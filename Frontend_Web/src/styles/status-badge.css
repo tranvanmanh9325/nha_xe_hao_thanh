@@ -1,0 +1,72 @@
+/* ==========================================================================
+   Status Badge Styles
+   ========================================================================== */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  line-height: 1.5;
+}
+
+/* Dot indicator */
+.status-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+/* ---- Variants ---- */
+
+/* Available (Còn trống) */
+.status-badge--available {
+  background-color: var(--success-bg);
+  color: var(--success);
+}
+
+.status-badge--available .status-badge__dot {
+  background-color: var(--success);
+}
+
+/* Full (Đã đầy) */
+.status-badge--full {
+  background-color: var(--danger-bg);
+  color: var(--danger);
+}
+
+.status-badge--full .status-badge__dot {
+  background-color: var(--danger);
+}
+
+/* Running (Đang chạy) */
+.status-badge--running {
+  background-color: var(--warning-bg);
+  color: #B45309;
+}
+
+.status-badge--running .status-badge__dot {
+  background-color: var(--warning);
+  /* Pulse animation for active trips */
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Completed (Hoàn thành) */
+.status-badge--completed {
+  background-color: var(--neutral-100);
+  color: var(--neutral-600);
+}
+
+.status-badge--completed .status-badge__dot {
+  background-color: var(--neutral-400);
+}

@@ -1,0 +1,17 @@
+/* ==========================================================================
+   Dashboard Layout Styles
+   ========================================================================== */
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.layout__main {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  margin-top: var(--topnav-height);
+  padding: var(--space-8);
+  background-color: var(--page-bg);
+  min-height: calc(100vh - var(--topnav-height));
+}

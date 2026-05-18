@@ -1,0 +1,168 @@
+/* ==========================================================================
+   Top Navigation Styles
+   ========================================================================== */
+
+.topnav {
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  height: var(--topnav-height);
+  background-color: var(--topnav-bg);
+  border-bottom: 1px solid var(--neutral-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-8);
+  z-index: 90;
+}
+
+/* ---- Left Section: Page Title + Search ---- */
+.topnav__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.topnav__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--neutral-900);
+  white-space: nowrap;
+}
+
+.topnav__search {
+  position: relative;
+  width: 320px;
+}
+
+.topnav__search-icon {
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--neutral-400);
+  pointer-events: none;
+}
+
+.topnav__search-input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-10);
+  background-color: var(--neutral-100);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  color: var(--neutral-900);
+  transition: all var(--transition-fast);
+}
+
+.topnav__search-input::placeholder {
+  color: var(--neutral-400);
+}
+
+.topnav__search-input:focus {
+  background-color: var(--white);
+  border-color: var(--brand-400);
+  box-shadow: 0 0 0 3px rgba(42, 140, 99, 0.1);
+}
+
+/* ---- Right Section: Actions ---- */
+.topnav__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.topnav__icon-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  color: var(--neutral-600);
+  transition: all var(--transition-fast);
+}
+
+.topnav__icon-btn:hover {
+  background-color: var(--neutral-100);
+  color: var(--neutral-900);
+}
+
+.topnav__badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background-color: var(--danger);
+  color: var(--white);
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* ---- Divider ---- */
+.topnav__divider {
+  width: 1px;
+  height: 28px;
+  background-color: var(--neutral-200);
+  margin: 0 var(--space-2);
+}
+
+/* ---- User Profile ---- */
+.topnav__user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-1);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.topnav__user:hover {
+  background-color: var(--neutral-100);
+}
+
+.topnav__user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--brand-500), var(--brand-400));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  flex-shrink: 0;
+}
+
+.topnav__user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.topnav__user-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--neutral-900);
+  line-height: var(--line-height-tight);
+}
+
+.topnav__user-role {
+  font-size: var(--font-size-xs);
+  color: var(--neutral-500);
+  line-height: var(--line-height-tight);
+}
+
+.topnav__chevron {
+  color: var(--neutral-400);
+}
