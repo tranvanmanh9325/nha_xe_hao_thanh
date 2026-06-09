@@ -1,7 +1,7 @@
 import StatusBadge from '../ui/StatusBadge';
 import { EditIcon, TrashIcon, ChevronLeftIcon, ChevronRightIcon } from '../../assets/icons';
 
-const TripsTable = ({ data = [], currentPage, totalPages, onPageChange }) => {
+const TripsTable = ({ data = [], isLoading, error, currentPage, totalPages, onPageChange }) => {
   return (
     <div className="trips-table-container">
       <table className="trips-table">
@@ -10,42 +10,67 @@ const TripsTable = ({ data = [], currentPage, totalPages, onPageChange }) => {
             <th>Mã chuyến</th>
             <th>Tuyến đường</th>
             <th>Khởi hành</th>
-            <th>Loại xe</th>
-            <th>Tài xế</th>
+            <th>Biển số xe</th>
+            <th>Giá vé</th>
             <th>Trạng thái</th>
             <th style={{ width: '80px', textAlign: 'center' }}>Thao tác</th>
           </tr>
         </thead>
         <tbody>
-          {data.length === 0 ? (
+          {isLoading ? (
+            <tr>
+              <td colSpan="7" style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
+                Đang tải dữ liệu...
+              </td>
+            </tr>
+          ) : error ? (
+            <tr>
+              <td colSpan="7" style={{ textAlign: 'center', padding: 'var(--space-8)', color: 'var(--color-danger)' }}>
+                {error}
+              </td>
+            </tr>
+          ) : data.length === 0 ? (
             <tr>
               <td colSpan="7" style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
                 Không tìm thấy chuyến xe nào.
               </td>
             </tr>
           ) : (
-            data.map((trip) => (
-              <tr key={trip.id}>
-                <td className="trips-table__code">{trip.code}</td>
-                <td>{trip.route}</td>
-                <td>{trip.departure}</td>
-                <td>{trip.vehicleType}</td>
-                <td>{trip.driver}</td>
-                <td>
-                  <StatusBadge status={trip.status} />
-                </td>
-                <td>
-                  <div className="trips-table__actions">
-                    <button className="trips-table__action-btn" title="Chỉnh sửa">
-                      <EditIcon size={18} />
-                    </button>
-                    <button className="trips-table__action-btn trips-table__action-btn--delete" title="Xóa">
-                      <TrashIcon size={18} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))
+            data.map((trip) => {
+              // Format departureTime: HH:mm - DD/MM/YYYY
+              const depDate = new Date(trip.departureTime);
+              const formattedTime = !isNaN(depDate) 
+                ? `${String(depDate.getHours()).padStart(2, '0')}:${String(depDate.getMinutes()).padStart(2, '0')} - ${String(depDate.getDate()).padStart(2, '0')}/${String(depDate.getMonth() + 1).padStart(2, '0')}/${depDate.getFullYear()}`
+                : trip.departureTime || 'N/A';
+                
+              // Format basePrice: VND
+              const formattedPrice = trip.basePrice != null
+                ? trip.basePrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
+                : '0 ₫';
+
+              return (
+                <tr key={trip.id}>
+                  <td className="trips-table__code">{trip.id}</td>
+                  <td>{trip.route}</td>
+                  <td>{formattedTime}</td>
+                  <td>{trip.licensePlate || 'Chưa xếp xe'}</td>
+                  <td>{formattedPrice}</td>
+                  <td>
+                    <StatusBadge status={trip.status} />
+                  </td>
+                  <td>
+                    <div className="trips-table__actions">
+                      <button className="trips-table__action-btn" title="Chỉnh sửa">
+                        <EditIcon size={18} />
+                      </button>
+                      <button className="trips-table__action-btn trips-table__action-btn--delete" title="Xóa">
+                        <TrashIcon size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })
           )}
         </tbody>
       </table>

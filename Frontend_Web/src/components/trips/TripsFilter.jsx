@@ -8,7 +8,7 @@ const TripsFilter = ({ searchTerm, onSearchChange, routeFilter, onRouteFilterCha
         <input
           type="text"
           className="trips-filter__input"
-          placeholder="Tìm theo mã chuyến, tài xế..."
+          placeholder="Tìm theo mã chuyến, biển số xe..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
         />

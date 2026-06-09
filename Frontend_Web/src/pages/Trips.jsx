@@ -1,23 +1,15 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import TripsToolbar from '../components/trips/TripsToolbar';
 import TripsFilter from '../components/trips/TripsFilter';
 import TripsTable from '../components/trips/TripsTable';
 import AddTripModal from '../components/trips/AddTripModal';
 import '../styles/trips.css';
 
-// Mock data for demonstration
-const MOCK_TRIPS = [
-  { id: 1, code: 'HT-1024', route: 'Sài Gòn - Đà Lạt', departure: '08:00 - 15/05/2026', vehicleType: 'Limousine 34', driver: 'Nguyễn Văn A', status: 'upcoming' },
-  { id: 2, code: 'HT-1025', route: 'Đà Lạt - Sài Gòn', departure: '09:00 - 15/05/2026', vehicleType: 'Giường nằm 40', driver: 'Trần Văn B', status: 'running' },
-  { id: 3, code: 'HT-1026', route: 'Sài Gòn - Nha Trang', departure: '10:30 - 15/05/2026', vehicleType: 'Limousine 34', driver: 'Lê Văn C', status: 'completed' },
-  { id: 4, code: 'HT-1027', route: 'Sài Gòn - Đà Lạt', departure: '12:00 - 15/05/2026', vehicleType: 'Phòng nằm 22', driver: 'Phạm Văn D', status: 'cancelled' },
-  { id: 5, code: 'HT-1028', route: 'Đà Lạt - Sài Gòn', departure: '14:00 - 15/05/2026', vehicleType: 'Giường nằm 40', driver: 'Hoàng Văn E', status: 'upcoming' },
-  { id: 6, code: 'HT-1029', route: 'Sài Gòn - Nha Trang', departure: '16:00 - 15/05/2026', vehicleType: 'Limousine 34', driver: 'Vũ Văn F', status: 'upcoming' },
-  { id: 7, code: 'HT-1030', route: 'Sài Gòn - Đà Lạt', departure: '18:00 - 15/05/2026', vehicleType: 'Phòng nằm 22', driver: 'Bùi Văn G', status: 'upcoming' },
-];
-
 const Trips = () => {
-  const [tripsData, setTripsData] = useState(MOCK_TRIPS);
+  const [tripsData, setTripsData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [routeFilter, setRouteFilter] = useState('all');
@@ -25,13 +17,36 @@ const Trips = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
+  // Fetch trips data from backend API
+  useEffect(() => {
+    const fetchTrips = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await fetch('http://localhost:8080/api/v1/trips');
+        if (!response.ok) {
+          throw new Error('Không thể tải dữ liệu chuyến xe từ máy chủ.');
+        }
+        const data = await response.json();
+        setTripsData(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTrips();
+  }, []);
+
   // Filter logic
   const filteredTrips = useMemo(() => {
     return tripsData.filter((trip) => {
-      // Text search (Code or Driver)
+      // Text search (ID or License Plate)
+      const searchLower = searchTerm.toLowerCase();
       const matchesSearch = 
-        trip.code.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        trip.driver.toLowerCase().includes(searchTerm.toLowerCase());
+        trip.id?.toString().toLowerCase().includes(searchLower) || 
+        (trip.licensePlate && trip.licensePlate.toLowerCase().includes(searchLower));
       
       // Route filter
       const matchesRoute = routeFilter === 'all' || trip.route === routeFilter;
@@ -98,6 +113,8 @@ const Trips = () => {
 
       <TripsTable 
         data={paginatedTrips}
+        isLoading={isLoading}
+        error={error}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
