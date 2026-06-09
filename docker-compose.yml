@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: rootpassword
+      POSTGRES_DB: haothanh_db
+    ports:
+      - "5432:5432"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./Backend_API
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/haothanh_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  api_gateway_lb:
+    image: nginx:alpine
+    container_name: api_gateway_lb
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./Frontend_Web
+      dockerfile: Dockerfile
+    container_name: frontend_web
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

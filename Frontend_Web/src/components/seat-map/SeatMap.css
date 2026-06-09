@@ -1,0 +1,287 @@
+/* ==========================================================================
+   Seat Map Styles
+   ========================================================================== */
+
+.seatmap-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  width: 100%;
+}
+
+/* ---- Tabs ---- */
+.seatmap-tabs {
+  display: flex;
+  gap: var(--space-4);
+  border-bottom: 1px solid var(--neutral-200);
+  padding-bottom: var(--space-2);
+}
+
+.seatmap-tab {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--neutral-600);
+  transition: all var(--transition-base);
+}
+
+.seatmap-tab:hover {
+  background-color: var(--neutral-100);
+  color: var(--neutral-900);
+}
+
+.seatmap-tab.active {
+  background-color: var(--brand-50);
+  color: var(--brand-600);
+  border-bottom: 2px solid var(--brand-500);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* ---- Vehicle Wrapper ---- */
+.seatmap-vehicle-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* ---- Floor ---- */
+.seatmap-floor {
+  background-color: var(--white);
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 320px;
+}
+
+.seatmap-floor-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-6);
+  color: var(--neutral-800);
+}
+
+/* ---- Steering Wheel ---- */
+.seatmap-steering-wheel {
+  margin-bottom: var(--space-8);
+  color: var(--neutral-400);
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  padding-left: var(--space-4);
+}
+
+/* ---- Matrix / Grid ---- */
+.seatmap-matrix {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.seatmap-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.seatmap-cell {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 48px; /* space for aisle or seat */
+}
+
+/* ---- Seat Component ---- */
+.seat {
+  width: 100%;
+  max-width: 54px;
+  height: 64px;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transition: all var(--transition-base);
+}
+
+.seat-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.seat-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  z-index: 10;
+  pointer-events: none; /* Let clicks pass through to button */
+}
+
+/* Seat States */
+.seat.available {
+  cursor: pointer;
+  color: var(--neutral-600);
+}
+
+.seat.available:hover {
+  transform: translateY(-2px);
+  color: var(--brand-500);
+}
+
+.seat.selected {
+  cursor: pointer;
+  color: var(--brand-500);
+  transform: translateY(-2px);
+}
+
+.seat.booked {
+  cursor: not-allowed;
+  color: var(--neutral-300);
+}
+
+.seat.booked .seat-label {
+  color: var(--neutral-400);
+}
+
+/* Specific SVG coloring via CSS currentColor */
+.seat.available .seat-bg {
+  fill: var(--white);
+  stroke: var(--neutral-300);
+  stroke-width: 2;
+}
+
+.seat.available:hover .seat-bg {
+  stroke: var(--brand-500);
+}
+
+.seat.selected .seat-bg {
+  fill: var(--brand-50);
+  stroke: var(--brand-500);
+  stroke-width: 2;
+}
+
+.seat.booked .seat-bg {
+  fill: var(--neutral-100);
+  stroke: var(--neutral-200);
+  stroke-width: 2;
+}
+
+/* ---- Legend ---- */
+.seatmap-legend {
+  display: flex;
+  gap: var(--space-6);
+  justify-content: center;
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--neutral-200);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--neutral-600);
+}
+
+.legend-box {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  border: 2px solid;
+}
+
+.legend-box.available {
+  background-color: var(--white);
+  border-color: var(--neutral-300);
+}
+
+.legend-box.selected {
+  background-color: var(--brand-50);
+  border-color: var(--brand-500);
+}
+
+.legend-box.booked {
+  background-color: var(--neutral-100);
+  border-color: var(--neutral-200);
+}
+
+/* ---- Info Panel ---- */
+.seatmap-info-panel {
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--neutral-200);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info-label {
+  font-weight: var(--font-weight-medium);
+  color: var(--neutral-600);
+}
+
+.info-value {
+  font-weight: var(--font-weight-semibold);
+  color: var(--neutral-900);
+  font-size: var(--font-size-lg);
+}
+
+.info-value.price {
+  color: var(--brand-600);
+  font-size: var(--font-size-xl);
+}
+
+.seat-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--brand-50);
+  color: var(--brand-600);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  margin-right: var(--space-2);
+}
+
+.book-btn {
+  background-color: var(--brand-500);
+  color: var(--white);
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-semibold);
+  transition: background-color var(--transition-base);
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+.book-btn:hover:not(:disabled) {
+  background-color: var(--brand-600);
+}
+
+.book-btn:disabled {
+  background-color: var(--neutral-300);
+  cursor: not-allowed;
+}

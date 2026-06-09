@@ -70,3 +70,43 @@
 .status-badge--completed .status-badge__dot {
   background-color: var(--neutral-400);
 }
+
+/* Upcoming (Sắp chạy) */
+.status-badge--upcoming {
+  background-color: var(--info-bg);
+  color: var(--info);
+}
+
+.status-badge--upcoming .status-badge__dot {
+  background-color: var(--info);
+}
+
+/* Cancelled (Hủy) */
+.status-badge--cancelled {
+  background-color: var(--danger-bg);
+  color: var(--danger);
+}
+
+.status-badge--cancelled .status-badge__dot {
+  background-color: var(--danger);
+}
+
+/* Paid (Đã thanh toán) */
+.status-badge--paid {
+  background-color: var(--success-bg);
+  color: var(--success);
+}
+
+.status-badge--paid .status-badge__dot {
+  background-color: var(--success);
+}
+
+/* Unpaid (Chưa thanh toán) */
+.status-badge--unpaid {
+  background-color: var(--warning-bg);
+  color: #B45309;
+}
+
+.status-badge--unpaid .status-badge__dot {
+  background-color: var(--warning);
+}

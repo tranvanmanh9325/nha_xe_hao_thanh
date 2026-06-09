@@ -132,3 +132,66 @@ export const tripsData = [
     driver: 'Huỳnh Tấn Đạt',
   },
 ];
+
+export const ticketsData = [
+  {
+    id: 'T-10024',
+    customerName: 'Nguyễn Văn An',
+    customerPhone: '0901234567',
+    tripCode: 'HT-2401',
+    route: 'TP.HCM - Đà Lạt',
+    departureTime: '18:00 - 20/05/2026',
+    seat: 'A12',
+    price: 350000,
+    status: 'paid',
+    bookingDate: '2026-05-18'
+  },
+  {
+    id: 'T-10025',
+    customerName: 'Trần Thị Bé',
+    customerPhone: '0912345678',
+    tripCode: 'HT-2402',
+    route: 'TP.HCM - Nha Trang',
+    departureTime: '19:30 - 20/05/2026',
+    seat: 'B05, B06',
+    price: 700000,
+    status: 'unpaid',
+    bookingDate: '2026-05-19'
+  },
+  {
+    id: 'T-10026',
+    customerName: 'Lê Hoàng Nam',
+    customerPhone: '0987654321',
+    tripCode: 'HT-2403',
+    route: 'Đà Lạt - TP.HCM',
+    departureTime: '20:00 - 20/05/2026',
+    seat: 'C15',
+    price: 350000,
+    status: 'paid',
+    bookingDate: '2026-05-18'
+  },
+  {
+    id: 'T-10027',
+    customerName: 'Phạm Thanh Tùng',
+    customerPhone: '0909998877',
+    tripCode: 'HT-2404',
+    route: 'TP.HCM - Buôn Ma Thuột',
+    departureTime: '20:30 - 20/05/2026',
+    seat: 'A01, A02',
+    price: 800000,
+    status: 'cancelled',
+    bookingDate: '2026-05-15'
+  },
+  {
+    id: 'T-10028',
+    customerName: 'Võ Minh Tuấn',
+    customerPhone: '0933445566',
+    tripCode: 'HT-2405',
+    route: 'Nha Trang - TP.HCM',
+    departureTime: '21:00 - 20/05/2026',
+    seat: 'B12',
+    price: 350000,
+    status: 'paid',
+    bookingDate: '2026-05-19'
+  }
+];
