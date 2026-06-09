@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import {
   DashboardIcon,
   BusRouteIcon,
-  BusSeatIcon,
+  BusIcon,
   TicketIcon,
   ChartIcon,
   SettingsIcon,
@@ -14,7 +14,7 @@ import '../../styles/sidebar.css';
 const navItems = [
   { to: '/', icon: DashboardIcon, label: 'Tổng quan' },
   { to: '/trips', icon: BusRouteIcon, label: 'Quản lý chuyến xe' },
-  { to: '/seat-map', icon: BusSeatIcon, label: 'Sơ đồ ghế' },
+  { to: '/buses', icon: BusIcon, label: 'Quản lý xe' },
   { to: '/tickets', icon: TicketIcon, label: 'Quản lý vé' },
   { to: '/revenue', icon: ChartIcon, label: 'Thống kê doanh thu' },
   { to: '/settings', icon: SettingsIcon, label: 'Cài đặt' },

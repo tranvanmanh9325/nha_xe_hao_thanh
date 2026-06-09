@@ -243,3 +243,16 @@ export const EyeIcon = ({ size = 22, className = '' }) => (
     <circle cx="12" cy="12" r="3" />
   </svg>
 );
+
+/* ---- Bus — vehicle shape ---- */
+export const BusIcon = ({ size = 22, className = '' }) => (
+  <svg {...baseProps(size, className)}>
+    <path d="M4 19h16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12z" />
+    <path d="M8 19v2" />
+    <path d="M16 19v2" />
+    <circle cx="7" cy="15" r="1.5" />
+    <circle cx="17" cy="15" r="1.5" />
+    <path d="M4 11h16" />
+    <path d="M12 5v6" />
+  </svg>
+);

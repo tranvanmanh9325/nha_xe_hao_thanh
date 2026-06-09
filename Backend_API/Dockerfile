@@ -1,12 +1,10 @@
 # Stage 1: Build the application using Maven
-FROM eclipse-temurin:21-jdk-alpine AS build
+FROM maven:3.9-eclipse-temurin-21-alpine AS build
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 # Build the application skipping tests to speed up the process
-RUN ./mvnw clean package -DskipTests || \
-    # Fallback to standard maven if mvnw is not copied/executable
-    apk add --no-cache maven && mvn clean package -DskipTests
+RUN mvn clean package -DskipTests
 
 # Stage 2: Create a minimal JRE image to run the application
 FROM eclipse-temurin:21-jre-alpine

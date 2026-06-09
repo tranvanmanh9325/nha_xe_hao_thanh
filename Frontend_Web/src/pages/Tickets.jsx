@@ -1,13 +1,14 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import TicketsToolbar from '../components/tickets/TicketsToolbar';
 import TicketsFilter from '../components/tickets/TicketsFilter';
 import TicketsTable from '../components/tickets/TicketsTable';
 import TicketDetailsModal from '../components/tickets/TicketDetailsModal';
-import { ticketsData } from '../data/mockData';
 import '../styles/tickets.css';
 
 const Tickets = () => {
-  const [ticketsList, setTicketsList] = useState(ticketsData);
+  const [ticketsList, setTicketsList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [tripFilter, setTripFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -16,6 +17,52 @@ const Tickets = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   const itemsPerPage = 5;
+
+  // Fetch data from API
+  useEffect(() => {
+    const fetchTickets = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('http://localhost:8080/api/v1/tickets');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        
+        // Map backend DTO to frontend format
+        const formattedData = data.map(t => {
+          const dateObj = new Date(t.departureTime);
+          const formattedDate = dateObj.toLocaleString('vi-VN', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+          });
+
+          return {
+            id: t.ticketCode,
+            customerName: t.customerName,
+            customerPhone: t.customerPhone,
+            route: t.route,
+            departureTime: formattedDate,
+            tripCode: `TRIP-${t.tripId}`,
+            seat: t.seatCode,
+            price: t.totalPrice,
+            status: t.paymentStatus.toLowerCase(),
+            originalId: t.id
+          };
+        });
+
+        setTicketsList(formattedData);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching tickets:', err);
+        setError('Không thể tải dữ liệu vé. Vui lòng thử lại sau.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTickets();
+  }, []);
 
   // Filter logic
   const filteredTickets = useMemo(() => {
@@ -71,6 +118,28 @@ const Tickets = () => {
       ));
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="tickets-page">
+        <TicketsToolbar />
+        <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+          Đang tải dữ liệu vé...
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="tickets-page">
+        <TicketsToolbar />
+        <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--error)' }}>
+          {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="tickets-page">

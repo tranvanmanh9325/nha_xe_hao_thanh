@@ -1,16 +1,28 @@
 import { useState, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import SeatMapRenderer from '../components/seat-map/SeatMapRenderer';
 import { seatMapConfigs } from '../data/seatMapConfig';
+import { ChevronLeftIcon } from '../assets/icons';
 import '../components/seat-map/SeatMap.css';
 
-const SeatMap = () => {
-  // State for switching vehicle types
-  const [activeVehicleId, setActiveVehicleId] = useState('limousine34');
-  
+// Mock data to map busId to the correct seatMapConfig
+const MOCK_BUSES = [
+  { id: 'bus-01', licensePlate: '51B-123.45', typeId: 'limousine34', typeName: 'Limousine 34 Phòng' },
+  { id: 'bus-02', licensePlate: '29B-987.65', typeId: 'bed40', typeName: 'Giường Nằm 40' },
+  { id: 'bus-03', licensePlate: '51B-555.55', typeId: 'limousine34', typeName: 'Limousine 34 Phòng' },
+  { id: 'bus-04', licensePlate: '43B-111.11', typeId: 'bed40', typeName: 'Giường Nằm 40' },
+];
+
+const BusDetail = () => {
+  const { busId } = useParams();
+  const navigate = useNavigate();
+
+  // Find the bus info
+  const bus = MOCK_BUSES.find((b) => b.id === busId);
+  const currentConfig = bus ? seatMapConfigs[bus.typeId] : null;
+
   // State for selected seats
   const [selectedSeats, setSelectedSeats] = useState([]);
-
-  const currentConfig = seatMapConfigs[activeVehicleId];
 
   // Toggle seat selection
   const handleSeatSelect = (seatId) => {
@@ -20,12 +32,6 @@ const SeatMap = () => {
       }
       return [...prevSelected, seatId]; // Select
     });
-  };
-
-  // Switch vehicle type (and clear selections)
-  const handleVehicleSwitch = (vehicleId) => {
-    setActiveVehicleId(vehicleId);
-    setSelectedSeats([]);
   };
 
   // Compute total price based on selected seats and base price
@@ -42,25 +48,37 @@ const SeatMap = () => {
     }).format(amount);
   };
 
-  if (!currentConfig) return <div>Đang tải dữ liệu...</div>;
+  if (!bus || !currentConfig) {
+    return (
+      <div style={{ padding: 'var(--space-6)' }}>
+        <button onClick={() => navigate('/buses')} className="btn" style={{ marginBottom: 'var(--space-4)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <ChevronLeftIcon size={20} /> Quay lại danh sách xe
+        </button>
+        <div>Không tìm thấy thông tin xe hoặc dữ liệu sơ đồ ghế.</div>
+      </div>
+    );
+  }
 
   return (
     <div className="seatmap-container">
-      <h2 style={{ marginBottom: '8px', color: 'var(--neutral-900)' }}>
-        Mô phỏng Sơ đồ ghế (Dynamic Layout)
-      </h2>
-      
-      {/* Tabs to switch vehicle type */}
-      <div className="seatmap-tabs">
-        {Object.values(seatMapConfigs).map((vehicle) => (
-          <button
-            key={vehicle.id}
-            className={`seatmap-tab ${activeVehicleId === vehicle.id ? 'active' : ''}`}
-            onClick={() => handleVehicleSwitch(vehicle.id)}
-          >
-            {vehicle.name}
-          </button>
-        ))}
+      {/* Header & Back Button */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
+        <button 
+          onClick={() => navigate('/buses')} 
+          style={{ 
+            background: 'none', border: 'none', cursor: 'pointer', 
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '8px', borderRadius: '50%', backgroundColor: 'var(--neutral-100)'
+          }}
+        >
+          <ChevronLeftIcon size={20} />
+        </button>
+        <div>
+          <h2 style={{ color: 'var(--neutral-900)', margin: 0 }}>
+            Chi tiết xe: {bus.licensePlate}
+          </h2>
+          <span style={{ color: 'var(--neutral-500)', fontSize: 'var(--text-sm)' }}>{bus.typeName}</span>
+        </div>
       </div>
 
       {/* Legend */}
@@ -126,4 +144,4 @@ const SeatMap = () => {
   );
 };
 
-export default SeatMap;
+export default BusDetail;
