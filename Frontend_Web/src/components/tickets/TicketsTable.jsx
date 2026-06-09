@@ -61,7 +61,7 @@ const TicketsTable = ({ data = [], currentPage, totalPages, onPageChange, onView
                       <button 
                         className="tickets-table__action-btn tickets-table__action-btn--delete" 
                         title="Hủy vé"
-                        onClick={() => onCancelClick(ticket.id)}
+                        onClick={() => onCancelClick(ticket)}
                       >
                         <TrashIcon size={18} />
                       </button>

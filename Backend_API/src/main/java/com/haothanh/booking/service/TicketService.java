@@ -5,4 +5,5 @@ import java.util.List;
 
 public interface TicketService {
     List<TicketResponseDTO> getAllTickets();
+    void cancelTicket(Long ticketId);
 }

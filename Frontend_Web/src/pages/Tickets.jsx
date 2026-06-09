@@ -111,11 +111,25 @@ const Tickets = () => {
     setIsModalOpen(true);
   };
 
-  const handleCancelTicket = (ticketId) => {
-    if (window.confirm('Bạn có chắc chắn muốn hủy vé này?')) {
-      setTicketsList(prev => prev.map(t => 
-        t.id === ticketId ? { ...t, status: 'cancelled' } : t
-      ));
+  const handleCancelTicket = async (ticket) => {
+    if (window.confirm('Bạn có chắc chắn muốn hủy vé này không?')) {
+      try {
+        const response = await fetch(`http://localhost:8080/api/v1/tickets/${ticket.originalId}/cancel`, {
+          method: 'PUT'
+        });
+        
+        if (response.ok) {
+          setTicketsList(prev => prev.map(t => 
+            t.originalId === ticket.originalId ? { ...t, status: 'cancelled' } : t
+          ));
+        } else {
+          const errorData = await response.json();
+          alert(`Lỗi: ${errorData.error || 'Không thể hủy vé'}`);
+        }
+      } catch (err) {
+        console.error("Error cancelling ticket:", err);
+        alert("Lỗi kết nối đến server");
+      }
     }
   };
 

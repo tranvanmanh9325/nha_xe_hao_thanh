@@ -1,15 +1,16 @@
 package com.haothanh.booking.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-public class BusResponseDTO {
-    private Long id;
+@NoArgsConstructor
+@AllArgsConstructor
+public class BusRequestDTO {
     private String licensePlate;
     private String busType;
     private Integer totalSeats;
-    private String status;
-    private String layoutConfig;
 }

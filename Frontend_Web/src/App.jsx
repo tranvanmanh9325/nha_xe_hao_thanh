@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import DashboardLayout from './components/layout/DashboardLayout';
 import Dashboard from './pages/Dashboard';
 import Trips from './pages/Trips';
+import TripSeatMap from './pages/TripSeatMap';
 import Buses from './pages/Buses';
 import BusDetail from './pages/BusDetail';
 import Tickets from './pages/Tickets';
@@ -14,7 +15,10 @@ const App = () => {
       <Routes>
         <Route element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
-          <Route path="trips" element={<Trips />} />
+          <Route path="trips">
+            <Route index element={<Trips />} />
+            <Route path=":id/seats" element={<TripSeatMap />} />
+          </Route>
           <Route path="buses">
             <Route index element={<Buses />} />
             <Route path=":busId" element={<BusDetail />} />

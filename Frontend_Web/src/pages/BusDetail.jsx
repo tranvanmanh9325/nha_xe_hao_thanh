@@ -1,25 +1,62 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import SeatMapRenderer from '../components/seat-map/SeatMapRenderer';
+import BusLayoutBuilder from '../components/seat-map/BusLayoutBuilder';
 import { seatMapConfigs } from '../data/seatMapConfig';
 import { ChevronLeftIcon } from '../assets/icons';
 import '../components/seat-map/SeatMap.css';
-
-// Mock data to map busId to the correct seatMapConfig
-const MOCK_BUSES = [
-  { id: 'bus-01', licensePlate: '51B-123.45', typeId: 'limousine34', typeName: 'Limousine 34 Phòng' },
-  { id: 'bus-02', licensePlate: '29B-987.65', typeId: 'bed40', typeName: 'Giường Nằm 40' },
-  { id: 'bus-03', licensePlate: '51B-555.55', typeId: 'limousine34', typeName: 'Limousine 34 Phòng' },
-  { id: 'bus-04', licensePlate: '43B-111.11', typeId: 'bed40', typeName: 'Giường Nằm 40' },
-];
 
 const BusDetail = () => {
   const { busId } = useParams();
   const navigate = useNavigate();
 
-  // Find the bus info
-  const bus = MOCK_BUSES.find((b) => b.id === busId);
-  const currentConfig = bus ? seatMapConfigs[bus.typeId] : null;
+  const [busInfo, setBusInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchBusInfo = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/v1/buses/${busId}`);
+        if (!response.ok) {
+          throw new Error('Không tìm thấy thông tin xe');
+        }
+        const data = await response.json();
+        setBusInfo(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBusInfo();
+  }, [busId]);
+
+  const getSeatMapConfigKey = (dbBusType) => {
+    if (!dbBusType) return null;
+    switch (dbBusType) {
+      case 'LIMOUSINE_34': return 'limousine34';
+      case 'SLEEPER_40': return 'bed40';
+      default: return null;
+    }
+  };
+
+  // Determine current config (priority: DB JSON -> default templates)
+  const currentConfig = useMemo(() => {
+    if (!busInfo) return null;
+    if (busInfo.layoutConfig) {
+      try {
+        return JSON.parse(busInfo.layoutConfig);
+      } catch (e) {
+        console.error("Failed to parse layoutConfig", e);
+      }
+    }
+    const key = getSeatMapConfigKey(busInfo.busType);
+    return key ? seatMapConfigs[key] : null;
+  }, [busInfo]);
+
+  // State for builder mode
+  const [isBuilderMode, setIsBuilderMode] = useState(false);
 
   // State for selected seats
   const [selectedSeats, setSelectedSeats] = useState([]);
@@ -34,27 +71,18 @@ const BusDetail = () => {
     });
   };
 
-  // Compute total price based on selected seats and base price
-  const totalPrice = useMemo(() => {
-    if (!currentConfig) return 0;
-    return selectedSeats.length * currentConfig.basePrice;
-  }, [selectedSeats, currentConfig]);
 
-  // Format currency
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
-    }).format(amount);
-  };
+  if (loading) {
+    return <div style={{ padding: 'var(--space-6)' }}>Đang tải thông tin xe...</div>;
+  }
 
-  if (!bus || !currentConfig) {
+  if (error || !busInfo || !currentConfig) {
     return (
       <div style={{ padding: 'var(--space-6)' }}>
         <button onClick={() => navigate('/buses')} className="btn" style={{ marginBottom: 'var(--space-4)', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <ChevronLeftIcon size={20} /> Quay lại danh sách xe
         </button>
-        <div>Không tìm thấy thông tin xe hoặc dữ liệu sơ đồ ghế.</div>
+        <div>{error || 'Không tìm thấy thông tin xe hoặc dữ liệu sơ đồ ghế.'}</div>
       </div>
     );
   }
@@ -62,26 +90,47 @@ const BusDetail = () => {
   return (
     <div className="seatmap-container">
       {/* Header & Back Button */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
-        <button 
-          onClick={() => navigate('/buses')} 
-          style={{ 
-            background: 'none', border: 'none', cursor: 'pointer', 
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: '8px', borderRadius: '50%', backgroundColor: 'var(--neutral-100)'
-          }}
-        >
-          <ChevronLeftIcon size={20} />
-        </button>
-        <div>
-          <h2 style={{ color: 'var(--neutral-900)', margin: 0 }}>
-            Chi tiết xe: {bus.licensePlate}
-          </h2>
-          <span style={{ color: 'var(--neutral-500)', fontSize: 'var(--text-sm)' }}>{bus.typeName}</span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
+          <button 
+            onClick={() => navigate('/buses')} 
+            style={{ 
+              background: 'none', border: 'none', cursor: 'pointer', 
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: '8px', borderRadius: '50%', backgroundColor: 'var(--neutral-100)'
+            }}
+          >
+            <ChevronLeftIcon size={20} />
+          </button>
+          <div>
+            <h2 style={{ color: 'var(--neutral-900)', margin: 0 }}>
+              Chi tiết xe: {busInfo.licensePlate}
+            </h2>
+            <span style={{ color: 'var(--neutral-500)', fontSize: 'var(--text-sm)' }}>
+              {busInfo.busType === 'LIMOUSINE_34' ? 'Limousine 34 Phòng' : busInfo.busType === 'SLEEPER_40' ? 'Giường Nằm 40' : busInfo.busType}
+            </span>
+          </div>
         </div>
+        {!isBuilderMode && (
+          <button className="btn btn-primary" onClick={() => setIsBuilderMode(true)}>
+            Chỉnh sửa sơ đồ
+          </button>
+        )}
       </div>
 
-      {/* Legend */}
+      {isBuilderMode ? (
+        <BusLayoutBuilder 
+          busId={busId} 
+          existingConfig={currentConfig} 
+          onCancel={() => setIsBuilderMode(false)}
+          onSaveSuccess={(updatedBus) => {
+            setBusInfo(updatedBus);
+            setIsBuilderMode(false);
+          }}
+        />
+      ) : (
+        <>
+          {/* Legend */}
       <div className="seatmap-legend">
         <div className="legend-item">
           <div className="legend-box available" />
@@ -103,43 +152,8 @@ const BusDetail = () => {
         selectedSeats={selectedSeats}
         onSeatSelect={handleSeatSelect}
       />
-
-      {/* Info Panel / Summary */}
-      <div className="seatmap-info-panel">
-        <div className="info-row">
-          <span className="info-label">Chuyến xe:</span>
-          <span className="info-value">{currentConfig.name}</span>
-        </div>
-        <div className="info-row">
-          <span className="info-label">Ghế đã chọn:</span>
-          <div className="info-value">
-            {selectedSeats.length > 0 ? (
-              selectedSeats.map((seatId) => (
-                <span key={seatId} className="seat-badge">
-                  {seatId}
-                </span>
-              ))
-            ) : (
-              <span className="text-muted">Chưa chọn ghế</span>
-            )}
-          </div>
-        </div>
-        <div className="info-row" style={{ marginTop: 'var(--space-2)' }}>
-          <span className="info-label">Tổng tiền:</span>
-          <span className="info-value price">{formatCurrency(totalPrice)}</span>
-        </div>
-        
-        <button
-          className="book-btn"
-          disabled={selectedSeats.length === 0}
-          onClick={() => {
-            alert(`Đã đặt các ghế: ${selectedSeats.join(', ')} \nTổng tiền: ${formatCurrency(totalPrice)}`);
-            setSelectedSeats([]);
-          }}
-        >
-          {selectedSeats.length > 0 ? 'Xác nhận đặt ghế' : 'Vui lòng chọn ghế'}
-        </button>
-      </div>
+      </>
+      )}
     </div>
   );
 };

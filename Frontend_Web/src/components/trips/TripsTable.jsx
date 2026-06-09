@@ -1,7 +1,9 @@
 import StatusBadge from '../ui/StatusBadge';
 import { EditIcon, TrashIcon, ChevronLeftIcon, ChevronRightIcon } from '../../assets/icons';
+import { useNavigate } from 'react-router-dom';
 
 const TripsTable = ({ data = [], isLoading, error, currentPage, totalPages, onPageChange }) => {
+  const navigate = useNavigate();
   return (
     <div className="trips-table-container">
       <table className="trips-table">
@@ -60,6 +62,18 @@ const TripsTable = ({ data = [], isLoading, error, currentPage, totalPages, onPa
                   </td>
                   <td>
                     <div className="trips-table__actions">
+                      <button 
+                        className="trips-table__action-btn" 
+                        title="Xem sơ đồ ghế"
+                        onClick={() => navigate(`/trips/${trip.id}/seats`)}
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M4 10v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6" />
+                          <path d="M12 2v8" />
+                          <path d="m8 6 4-4 4 4" />
+                          <path d="M4 14h16" />
+                        </svg>
+                      </button>
                       <button className="trips-table__action-btn" title="Chỉnh sửa">
                         <EditIcon size={18} />
                       </button>

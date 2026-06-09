@@ -8,9 +8,9 @@ import './SeatMap.css';
  * @param {Object} props
  * @param {Object} props.config - Vehicle layout schema
  * @param {Array<string>} props.selectedSeats - Array of selected seat IDs
- * @param {Function} props.onSeatSelect - Callback to toggle seat selection
+ * @param {Array<string>} [props.bookedSeats] - Array of booked seat IDs
  */
-const SeatMapRenderer = ({ config, selectedSeats, onSeatSelect }) => {
+const SeatMapRenderer = ({ config, selectedSeats, onSeatSelect, bookedSeats = [] }) => {
   if (!config || !config.floors) {
     return <div>No configuration available</div>;
   }
@@ -51,11 +51,15 @@ const SeatMapRenderer = ({ config, selectedSeats, onSeatSelect }) => {
               <div key={`row-${rowIndex}`} className="seatmap-row">
                 {row.map((cell, colIndex) => {
                   const isSeat = cell && cell.type === 'seat';
+                  const cellData = isSeat 
+                    ? { ...cell, status: bookedSeats.includes(cell.id) ? 'booked' : cell.status } 
+                    : cell;
+                  
                   return (
                     <div key={`cell-${rowIndex}-${colIndex}`} className="seatmap-cell">
                       {isSeat ? (
                         <Seat
-                          data={cell}
+                          data={cellData}
                           isSelected={selectedSeats.includes(cell.id)}
                           onSelect={onSeatSelect}
                         />

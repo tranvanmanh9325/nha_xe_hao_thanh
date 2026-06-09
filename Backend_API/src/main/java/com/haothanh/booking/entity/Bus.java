@@ -29,6 +29,9 @@ public class Bus {
     @Column(name = "total_seats", nullable = false)
     private Integer totalSeats;
 
+    @Column(name = "layout_config", columnDefinition = "TEXT")
+    private String layoutConfig;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;

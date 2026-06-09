@@ -38,4 +38,21 @@ public class TicketServiceImpl implements TicketService {
                 .tripId(ticket.getTrip().getId())
                 .build();
     }
+
+    @Override
+    @Transactional
+    public void cancelTicket(Long ticketId) {
+        if (ticketId == null) {
+            throw new IllegalArgumentException("Mã vé không hợp lệ");
+        }
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+        
+        if ("CANCELLED".equalsIgnoreCase(ticket.getPaymentStatus())) {
+            throw new RuntimeException("Vé đã bị hủy trước đó");
+        }
+        
+        ticket.setPaymentStatus("CANCELLED");
+        ticketRepository.save(ticket);
+    }
 }

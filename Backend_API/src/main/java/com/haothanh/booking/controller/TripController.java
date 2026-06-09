@@ -30,4 +30,15 @@ public class TripController {
         List<TripResponseDTO> trips = tripService.getTrips(route);
         return ResponseEntity.ok(trips);
     }
+
+    /**
+     * Endpoint to fetch the seat map for a specific trip, including layout and booked seats.
+     *
+     * @param id The ID of the trip
+     * @return TripSeatMapResponseDTO wrapped in ResponseEntity
+     */
+    @GetMapping("/{id}/seats")
+    public ResponseEntity<com.haothanh.booking.dto.TripSeatMapResponseDTO> getTripSeatMap(@PathVariable Long id) {
+        return ResponseEntity.ok(tripService.getTripSeatMap(id));
+    }
 }

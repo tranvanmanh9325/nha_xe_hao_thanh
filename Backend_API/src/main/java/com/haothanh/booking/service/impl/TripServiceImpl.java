@@ -1,7 +1,9 @@
 package com.haothanh.booking.service.impl;
 
 import com.haothanh.booking.dto.TripResponseDTO;
+import com.haothanh.booking.dto.TripSeatMapResponseDTO;
 import com.haothanh.booking.entity.Trip;
+import com.haothanh.booking.repository.TicketRepository;
 import com.haothanh.booking.repository.TripRepository;
 import com.haothanh.booking.service.TripService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 public class TripServiceImpl implements TripService {
 
     private final TripRepository tripRepository;
+    private final TicketRepository ticketRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -43,6 +46,25 @@ public class TripServiceImpl implements TripService {
                 .status(trip.getStatus())
                 // Safe navigation in case trip.getBus() is somehow null (though DB constraints say nullable=false)
                 .licensePlate(trip.getBus() != null ? trip.getBus().getLicensePlate() : null)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TripSeatMapResponseDTO getTripSeatMap(Long tripId) {
+        Trip trip = tripRepository.findById(java.util.Objects.requireNonNull(tripId))
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy chuyến xe"));
+        com.haothanh.booking.entity.Bus bus = trip.getBus();
+        
+        List<String> statuses = java.util.Arrays.asList("PAID", "PENDING");
+        List<String> bookedSeats = ticketRepository.findBookedSeatsByTripId(java.util.Objects.requireNonNull(tripId), statuses);
+        
+        return TripSeatMapResponseDTO.builder()
+                .tripId(tripId)
+                .licensePlate(bus != null ? bus.getLicensePlate() : null)
+                .busType(bus != null ? bus.getBusType() : null)
+                .layoutConfig(bus != null ? bus.getLayoutConfig() : null)
+                .bookedSeats(bookedSeats)
                 .build();
     }
 }

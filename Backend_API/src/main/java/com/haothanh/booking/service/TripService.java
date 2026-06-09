@@ -1,6 +1,7 @@
 package com.haothanh.booking.service;
 
 import com.haothanh.booking.dto.TripResponseDTO;
+import com.haothanh.booking.dto.TripSeatMapResponseDTO;
 
 import java.util.List;
 
@@ -14,4 +15,12 @@ public interface TripService {
      * @return List of TripResponseDTO
      */
     List<TripResponseDTO> getTrips(String route);
+
+    /**
+     * Retrieves the seat map for a specific trip.
+     *
+     * @param tripId The ID of the trip
+     * @return TripSeatMapResponseDTO containing seat details
+     */
+    TripSeatMapResponseDTO getTripSeatMap(Long tripId);
 }

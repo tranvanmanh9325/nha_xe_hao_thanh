@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PlusIcon } from '../assets/icons';
+import AddBusModal from '../components/AddBusModal';
 
 const Buses = () => {
   const navigate = useNavigate();
   const [buses, setBuses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     // Fetch buses from backend API
@@ -26,7 +29,7 @@ const Buses = () => {
     };
 
     fetchBuses();
-  }, []);
+  }, [refreshKey]);
 
   return (
     <div className="page-container" style={{ padding: 'var(--space-6)' }}>
@@ -35,7 +38,25 @@ const Buses = () => {
           <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: '600', color: 'var(--neutral-900)' }}>Quản lý xe</h1>
           <p style={{ color: 'var(--neutral-500)', marginTop: 'var(--space-1)' }}>Quản lý danh sách các xe và xem chi tiết sơ đồ ghế.</p>
         </div>
-        <button className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+        <button 
+          className="btn btn-primary" 
+          onClick={() => setIsAddModalOpen(true)}
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 'var(--space-2)',
+            backgroundColor: 'var(--brand-500)',
+            color: 'white',
+            padding: 'var(--space-2) var(--space-4)',
+            borderRadius: 'var(--radius-md)',
+            fontWeight: '500',
+            transition: 'background-color var(--transition-fast)',
+            cursor: 'pointer',
+            border: 'none'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--brand-600)'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--brand-500)'}
+        >
           <PlusIcon size={20} />
           <span>Thêm xe mới</span>
         </button>
@@ -103,6 +124,13 @@ const Buses = () => {
           ))}
         </div>
       )}
+
+      {/* Modal Thêm Xe Mới */}
+      <AddBusModal 
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)} 
+        onBusAdded={() => setRefreshKey(prev => prev + 1)}
+      />
     </div>
   );
 };
