@@ -63,16 +63,18 @@ const TripsTable = ({ data = [], isLoading, error, currentPage, totalPages, onPa
                   <td>
                     <div className="trips-table__actions">
                       <button 
-                        className="trips-table__action-btn" 
-                        title="Xem sơ đồ ghế"
+                        className="trips-table__action-btn trips-table__action-btn--primary" 
+                        title="Sơ đồ & Đặt vé"
                         onClick={() => navigate(`/trips/${trip.id}/seats`)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', borderRadius: '4px', backgroundColor: 'var(--brand-50)', color: 'var(--brand-600)', fontWeight: '500', width: 'auto' }}
                       >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M4 10v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6" />
                           <path d="M12 2v8" />
                           <path d="m8 6 4-4 4 4" />
                           <path d="M4 14h16" />
                         </svg>
+                        Đặt vé
                       </button>
                       <button className="trips-table__action-btn" title="Chỉnh sửa">
                         <EditIcon size={18} />

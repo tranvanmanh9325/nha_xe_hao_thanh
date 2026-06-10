@@ -32,6 +32,18 @@ public class Bus {
     @Column(name = "layout_config", columnDefinition = "TEXT")
     private String layoutConfig;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "manufacture_year")
+    private Integer manufactureYear;
+
+    @Column(name = "color", length = 50)
+    private String color;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;

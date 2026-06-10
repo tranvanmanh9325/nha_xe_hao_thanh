@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -42,8 +43,15 @@ public class BusController {
         return ResponseEntity.ok(busService.updateBusLayout(id, request.getLayoutConfig()));
     }
 
-    @PostMapping
-    public ResponseEntity<BusResponseDTO> createBus(@RequestBody BusRequestDTO request) {
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<BusResponseDTO> createBus(@ModelAttribute BusRequestDTO request) {
         return ResponseEntity.ok(busService.createBus(request));
+    }
+
+    @PutMapping(value = "/{id}", consumes = "multipart/form-data")
+    public ResponseEntity<BusResponseDTO> updateBus(
+            @PathVariable Long id, 
+            @ModelAttribute BusRequestDTO request) {
+        return ResponseEntity.ok(busService.updateBusInfo(id, request));
     }
 }

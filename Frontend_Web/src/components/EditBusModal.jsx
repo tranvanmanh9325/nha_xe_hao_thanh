@@ -1,15 +1,15 @@
 import { useState } from 'react';
 
-const AddBusModal = ({ isOpen, onClose, onBusAdded }) => {
+const EditBusModal = ({ isOpen, onClose, onBusUpdated, busInfo }) => {
   const [formData, setFormData] = useState({
-    licensePlate: '',
-    busType: '',
-    totalSeats: '',
-    description: '',
-    manufactureYear: '',
-    color: '',
+    licensePlate: busInfo?.licensePlate || '',
+    busType: busInfo?.busType || '',
+    totalSeats: busInfo?.totalSeats || '',
+    description: busInfo?.description || '',
+    manufactureYear: busInfo?.manufactureYear || '',
+    color: busInfo?.color || '',
     image: null,
-    imagePreview: null
+    imagePreview: busInfo?.imageUrl || null
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -49,12 +49,12 @@ const AddBusModal = ({ isOpen, onClose, onBusAdded }) => {
       if (formData.image) {
         formDataObj.append('image', formData.image);
       }
-      formDataObj.append('description', formData.description);
-      formDataObj.append('manufactureYear', formData.manufactureYear);
-      formDataObj.append('color', formData.color);
+      if (formData.description) formDataObj.append('description', formData.description);
+      if (formData.manufactureYear) formDataObj.append('manufactureYear', formData.manufactureYear);
+      if (formData.color) formDataObj.append('color', formData.color);
 
-      const response = await fetch('http://localhost:8080/api/v1/buses', {
-        method: 'POST',
+      const response = await fetch(`http://localhost:8080/api/v1/buses/${busInfo.id}`, {
+        method: 'PUT',
         // Do NOT set Content-Type header when sending FormData, 
         // the browser will automatically set it with boundary
         body: formDataObj,
@@ -62,14 +62,10 @@ const AddBusModal = ({ isOpen, onClose, onBusAdded }) => {
 
       if (!response.ok) {
         const errData = await response.json().catch(() => null);
-        throw new Error(errData?.message || 'Lỗi khi thêm xe. Biển số xe có thể đã tồn tại.');
+        throw new Error(errData?.message || 'Lỗi khi cập nhật thông tin xe.');
       }
 
-      setFormData({ 
-        licensePlate: '', busType: '', totalSeats: '',
-        description: '', manufactureYear: '', color: '', image: null, imagePreview: null 
-      });
-      if (onBusAdded) onBusAdded();
+      if (onBusUpdated) onBusUpdated();
       onClose();
     } catch (err) {
       setError(err.message);
@@ -111,7 +107,7 @@ const AddBusModal = ({ isOpen, onClose, onBusAdded }) => {
         boxShadow: 'var(--shadow-lg)'
       }}>
         <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: '600', marginBottom: 'var(--space-4)', color: 'var(--neutral-900)' }}>
-          Thêm xe mới
+          Cập nhật thông tin xe
         </h2>
         
         {error && (
@@ -143,7 +139,7 @@ const AddBusModal = ({ isOpen, onClose, onBusAdded }) => {
               {formData.imagePreview ? (
                 <img src={formData.imagePreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
-                <span style={{ color: 'var(--neutral-500)', fontSize: 'var(--text-sm)' }}>Nhấn để chọn ảnh</span>
+                <span style={{ color: 'var(--neutral-500)', fontSize: 'var(--text-sm)' }}>Nhấn để chọn ảnh mới</span>
               )}
               <input 
                 id="busImageUpload"
@@ -263,4 +259,4 @@ const AddBusModal = ({ isOpen, onClose, onBusAdded }) => {
   );
 };
 
-export default AddBusModal;
+export default EditBusModal;

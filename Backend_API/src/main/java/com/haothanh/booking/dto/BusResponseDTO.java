@@ -12,4 +12,8 @@ public class BusResponseDTO {
     private Integer totalSeats;
     private String status;
     private String layoutConfig;
+    private String imageUrl;
+    private String description;
+    private Integer manufactureYear;
+    private String color;
 }

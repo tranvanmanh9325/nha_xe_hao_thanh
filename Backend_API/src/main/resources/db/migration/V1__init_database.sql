@@ -14,6 +14,11 @@ CREATE TABLE buses (
     license_plate VARCHAR(50) UNIQUE NOT NULL,
     bus_type VARCHAR(50) NOT NULL,
     total_seats INT NOT NULL,
+    layout_config TEXT,
+    image_url VARCHAR(255),
+    description TEXT,
+    manufacture_year INT,
+    color VARCHAR(50),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -50,28 +55,28 @@ INSERT INTO users (full_name, phone, email, password, role)
 VALUES ('Admin Hao Thanh', '0901234567', 'admin@haothanh.com', '$2a$10$7R4d.R2G0R4qM1m4.q5G.eVt4.r5T3z2X/7Z4.Q5w1.2A3B4C5D', 'ADMIN');
 
 -- Insert mock buses
-INSERT INTO buses (license_plate, bus_type, total_seats) 
+INSERT INTO buses (license_plate, bus_type, total_seats, layout_config) 
 VALUES 
-('51B-12345', 'LIMOUSINE_34', 34),
-('49B-67890', 'SLEEPER_40', 40),
-('51B-99999', 'SEAT_28', 28);
+('37B-12345', 'LIMOUSINE_34', 34, '{"id":"custom_1781092669932","name":"Custom Layout","basePrice":250000,"floors":[{"floorIndex":1,"floorName":"Tầng 1","matrix":[[{"id":"A-1","type":"seat","status":"available"},null,{"id":"C-1","type":"seat","status":"available"},null,{"id":"E-1","type":"seat","status":"available"}],[{"id":"A-2","type":"seat","status":"available"},null,{"id":"C-2","type":"seat","status":"available"},null,{"id":"E-2","type":"seat","status":"available"}],[{"id":"A-3","type":"seat","status":"available"},null,{"id":"C-3","type":"seat","status":"available"},null,{"id":"E-3","type":"seat","status":"available"}],[{"id":"A-4","type":"seat","status":"available"},null,{"id":"C-4","type":"seat","status":"available"},null,{"id":"E-4","type":"seat","status":"available"}],[{"id":"A-5","type":"seat","status":"available"},null,{"id":"C-5","type":"seat","status":"available"},null,{"id":"E-5","type":"seat","status":"available"}],[{"id":"A-6","type":"seat","status":"available"},null,{"id":"C-6","type":"seat","status":"available"},null,{"id":"E-6","type":"wc"}]]},{"floorIndex":2,"floorName":"Tầng 2","matrix":[[{"id":"D-1","type":"seat","status":"available"},null,{"id":"F-1","type":"seat","status":"available"},null,{"id":"H-1","type":"seat","status":"available"}],[{"id":"D-2","type":"seat","status":"available"},null,{"id":"F-2","type":"seat","status":"available"},null,{"id":"H-2","type":"seat","status":"available"}],[{"id":"D-3","type":"seat","status":"available"},null,{"id":"F-3","type":"seat","status":"available"},null,{"id":"H-3","type":"seat","status":"available"}],[{"id":"D-4","type":"seat","status":"available"},null,{"id":"F-4","type":"seat","status":"available"},null,{"id":"H-4","type":"seat","status":"available"}],[{"id":"D-5","type":"seat","status":"available"},null,{"id":"F-5","type":"seat","status":"available"},null,{"id":"H-5","type":"seat","status":"available"}],[{"id":"D-6","type":"seat","status":"available"},null,{"id":"F-6","type":"seat","status":"available"},null,{"id":"H-6","type":"wc"}]]}]}'),
+('37B-67890', 'SLEEPER_40', 40, '{"id":"custom_1781092623308","name":"Custom Layout","basePrice":250000,"floors":[{"floorIndex":1,"floorName":"Tầng 1","matrix":[[{"id":"A-1","type":"seat","status":"available"},null,{"id":"C-1","type":"seat","status":"available"},null,{"id":"E-1","type":"seat","status":"available"}],[{"id":"A-2","type":"seat","status":"available"},null,{"id":"C-2","type":"seat","status":"available"},null,{"id":"E-2","type":"seat","status":"available"}],[{"id":"A-3","type":"seat","status":"available"},null,{"id":"C-3","type":"seat","status":"available"},null,{"id":"E-3","type":"seat","status":"available"}],[{"id":"A-4","type":"seat","status":"available"},null,{"id":"C-4","type":"seat","status":"available"},null,{"id":"E-4","type":"seat","status":"available"}],[{"id":"A-5","type":"seat","status":"available"},null,{"id":"C-5","type":"seat","status":"available"},null,{"id":"E-5","type":"seat","status":"available"}],[{"id":"A-6","type":"seat","status":"available"},null,{"id":"C-6","type":"seat","status":"available"},null,{"id":"E-6","type":"seat","status":"available"}],[{"id":"A-7","type":"seat","status":"available"},null,{"id":"C-7","type":"seat","status":"available"},null,{"id":"E-7","type":"wc"}]]},{"floorIndex":2,"floorName":"Tầng 2","matrix":[[{"id":"D-1","type":"seat","status":"available"},null,{"id":"F-1","type":"seat","status":"available"},null,{"id":"H-1","type":"seat","status":"available"}],[{"id":"D-2","type":"seat","status":"available"},null,{"id":"F-2","type":"seat","status":"available"},null,{"id":"H-2","type":"seat","status":"available"}],[{"id":"D-3","type":"seat","status":"available"},null,{"id":"F-3","type":"seat","status":"available"},null,{"id":"H-3","type":"seat","status":"available"}],[{"id":"D-4","type":"seat","status":"available"},null,{"id":"F-4","type":"seat","status":"available"},null,{"id":"H-4","type":"seat","status":"available"}],[{"id":"D-5","type":"seat","status":"available"},null,{"id":"F-5","type":"seat","status":"available"},null,{"id":"H-5","type":"seat","status":"available"}],[{"id":"D-6","type":"seat","status":"available"},null,{"id":"F-6","type":"seat","status":"available"},null,{"id":"H-6","type":"seat","status":"available"}],[{"id":"D-7","type":"seat","status":"available"},null,{"id":"F-7","type":"seat","status":"available"},null,{"id":"H-7","type":"wc"}]]}]}'),
+('37B-99999', 'SEAT_28', 24, '{"id":"custom_1781092565541","name":"Custom Layout","basePrice":250000,"floors":[{"floorIndex":1,"floorName":"Tầng 1","matrix":[[{"id":"A-1","type":"seat","status":"available"},null,{"id":"C-1","type":"seat","status":"available"}],[{"id":"A-2","type":"seat","status":"available"},null,{"id":"C-2","type":"seat","status":"available"}],[{"id":"A-3","type":"seat","status":"available"},null,{"id":"C-3","type":"seat","status":"available"}],[{"id":"A-4","type":"seat","status":"available"},null,{"id":"C-4","type":"seat","status":"available"}],[{"id":"A-5","type":"seat","status":"available"},null,{"id":"C-5","type":"seat","status":"available"}],[{"id":"A-6","type":"seat","status":"available"},null,{"id":"C-6","type":"seat","status":"available"}]]},{"floorIndex":2,"floorName":"Tầng 2","matrix":[[{"id":"D-1","type":"seat","status":"available"},null,{"id":"F-1","type":"seat","status":"available"}],[{"id":"D-2","type":"seat","status":"available"},null,{"id":"F-2","type":"seat","status":"available"}],[{"id":"D-3","type":"seat","status":"available"},null,{"id":"F-3","type":"seat","status":"available"}],[{"id":"D-4","type":"seat","status":"available"},null,{"id":"F-4","type":"seat","status":"available"}],[{"id":"D-5","type":"seat","status":"available"},null,{"id":"F-5","type":"seat","status":"available"}],[{"id":"D-6","type":"seat","status":"available"},null,{"id":"F-6","type":"seat","status":"available"}]]}]}');
 
 -- Insert mock trips using subqueries to safely get the bus_id without hardcoding IDs
 INSERT INTO trips (bus_id, route, departure_time, base_price, status) 
 VALUES 
-((SELECT id FROM buses WHERE license_plate = '51B-12345'), 'TP.HCM - Đà Lạt', '2026-06-15 08:00:00+07', 350000.00, 'SCHEDULED'),
-((SELECT id FROM buses WHERE license_plate = '51B-12345'), 'Đà Lạt - TP.HCM', '2026-06-16 14:00:00+07', 350000.00, 'SCHEDULED'),
-((SELECT id FROM buses WHERE license_plate = '49B-67890'), 'TP.HCM - Nha Trang', '2026-06-15 20:00:00+07', 400000.00, 'SCHEDULED'),
-((SELECT id FROM buses WHERE license_plate = '49B-67890'), 'Nha Trang - TP.HCM', '2026-06-17 19:30:00+07', 400000.00, 'SCHEDULED'),
-((SELECT id FROM buses WHERE license_plate = '51B-99999'), 'TP.HCM - Vũng Tàu', '2026-06-15 09:00:00+07', 150000.00, 'SCHEDULED'),
-((SELECT id FROM buses WHERE license_plate = '51B-99999'), 'Vũng Tàu - TP.HCM', '2026-06-15 15:00:00+07', 150000.00, 'SCHEDULED');
+((SELECT id FROM buses WHERE license_plate = '37B-12345'), 'TP.HCM - Đà Lạt', '2026-06-15 08:00:00+07', 350000.00, 'SCHEDULED'),
+((SELECT id FROM buses WHERE license_plate = '37B-12345'), 'Đà Lạt - TP.HCM', '2026-06-16 14:00:00+07', 350000.00, 'SCHEDULED'),
+((SELECT id FROM buses WHERE license_plate = '37B-67890'), 'TP.HCM - Nha Trang', '2026-06-15 20:00:00+07', 400000.00, 'SCHEDULED'),
+((SELECT id FROM buses WHERE license_plate = '37B-67890'), 'Nha Trang - TP.HCM', '2026-06-17 19:30:00+07', 400000.00, 'SCHEDULED'),
+((SELECT id FROM buses WHERE license_plate = '37B-99999'), 'TP.HCM - Vũng Tàu', '2026-06-15 09:00:00+07', 150000.00, 'SCHEDULED'),
+((SELECT id FROM buses WHERE license_plate = '37B-99999'), 'Vũng Tàu - TP.HCM', '2026-06-15 15:00:00+07', 150000.00, 'SCHEDULED');
 
 -- Insert mock tickets
 -- Using subqueries to safely get the trip_id and user_id without hardcoding IDs
 INSERT INTO tickets (trip_id, user_id, ticket_code, seat_code, total_price, payment_status) 
 VALUES 
-((SELECT id FROM trips WHERE route = 'TP.HCM - Đà Lạt' LIMIT 1), (SELECT id FROM users WHERE phone = '0901234567'), 'T-10024', 'A01', 350000.00, 'PAID'),
-((SELECT id FROM trips WHERE route = 'TP.HCM - Đà Lạt' LIMIT 1), (SELECT id FROM users WHERE phone = '0901234567'), 'T-10025', 'A02', 350000.00, 'PENDING'),
-((SELECT id FROM trips WHERE route = 'TP.HCM - Nha Trang' LIMIT 1), (SELECT id FROM users WHERE phone = '0901234567'), 'T-10026', 'B12', 400000.00, 'PAID'),
-((SELECT id FROM trips WHERE route = 'Nha Trang - TP.HCM' LIMIT 1), (SELECT id FROM users WHERE phone = '0901234567'), 'T-10027', 'C03', 400000.00, 'CANCELLED'),
-((SELECT id FROM trips WHERE route = 'TP.HCM - Vũng Tàu' LIMIT 1), (SELECT id FROM users WHERE phone = '0901234567'), 'T-10028', 'D04', 150000.00, 'PENDING');
+((SELECT id FROM trips WHERE route = 'TP.HCM - Đà Lạt' LIMIT 1), (SELECT id FROM users WHERE phone = '0901234567'), 'T-10024', 'A-1', 350000.00, 'PAID'),
+((SELECT id FROM trips WHERE route = 'TP.HCM - Đà Lạt' LIMIT 1), (SELECT id FROM users WHERE phone = '0901234567'), 'T-10025', 'A-2', 350000.00, 'PENDING'),
+((SELECT id FROM trips WHERE route = 'TP.HCM - Nha Trang' LIMIT 1), (SELECT id FROM users WHERE phone = '0901234567'), 'T-10026', 'B-2', 400000.00, 'PAID'),
+((SELECT id FROM trips WHERE route = 'Nha Trang - TP.HCM' LIMIT 1), (SELECT id FROM users WHERE phone = '0901234567'), 'T-10027', 'C-3', 400000.00, 'CANCELLED'),
+((SELECT id FROM trips WHERE route = 'TP.HCM - Vũng Tàu' LIMIT 1), (SELECT id FROM users WHERE phone = '0901234567'), 'T-10028', 'D-4', 150000.00, 'PENDING');

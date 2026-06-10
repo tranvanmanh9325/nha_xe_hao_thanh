@@ -35,4 +35,14 @@ public class TicketController {
             return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
+
+    @org.springframework.web.bind.annotation.PostMapping("/offline")
+    public ResponseEntity<?> bookOfflineTicket(@org.springframework.web.bind.annotation.RequestBody com.haothanh.booking.dto.TicketRequestDTO request) {
+        try {
+            TicketResponseDTO ticket = ticketService.bookOfflineTicket(request);
+            return ResponseEntity.ok(ticket);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
+        }
+    }
 }

@@ -64,6 +64,9 @@ public class TripServiceImpl implements TripService {
                 .licensePlate(bus != null ? bus.getLicensePlate() : null)
                 .busType(bus != null ? bus.getBusType() : null)
                 .layoutConfig(bus != null ? bus.getLayoutConfig() : null)
+                .route(trip.getRoute())
+                .departureTime(trip.getDepartureTime())
+                .basePrice(trip.getBasePrice())
                 .bookedSeats(bookedSeats)
                 .build();
     }

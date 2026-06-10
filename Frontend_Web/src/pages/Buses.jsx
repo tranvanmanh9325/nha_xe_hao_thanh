@@ -83,11 +83,13 @@ const Buses = () => {
               style={{ 
                 backgroundColor: 'white',
                 borderRadius: 'var(--radius-lg)',
-                padding: 'var(--space-4)',
                 boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
                 border: '1px solid var(--neutral-200)',
                 cursor: 'pointer',
-                transition: 'transform 0.2s, box-shadow 0.2s'
+                transition: 'transform 0.2s, box-shadow 0.2s',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column'
               }}
               onClick={() => navigate(`/buses/${bus.id}`)}
               onMouseEnter={(e) => {
@@ -99,26 +101,58 @@ const Buses = () => {
                 e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-4)' }}>
-                <div>
-                  <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: '600', color: 'var(--primary-color)' }}>{bus.licensePlate}</h3>
-                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--neutral-500)' }}>{bus.busType}</span>
-                </div>
+              {/* Image Section */}
+              <div style={{ height: '200px', backgroundColor: 'var(--neutral-100)', position: 'relative' }}>
+                {bus.imageUrl ? (
+                  <img 
+                    src={bus.imageUrl} 
+                    alt={bus.licensePlate} 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                  />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--neutral-400)' }}>
+                    Chưa có ảnh
+                  </div>
+                )}
                 <span style={{
+                  position: 'absolute',
+                  top: 'var(--space-3)',
+                  right: 'var(--space-3)',
                   padding: '4px 8px',
                   borderRadius: '999px',
                   fontSize: 'var(--text-xs)',
                   fontWeight: '500',
                   backgroundColor: bus.status === 'Đang hoạt động' ? '#dcfce7' : '#fee2e2',
-                  color: bus.status === 'Đang hoạt động' ? '#166534' : '#991b1b'
+                  color: bus.status === 'Đang hoạt động' ? '#166534' : '#991b1b',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                 }}>
                   {bus.status}
                 </span>
               </div>
               
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--neutral-100)', paddingTop: 'var(--space-3)', marginTop: 'auto' }}>
-                <span style={{ fontSize: 'var(--text-sm)', color: 'var(--neutral-600)' }}>Tổng số ghế:</span>
-                <span style={{ fontSize: 'var(--text-sm)', fontWeight: '600', color: 'var(--neutral-900)' }}>{bus.totalSeats}</span>
+              {/* Content Section */}
+              <div style={{ padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <div style={{ marginBottom: 'var(--space-4)' }}>
+                  <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: '600', color: 'var(--primary-color)' }}>{bus.licensePlate}</h3>
+                  <div style={{ fontSize: 'var(--text-sm)', color: 'var(--neutral-500)', display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginTop: '4px' }}>
+                    <span>
+                      {bus.busType === 'LIMOUSINE_34' ? 'Limousine 34 Phòng' : 
+                       bus.busType === 'SLEEPER_40' ? 'Giường Nằm 40' : 
+                       bus.busType === 'SEAT_28' ? 'Ghế Ngồi 28' : bus.busType}
+                    </span>
+                    {bus.color && (
+                      <>
+                        <span>•</span>
+                        <span>{bus.color}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--neutral-100)', paddingTop: 'var(--space-3)', marginTop: 'auto' }}>
+                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--neutral-600)' }}>Tổng số ghế:</span>
+                  <span style={{ fontSize: 'var(--text-sm)', fontWeight: '600', color: 'var(--neutral-900)' }}>{bus.totalSeats}</span>
+                </div>
               </div>
             </div>
           ))}

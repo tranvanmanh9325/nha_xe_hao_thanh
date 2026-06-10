@@ -253,6 +253,15 @@ export const BusIcon = ({ size = 22, className = '' }) => (
     <circle cx="7" cy="15" r="1.5" />
     <circle cx="17" cy="15" r="1.5" />
     <path d="M4 11h16" />
-    <path d="M12 5v6" />
   </svg>
 );
+
+/* ---- Save — floppy disk ---- */
+export const SaveIcon = ({ size = 22, className = '' }) => (
+  <svg {...baseProps(size, className)}>
+    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+    <polyline points="17 21 17 13 7 13 7 21" />
+    <polyline points="7 3 7 8 15 8" />
+  </svg>
+);
+
