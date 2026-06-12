@@ -6,6 +6,8 @@ import com.haothanh.booking.service.RouteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Map;
@@ -13,7 +15,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/routes")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class RouteController {
 
     private final RouteService routeService;
@@ -29,21 +30,25 @@ public class RouteController {
     }
 
     @PostMapping
-    public ResponseEntity<RouteResponseDTO> createRoute(@RequestBody RouteRequestDTO requestDTO) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<RouteResponseDTO> createRoute(@Valid @RequestBody RouteRequestDTO requestDTO) {
         return ResponseEntity.ok(routeService.createRoute(requestDTO));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RouteResponseDTO> updateRoute(@PathVariable Long id, @RequestBody RouteRequestDTO requestDTO) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<RouteResponseDTO> updateRoute(@PathVariable Long id, @Valid @RequestBody RouteRequestDTO requestDTO) {
         return ResponseEntity.ok(routeService.updateRoute(id, requestDTO));
     }
 
     @PutMapping("/{id}/status")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RouteResponseDTO> updateRouteStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
         return ResponseEntity.ok(routeService.updateRouteStatus(id, body.get("status")));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteRoute(@PathVariable Long id) {
         try {
             routeService.deleteRoute(id);

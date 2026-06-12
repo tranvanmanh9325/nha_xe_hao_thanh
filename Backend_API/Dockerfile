@@ -13,4 +13,4 @@ COPY --from=build /app/target/*.jar app.jar
 # Expose the application port
 EXPOSE 8080
 # Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-XX:+UseG1GC", "-XX:MaxGCPauseMillis=200", "-XX:+UseStringDeduplication", "-Xms512m", "-Xmx768m", "-jar", "app.jar"]

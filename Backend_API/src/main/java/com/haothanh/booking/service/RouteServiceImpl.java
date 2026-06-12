@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +22,7 @@ public class RouteServiceImpl implements RouteService {
     private final TripRepository tripRepository;
 
     @Override
+    @Cacheable("routes")
     public List<RouteResponseDTO> getAllRoutes() {
         return routeRepository.findAll().stream()
                 .map(this::mapToDTO)
@@ -27,6 +30,7 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
+    @Cacheable(value = "routes", key = "#id")
     public RouteResponseDTO getRouteById(Long id) {
         Route route = routeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy tuyến đường"));
@@ -34,6 +38,7 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
+    @CacheEvict(value = "routes", allEntries = true)
     public RouteResponseDTO createRoute(RouteRequestDTO requestDTO) {
         if (routeRepository.existsByRouteCode(requestDTO.getRouteCode())) {
             throw new RuntimeException("Mã tuyến đường đã tồn tại");
@@ -50,6 +55,7 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
+    @CacheEvict(value = "routes", allEntries = true)
     public RouteResponseDTO updateRoute(Long id, RouteRequestDTO requestDTO) {
         Route route = routeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy tuyến đường"));
@@ -72,6 +78,7 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
+    @CacheEvict(value = "routes", allEntries = true)
     public RouteResponseDTO updateRouteStatus(Long id, String status) {
         Route route = routeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy tuyến đường"));
@@ -80,6 +87,7 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
+    @CacheEvict(value = "routes", allEntries = true)
     public void deleteRoute(Long id) {
         Route route = routeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy tuyến đường"));

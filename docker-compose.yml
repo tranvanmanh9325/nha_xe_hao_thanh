@@ -3,6 +3,7 @@ services:
   db:
     image: postgres:15-alpine
     container_name: postgres_db
+    command: postgres -c max_connections=200
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -16,6 +17,11 @@ services:
           memory: 1G
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
   redis:
@@ -28,6 +34,11 @@ services:
         limits:
           cpus: '0.5'
           memory: 512M
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
   backend:
@@ -50,8 +61,15 @@ services:
           cpus: '1.0'
           memory: 1G
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/api/v1/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
     restart: unless-stopped
 
   api_gateway_lb:

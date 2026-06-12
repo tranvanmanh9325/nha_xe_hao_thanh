@@ -9,6 +9,7 @@ import com.haothanh.booking.service.TripService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ public class TripServiceImpl implements TripService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "trips", key = "#route != null ? #route : 'all'")
     public List<TripResponseDTO> getTrips(String route) {
         List<Trip> trips;
         
@@ -51,6 +53,7 @@ public class TripServiceImpl implements TripService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "trip-seat-map", key = "#tripId")
     public TripSeatMapResponseDTO getTripSeatMap(Long tripId) {
         Trip trip = tripRepository.findById(java.util.Objects.requireNonNull(tripId))
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy chuyến xe"));

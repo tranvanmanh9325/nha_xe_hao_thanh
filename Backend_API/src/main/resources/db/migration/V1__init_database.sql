@@ -62,6 +62,29 @@ CREATE TABLE tickets (
     CONSTRAINT fk_ticket_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Performance indexes for high-traffic query patterns
+CREATE INDEX IF NOT EXISTS idx_trips_route ON trips(route);
+CREATE INDEX IF NOT EXISTS idx_trips_departure_time ON trips(departure_time);
+CREATE INDEX IF NOT EXISTS idx_trips_status ON trips(status);
+CREATE INDEX IF NOT EXISTS idx_trips_bus_id ON trips(bus_id);
+
+CREATE INDEX IF NOT EXISTS idx_tickets_trip_id ON tickets(trip_id);
+CREATE INDEX IF NOT EXISTS idx_tickets_user_id ON tickets(user_id);
+CREATE INDEX IF NOT EXISTS idx_tickets_payment_status ON tickets(payment_status);
+
+-- Composite index for the most frequent query: finding booked seats per trip
+CREATE INDEX IF NOT EXISTS idx_tickets_trip_status ON tickets(trip_id, payment_status);
+
+CREATE INDEX IF NOT EXISTS idx_users_phone ON users(phone);
+CREATE INDEX IF NOT EXISTS idx_buses_license_plate ON buses(license_plate);
+CREATE INDEX IF NOT EXISTS idx_routes_route_code ON routes(route_code);
+
+-- UNIQUE partial index to prevent double-booking at DB level (defense-in-depth)
+-- Only allow one active ticket per seat per trip
+CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_active_seat_per_trip 
+    ON tickets(trip_id, seat_code) 
+    WHERE payment_status IN ('PAID', 'PENDING');
+
 -- Insert mock admin user
 -- Password is a mock bcrypt hash (e.g. for "password123")
 INSERT INTO users (full_name, phone, email, password, role) 

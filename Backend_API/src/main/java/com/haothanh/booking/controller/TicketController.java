@@ -4,10 +4,13 @@ import com.haothanh.booking.dto.TicketResponseDTO;
 import com.haothanh.booking.service.TicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import com.haothanh.booking.dto.TicketRequestDTO;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -16,7 +19,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/tickets")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
 public class TicketController {
 
     private final TicketService ticketService;
@@ -24,6 +26,11 @@ public class TicketController {
     @GetMapping
     public ResponseEntity<List<TicketResponseDTO>> getAllTickets() {
         return ResponseEntity.ok(ticketService.getAllTickets());
+    }
+
+    @PostMapping("/offline")
+    public ResponseEntity<TicketResponseDTO> bookOfflineTicket(@Valid @RequestBody TicketRequestDTO request) {
+        return ResponseEntity.ok(ticketService.bookOfflineTicket(request));
     }
 
     @PutMapping("/{id}/cancel")
@@ -36,13 +43,4 @@ public class TicketController {
         }
     }
 
-    @org.springframework.web.bind.annotation.PostMapping("/offline")
-    public ResponseEntity<?> bookOfflineTicket(@org.springframework.web.bind.annotation.RequestBody com.haothanh.booking.dto.TicketRequestDTO request) {
-        try {
-            TicketResponseDTO ticket = ticketService.bookOfflineTicket(request);
-            return ResponseEntity.ok(ticket);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
-        }
-    }
 }

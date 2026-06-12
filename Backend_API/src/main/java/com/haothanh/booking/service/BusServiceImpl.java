@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import java.util.Map;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,7 @@ public class BusServiceImpl implements BusService {
     private final Cloudinary cloudinary;
 
     @Override
+    @Cacheable("buses")
     public List<BusResponseDTO> findAllBuses() {
         return busRepository.findAll().stream()
                 .map(this::mapToDTO)
@@ -29,6 +32,7 @@ public class BusServiceImpl implements BusService {
     }
 
     @Override
+    @Cacheable(value = "buses", key = "#id")
     public BusResponseDTO getBusById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("ID xe không được để trống");
@@ -39,6 +43,7 @@ public class BusServiceImpl implements BusService {
     }
 
     @Override
+    @CacheEvict(value = "buses", allEntries = true)
     public BusResponseDTO updateBusLayout(Long id, String layoutConfig) {
         if (id == null) {
             throw new IllegalArgumentException("ID xe không được để trống");
@@ -52,6 +57,7 @@ public class BusServiceImpl implements BusService {
     }
 
     @Override
+    @CacheEvict(value = "buses", allEntries = true)
     public BusResponseDTO createBus(BusRequestDTO request) {
         if (busRepository.existsByLicensePlate(request.getLicensePlate())) {
             throw new RuntimeException("Biển số xe đã tồn tại");
@@ -84,6 +90,7 @@ public class BusServiceImpl implements BusService {
     }
 
     @Override
+    @CacheEvict(value = "buses", allEntries = true)
     public BusResponseDTO updateBusInfo(Long id, BusRequestDTO request) {
         if (id == null) {
             throw new IllegalArgumentException("ID xe không được để trống");
@@ -118,6 +125,7 @@ public class BusServiceImpl implements BusService {
     }
 
     @Override
+    @CacheEvict(value = "buses", allEntries = true)
     public void updateStatus(Long id, String status) {
         if (id == null) {
             throw new IllegalArgumentException("ID xe không được để trống");
@@ -129,6 +137,7 @@ public class BusServiceImpl implements BusService {
     }
 
     @Override
+    @CacheEvict(value = "buses", allEntries = true)
     public void deleteBus(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("ID xe không được để trống");

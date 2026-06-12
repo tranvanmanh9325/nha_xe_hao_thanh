@@ -10,7 +10,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/trips")
-@CrossOrigin(origins = "http://localhost:3000") // Enable CORS for the React frontend
 @RequiredArgsConstructor
 public class TripController {
 
