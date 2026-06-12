@@ -1,5 +1,6 @@
 import { useState, forwardRef, useImperativeHandle } from 'react';
 import { toast } from 'react-toastify';
+import Select from '../ui/Select';
 import './SeatMap.css'; // Reusing some base styles
 
 const CELL_TYPES = {
@@ -265,44 +266,85 @@ const BusLayoutBuilder = forwardRef(({ busId, busInfo, existingConfig, onSaveSuc
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <label style={{ fontSize: '13px', color: 'var(--neutral-600)', whiteSpace: 'nowrap' }}>Giá (VND):</label>
-            <input type="number" value={basePrice} onChange={e => setBasePrice(Number(e.target.value))} style={{ padding: '6px 10px', border: '1px solid var(--neutral-300)', borderRadius: '4px', fontSize: '13px', width: '100px' }} />
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <label style={{ fontSize: '13px', color: 'var(--neutral-600)', whiteSpace: 'nowrap' }}>Tầng:</label>
-            <select 
-              value={numFloors} 
-              onChange={e => setNumFloors(Number(e.target.value))} 
+            <label style={{ fontSize: 'var(--text-sm)', color: 'var(--neutral-600)', whiteSpace: 'nowrap', fontWeight: '500' }}>Giá (VND):</label>
+            <input 
+              type="number" 
+              value={basePrice} 
+              onChange={e => setBasePrice(Number(e.target.value))} 
               style={{ 
-                padding: '6px 28px 6px 12px', 
+                padding: 'var(--space-2) var(--space-3)', 
                 border: '1px solid var(--neutral-300)', 
-                borderRadius: '4px', 
-                fontSize: '13px',
-                appearance: 'none',
-                backgroundColor: 'var(--white, #ffffff)',
-                backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%236b7280\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'/%3E%3C/svg%3E")',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'right 8px center',
-                cursor: 'pointer',
+                borderRadius: 'var(--radius-md)', 
+                fontSize: 'var(--text-sm)', 
+                width: '120px',
                 outline: 'none',
-                minWidth: '60px',
-                color: 'var(--neutral-800)',
-                transition: 'border-color 0.2s'
+                transition: 'all var(--transition-fast)'
+              }} 
+              onFocus={(e) => {
+                e.target.style.borderColor = 'var(--brand-500)';
+                e.target.style.boxShadow = '0 0 0 3px var(--brand-100)';
               }}
-            >
-              <option value={1}>1</option>
-              <option value={2}>2</option>
-            </select>
+              onBlur={(e) => {
+                e.target.style.borderColor = 'var(--neutral-300)';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <label style={{ fontSize: '13px', color: 'var(--neutral-600)', whiteSpace: 'nowrap' }}>Hàng:</label>
-            <input type="number" min={1} max={20} value={rows} onChange={e => setRows(Number(e.target.value))} style={{ width: '60px', padding: '6px 10px', border: '1px solid var(--neutral-300)', borderRadius: '4px', fontSize: '13px' }} />
+            <label style={{ fontSize: 'var(--text-sm)', color: 'var(--neutral-600)', whiteSpace: 'nowrap', fontWeight: '500' }}>Tầng:</label>
+            <Select 
+              value={numFloors} 
+              onChange={val => setNumFloors(Number(val))} 
+              options={[
+                { value: 1, label: '1 tầng' },
+                { value: 2, label: '2 tầng' }
+              ]}
+              style={{ width: '100px' }}
+            />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <label style={{ fontSize: '13px', color: 'var(--neutral-600)', whiteSpace: 'nowrap' }}>Cột:</label>
-            <input type="number" min={1} max={10} value={cols} onChange={e => setCols(Number(e.target.value))} style={{ width: '60px', padding: '6px 10px', border: '1px solid var(--neutral-300)', borderRadius: '4px', fontSize: '13px' }} />
+            <label style={{ fontSize: 'var(--text-sm)', color: 'var(--neutral-600)', whiteSpace: 'nowrap', fontWeight: '500' }}>Hàng:</label>
+            <input 
+              type="number" min={1} max={20} value={rows} onChange={e => setRows(Number(e.target.value))} 
+              style={{ 
+                width: '70px', padding: 'var(--space-2) var(--space-3)', border: '1px solid var(--neutral-300)', 
+                borderRadius: 'var(--radius-md)', fontSize: 'var(--text-sm)', outline: 'none', transition: 'all var(--transition-fast)' 
+              }} 
+              onFocus={(e) => { e.target.style.borderColor = 'var(--brand-500)'; e.target.style.boxShadow = '0 0 0 3px var(--brand-100)'; }}
+              onBlur={(e) => { e.target.style.borderColor = 'var(--neutral-300)'; e.target.style.boxShadow = 'none'; }}
+            />
           </div>
-          <button className="btn" style={{ padding: '6px 12px', fontSize: '13px', backgroundColor: 'var(--neutral-200)', color: 'var(--neutral-700)', border: '1px solid var(--neutral-300)' }} onClick={handleGenerateGrid}>Áp dụng</button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <label style={{ fontSize: 'var(--text-sm)', color: 'var(--neutral-600)', whiteSpace: 'nowrap', fontWeight: '500' }}>Cột:</label>
+            <input 
+              type="number" min={1} max={10} value={cols} onChange={e => setCols(Number(e.target.value))} 
+              style={{ 
+                width: '70px', padding: 'var(--space-2) var(--space-3)', border: '1px solid var(--neutral-300)', 
+                borderRadius: 'var(--radius-md)', fontSize: 'var(--text-sm)', outline: 'none', transition: 'all var(--transition-fast)' 
+              }} 
+              onFocus={(e) => { e.target.style.borderColor = 'var(--brand-500)'; e.target.style.boxShadow = '0 0 0 3px var(--brand-100)'; }}
+              onBlur={(e) => { e.target.style.borderColor = 'var(--neutral-300)'; e.target.style.boxShadow = 'none'; }}
+            />
+          </div>
+          <button 
+            className="btn" 
+            style={{ 
+              padding: 'var(--space-2) var(--space-4)', 
+              fontSize: 'var(--text-sm)', 
+              fontWeight: '500',
+              backgroundColor: 'white', 
+              color: 'var(--brand-600)', 
+              border: '1px solid var(--brand-500)',
+              borderRadius: 'var(--radius-md)',
+              cursor: 'pointer',
+              transition: 'all var(--transition-fast)'
+            }} 
+            onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--brand-50)'; }}
+            onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'white'; }}
+            onClick={handleGenerateGrid}
+          >
+            Áp dụng
+          </button>
         </div>
       </div>
 

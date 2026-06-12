@@ -18,6 +18,7 @@ import com.cloudinary.utils.ObjectUtils;
 public class BusServiceImpl implements BusService {
 
     private final BusRepository busRepository;
+    private final com.haothanh.booking.repository.TripRepository tripRepository;
     private final Cloudinary cloudinary;
 
     @Override
@@ -74,6 +75,7 @@ public class BusServiceImpl implements BusService {
                 .description(request.getDescription())
                 .manufactureYear(request.getManufactureYear())
                 .color(request.getColor())
+                .status("Đang hoạt động")
                 // layoutConfig will be null initially, or we can set a default empty JSON "{}"
                 .build();
                 
@@ -115,13 +117,38 @@ public class BusServiceImpl implements BusService {
         return mapToDTO(updatedBus);
     }
 
+    @Override
+    public void updateStatus(Long id, String status) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID xe không được để trống");
+        }
+        Bus bus = busRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin xe"));
+        bus.setStatus(status);
+        busRepository.save(bus);
+    }
+
+    @Override
+    public void deleteBus(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID xe không được để trống");
+        }
+        if (!busRepository.existsById(id)) {
+            throw new RuntimeException("Không tìm thấy thông tin xe");
+        }
+        if (tripRepository.existsByBusId(id)) {
+            throw new RuntimeException("Không thể xóa xe đã từng được lên lịch chuyến đi.");
+        }
+        busRepository.deleteById(id);
+    }
+
     private BusResponseDTO mapToDTO(Bus bus) {
         return BusResponseDTO.builder()
                 .id(bus.getId())
                 .licensePlate(bus.getLicensePlate())
                 .busType(bus.getBusType())
                 .totalSeats(bus.getTotalSeats())
-                .status("Đang hoạt động")
+                .status(bus.getStatus())
                 .layoutConfig(bus.getLayoutConfig())
                 .imageUrl(bus.getImageUrl())
                 .description(bus.getDescription())

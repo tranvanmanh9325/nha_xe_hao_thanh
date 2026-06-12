@@ -44,6 +44,9 @@ public class Bus {
     @Column(name = "color", length = 50)
     private String color;
 
+    @Column(name = "status", length = 50)
+    private String status;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;

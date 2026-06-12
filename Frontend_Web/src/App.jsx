@@ -3,6 +3,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import DashboardLayout from './components/layout/DashboardLayout';
 import Dashboard from './pages/Dashboard';
+import RouteManagement from './pages/RouteManagement';
 import Trips from './pages/Trips';
 import TripSeatMap from './pages/TripSeatMap';
 import Buses from './pages/Buses';
@@ -19,6 +20,7 @@ const App = () => {
         <Routes>
           <Route element={<DashboardLayout />}>
             <Route index element={<Dashboard />} />
+            <Route path="routes" element={<RouteManagement />} />
             <Route path="trips">
               <Route index element={<Trips />} />
               <Route path=":id/seats" element={<TripSeatMap />} />

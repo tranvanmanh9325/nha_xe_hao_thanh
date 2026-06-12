@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import ImageCropperModal from './ImageCropperModal';
 
 const EditBusModal = ({ isOpen, onClose, onBusUpdated, busInfo }) => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,11 @@ const EditBusModal = ({ isOpen, onClose, onBusUpdated, busInfo }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
+  // Cropper states
+  const [isCropperOpen, setIsCropperOpen] = useState(false);
+  const [tempImageSrc, setTempImageSrc] = useState(null);
+  const fileInputRef = useRef(null);
+
   if (!isOpen) return null;
 
   const handleChange = (e) => {
@@ -24,12 +30,27 @@ const EditBusModal = ({ isOpen, onClose, onBusUpdated, busInfo }) => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData(prev => ({
-        ...prev,
-        image: file,
-        imagePreview: URL.createObjectURL(file)
-      }));
+      const reader = new FileReader();
+      reader.onload = () => {
+        setTempImageSrc(reader.result);
+        setIsCropperOpen(true);
+      };
+      reader.readAsDataURL(file);
+      // Reset input value to allow selecting the same file again
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
+  };
+
+  const handleCropComplete = (croppedFile) => {
+    setFormData(prev => ({
+      ...prev,
+      image: croppedFile,
+      imagePreview: URL.createObjectURL(croppedFile)
+    }));
+    setIsCropperOpen(false);
+    setTempImageSrc(null);
   };
 
   const handleSave = async () => {
@@ -146,6 +167,7 @@ const EditBusModal = ({ isOpen, onClose, onBusUpdated, busInfo }) => {
                 type="file" 
                 accept="image/*"
                 onChange={handleImageChange}
+                ref={fileInputRef}
                 style={{ display: 'none' }}
               />
             </div>
@@ -255,6 +277,17 @@ const EditBusModal = ({ isOpen, onClose, onBusUpdated, busInfo }) => {
           </button>
         </div>
       </div>
+      
+      {/* Modal cắt ảnh */}
+      <ImageCropperModal
+        isOpen={isCropperOpen}
+        imageSrc={tempImageSrc}
+        onClose={() => {
+          setIsCropperOpen(false);
+          setTempImageSrc(null);
+        }}
+        onCropComplete={handleCropComplete}
+      />
     </div>
   );
 };

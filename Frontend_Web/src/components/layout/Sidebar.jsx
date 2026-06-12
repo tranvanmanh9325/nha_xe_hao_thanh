@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import {
   DashboardIcon,
+  MapIcon,
   BusRouteIcon,
   BusIcon,
   TicketIcon,
@@ -13,6 +14,7 @@ import '../../styles/sidebar.css';
 /* Navigation items config — single source of truth for sidebar menu */
 const navItems = [
   { to: '/', icon: DashboardIcon, label: 'Tổng quan' },
+  { to: '/routes', icon: MapIcon, label: 'Quản lý tuyến đường' },
   { to: '/trips', icon: BusRouteIcon, label: 'Quản lý chuyến xe' },
   { to: '/buses', icon: BusIcon, label: 'Quản lý xe' },
   { to: '/tickets', icon: TicketIcon, label: 'Quản lý vé' },

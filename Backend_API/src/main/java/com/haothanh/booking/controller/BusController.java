@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import com.haothanh.booking.dto.BusLayoutRequestDTO;
 import com.haothanh.booking.dto.BusRequestDTO;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/buses")
@@ -53,5 +55,23 @@ public class BusController {
             @PathVariable Long id, 
             @ModelAttribute BusRequestDTO request) {
         return ResponseEntity.ok(busService.updateBusInfo(id, request));
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Void> updateStatus(
+            @PathVariable Long id, 
+            @RequestBody Map<String, String> body) {
+        String status = body.get("status");
+        if (status == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        busService.updateStatus(id, status);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBus(@PathVariable Long id) {
+        busService.deleteBus(id);
+        return ResponseEntity.ok().build();
     }
 }

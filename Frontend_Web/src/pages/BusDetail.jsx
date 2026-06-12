@@ -309,4 +309,3 @@ const BusDetail = () => {
 };
 
 export default BusDetail;
-

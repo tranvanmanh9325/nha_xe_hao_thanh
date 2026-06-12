@@ -265,3 +265,26 @@ export const SaveIcon = ({ size = 22, className = '' }) => (
   </svg>
 );
 
+/* ---- Pause ---- */
+export const PauseIcon = ({ size = 22, className = '' }) => (
+  <svg {...baseProps(size, className)}>
+    <rect x="6" y="4" width="4" height="16" />
+    <rect x="14" y="4" width="4" height="16" />
+  </svg>
+);
+
+/* ---- Play ---- */
+export const PlayIcon = ({ size = 22, className = '' }) => (
+  <svg {...baseProps(size, className)}>
+    <polygon points="5 3 19 12 5 21 5 3" />
+  </svg>
+);
+
+/* ---- Map — map map pin ---- */
+export const MapIcon = ({ size = 22, className = '' }) => (
+  <svg {...baseProps(size, className)}>
+    <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+    <line x1="9" y1="3" x2="9" y2="18" />
+    <line x1="15" y1="6" x2="15" y2="21" />
+  </svg>
+);
