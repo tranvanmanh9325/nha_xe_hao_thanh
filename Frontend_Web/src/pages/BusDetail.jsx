@@ -5,6 +5,7 @@ import BusLayoutBuilder from '../components/seat-map/BusLayoutBuilder';
 import { seatMapConfigs } from '../data/seatMapConfig';
 import { ChevronLeftIcon, EditIcon, CloseIcon, SaveIcon } from '../assets/icons';
 import EditBusModal from '../components/EditBusModal';
+import { authFetch } from '../utils/authService';
 import { useRef } from 'react';
 import '../components/seat-map/SeatMap.css';
 
@@ -21,7 +22,7 @@ const BusDetail = () => {
   useEffect(() => {
     const fetchBusInfo = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/v1/buses/${busId}`);
+        const response = await authFetch(`http://localhost:8080/api/v1/buses/${busId}`);
         if (!response.ok) {
           throw new Error('Không tìm thấy thông tin xe');
         }

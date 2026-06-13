@@ -1,6 +1,11 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+// B2C Pages
+import GuestHomepage from './pages/b2c/GuestHomepage';
+
+// B2B Admin Pages & Layout
 import DashboardLayout from './components/layout/DashboardLayout';
 import Dashboard from './pages/Dashboard';
 import RouteManagement from './pages/RouteManagement';
@@ -18,7 +23,12 @@ const App = () => {
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
       <BrowserRouter>
         <Routes>
-          <Route element={<DashboardLayout />}>
+          
+          {/* Public Routes (B2C) */}
+          <Route path="/" element={<GuestHomepage />} />
+
+          {/* Admin Routes (B2B) */}
+          <Route path="/admin" element={<DashboardLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="routes" element={<RouteManagement />} />
             <Route path="trips">
@@ -33,6 +43,7 @@ const App = () => {
             <Route path="revenue" element={<Revenue />} />
             <Route path="settings" element={<Settings />} />
           </Route>
+
         </Routes>
       </BrowserRouter>
     </>

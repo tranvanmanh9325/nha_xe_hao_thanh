@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { authFetch } from '../utils/authService';
 
 const RouteFormModal = ({ isOpen, onClose, onSaved, initialData }) => {
   const [formData, setFormData] = useState({
@@ -34,7 +35,7 @@ const RouteFormModal = ({ isOpen, onClose, onSaved, initialData }) => {
         : 'http://localhost:8080/api/v1/routes';
       const method = isEdit ? 'PUT' : 'POST';
 
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method: method,
         headers: {
           'Content-Type': 'application/json',

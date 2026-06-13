@@ -9,6 +9,10 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -19,6 +23,9 @@ public class TripSeatMapResponseDTO {
     private String busType;
     private String layoutConfig;
     private String route;
+
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private OffsetDateTime departureTime;
     private BigDecimal basePrice;
     private List<String> bookedSeats;

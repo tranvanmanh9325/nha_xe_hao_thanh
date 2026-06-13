@@ -88,7 +88,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_active_seat_per_trip
 -- Insert mock admin user
 -- Password is a mock bcrypt hash (e.g. for "password123")
 INSERT INTO users (full_name, phone, email, password, role) 
-VALUES ('Admin Hao Thanh', '0901234567', 'admin@haothanh.com', '$2a$10$7R4d.R2G0R4qM1m4.q5G.eVt4.r5T3z2X/7Z4.Q5w1.2A3B4C5D', 'ADMIN');
+VALUES ('Admin Hao Thanh', '0901234567', 'admin@haothanh.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUrawRaQiCX2', 'ADMIN');
 
 -- Insert mock buses
 INSERT INTO buses (license_plate, bus_type, total_seats, layout_config, image_url, description, manufacture_year, color) 

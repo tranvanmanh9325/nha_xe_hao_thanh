@@ -4,6 +4,7 @@ import SeatMapRenderer from '../components/seat-map/SeatMapRenderer';
 import { seatMapConfigs } from '../data/seatMapConfig';
 import { ChevronLeftIcon } from '../assets/icons';
 import { toast } from 'react-toastify';
+import { authFetch } from '../utils/authService';
 import '../components/seat-map/SeatMap.css';
 
 const TripSeatMap = () => {
@@ -26,7 +27,7 @@ const TripSeatMap = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/v1/trips/${id}/seats`);
+        const response = await authFetch(`http://localhost:8080/api/v1/trips/${id}/seats`);
         if (!response.ok) {
           throw new Error('Không tìm thấy sơ đồ ghế cho chuyến đi này');
         }
@@ -87,8 +88,7 @@ const TripSeatMap = () => {
     
     try {
       const promises = selectedSeats.map(seatCode => {
-        return fetch('http://localhost:8080/api/v1/tickets/offline', {
-          method: 'POST',
+        return authFetch('http://localhost:8080/api/v1/tickets/offline', {
           headers: {
             'Content-Type': 'application/json'
           },

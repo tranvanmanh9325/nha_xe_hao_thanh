@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { authFetch } from '../utils/authService';
 
 const AddBusModal = ({ isOpen, onClose, onBusAdded }) => {
   const [formData, setFormData] = useState({
@@ -53,7 +54,7 @@ const AddBusModal = ({ isOpen, onClose, onBusAdded }) => {
       formDataObj.append('manufactureYear', formData.manufactureYear);
       formDataObj.append('color', formData.color);
 
-      const response = await fetch('http://localhost:8080/api/v1/buses', {
+      const response = await authFetch('http://localhost:8080/api/v1/buses', {
         method: 'POST',
         // Do NOT set Content-Type header when sending FormData, 
         // the browser will automatically set it with boundary

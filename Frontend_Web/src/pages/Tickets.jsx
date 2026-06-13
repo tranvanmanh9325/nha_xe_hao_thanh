@@ -3,6 +3,7 @@ import TicketsToolbar from '../components/tickets/TicketsToolbar';
 import TicketsFilter from '../components/tickets/TicketsFilter';
 import TicketsTable from '../components/tickets/TicketsTable';
 import TicketDetailsModal from '../components/tickets/TicketDetailsModal';
+import { authFetch } from '../utils/authService';
 import '../styles/tickets.css';
 
 const Tickets = () => {
@@ -23,7 +24,7 @@ const Tickets = () => {
     const fetchTickets = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('http://localhost:8080/api/v1/tickets');
+        const response = await authFetch('http://localhost:8080/api/v1/tickets');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -114,7 +115,7 @@ const Tickets = () => {
   const handleCancelTicket = async (ticket) => {
     if (window.confirm('Bạn có chắc chắn muốn hủy vé này không?')) {
       try {
-        const response = await fetch(`http://localhost:8080/api/v1/tickets/${ticket.originalId}/cancel`, {
+        const response = await authFetch(`http://localhost:8080/api/v1/tickets/${ticket.originalId}/cancel`, {
           method: 'PUT'
         });
         

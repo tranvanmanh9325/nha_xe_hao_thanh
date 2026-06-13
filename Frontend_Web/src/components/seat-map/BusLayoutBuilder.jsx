@@ -1,6 +1,7 @@
 import { useState, forwardRef, useImperativeHandle } from 'react';
 import { toast } from 'react-toastify';
 import Select from '../ui/Select';
+import { authFetch } from '../../utils/authService';
 import './SeatMap.css'; // Reusing some base styles
 
 const CELL_TYPES = {
@@ -216,7 +217,7 @@ const BusLayoutBuilder = forwardRef(({ busId, busInfo, existingConfig, onSaveSuc
         floors: savedFloors
       };
 
-      const response = await fetch(`http://localhost:8080/api/v1/buses/${busId}/layout`, {
+      const response = await authFetch(`http://localhost:8080/api/v1/buses/${busId}/layout`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ layoutConfig: JSON.stringify(payload) })

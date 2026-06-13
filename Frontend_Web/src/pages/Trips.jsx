@@ -3,6 +3,7 @@ import TripsToolbar from '../components/trips/TripsToolbar';
 import TripsFilter from '../components/trips/TripsFilter';
 import TripsTable from '../components/trips/TripsTable';
 import AddTripModal from '../components/trips/AddTripModal';
+import { authFetch } from '../utils/authService';
 import '../styles/trips.css';
 
 const Trips = () => {
@@ -23,7 +24,7 @@ const Trips = () => {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await fetch('http://localhost:8080/api/v1/trips');
+        const response = await authFetch('http://localhost:8080/api/v1/trips');
         if (!response.ok) {
           throw new Error('Không thể tải dữ liệu chuyến xe từ máy chủ.');
         }

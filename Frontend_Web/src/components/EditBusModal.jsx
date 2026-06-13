@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import ImageCropperModal from './ImageCropperModal';
+import { authFetch } from '../utils/authService';
 
 const EditBusModal = ({ isOpen, onClose, onBusUpdated, busInfo }) => {
   const [formData, setFormData] = useState({
@@ -74,7 +75,7 @@ const EditBusModal = ({ isOpen, onClose, onBusUpdated, busInfo }) => {
       if (formData.manufactureYear) formDataObj.append('manufactureYear', formData.manufactureYear);
       if (formData.color) formDataObj.append('color', formData.color);
 
-      const response = await fetch(`http://localhost:8080/api/v1/buses/${busInfo.id}`, {
+      const response = await authFetch(`http://localhost:8080/api/v1/buses/${busInfo.id}`, {
         method: 'PUT',
         // Do NOT set Content-Type header when sending FormData, 
         // the browser will automatically set it with boundary

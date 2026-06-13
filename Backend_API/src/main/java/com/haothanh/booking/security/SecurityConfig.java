@@ -37,15 +37,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configure(http)) // Uses WebMvcConfigurer from WebConfig
+            .cors(org.springframework.security.config.Customizer.withDefaults()) // Uses WebMvcConfigurer from WebConfig
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll() // Login/Register
-                .requestMatchers(HttpMethod.GET, "/api/v1/buses/**").permitAll() // View buses
-                .requestMatchers(HttpMethod.GET, "/api/v1/routes/**").permitAll() // View routes
-                .requestMatchers(HttpMethod.GET, "/api/v1/trips/**").permitAll() // View trips
+                .requestMatchers(HttpMethod.GET, "/api/v1/buses", "/api/v1/buses/**").permitAll() // View buses
+                .requestMatchers(HttpMethod.GET, "/api/v1/routes", "/api/v1/routes/**").permitAll() // View routes
+                .requestMatchers(HttpMethod.GET, "/api/v1/trips", "/api/v1/trips/**").permitAll() // View trips
                 .requestMatchers(HttpMethod.GET, "/api/v1/tickets/seats").permitAll() // View available seats
+                .requestMatchers(HttpMethod.POST, "/api/v1/tickets/offline").permitAll() // Book offline tickets
                 .requestMatchers("/api/v1/health").permitAll() // Health check
                 .anyRequest().authenticated()
             );

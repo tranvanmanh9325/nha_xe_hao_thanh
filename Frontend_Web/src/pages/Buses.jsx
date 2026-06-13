@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { PlusIcon, TrashIcon, PauseIcon, PlayIcon } from '../assets/icons';
 import AddBusModal from '../components/AddBusModal';
 import ConfirmModal from '../components/ui/ConfirmModal';
+import { authFetch } from '../utils/authService';
 import { toast } from 'react-toastify';
 
 const Buses = () => {
@@ -21,7 +22,7 @@ const Buses = () => {
     // Fetch buses from backend API
     const fetchBuses = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/v1/buses');
+        const response = await authFetch('http://localhost:8080/api/v1/buses');
         if (!response.ok) {
           throw new Error('Lỗi khi tải danh sách xe từ máy chủ');
         }
@@ -41,7 +42,7 @@ const Buses = () => {
     e.stopPropagation();
     const newStatus = bus.status === 'Đang hoạt động' ? 'Tạm ngưng' : 'Đang hoạt động';
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/buses/${bus.id}/status`, {
+      const response = await authFetch(`http://localhost:8080/api/v1/buses/${bus.id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +77,7 @@ const Buses = () => {
     if (!bus) return;
     
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/buses/${bus.id}`, {
+      const response = await authFetch(`http://localhost:8080/api/v1/buses/${bus.id}`, {
         method: 'DELETE',
       });
       
@@ -165,7 +166,7 @@ const Buses = () => {
                 display: 'flex',
                 flexDirection: 'column'
               }}
-              onClick={() => navigate(`/buses/${bus.id}`)}
+              onClick={() => navigate(`/admin/buses/${bus.id}`)}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';

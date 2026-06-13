@@ -13,13 +13,13 @@ import '../../styles/sidebar.css';
 
 /* Navigation items config — single source of truth for sidebar menu */
 const navItems = [
-  { to: '/', icon: DashboardIcon, label: 'Tổng quan' },
-  { to: '/routes', icon: MapIcon, label: 'Quản lý tuyến đường' },
-  { to: '/trips', icon: BusRouteIcon, label: 'Quản lý chuyến xe' },
-  { to: '/buses', icon: BusIcon, label: 'Quản lý xe' },
-  { to: '/tickets', icon: TicketIcon, label: 'Quản lý vé' },
-  { to: '/revenue', icon: ChartIcon, label: 'Thống kê doanh thu' },
-  { to: '/settings', icon: SettingsIcon, label: 'Cài đặt' },
+  { to: '/admin', icon: DashboardIcon, label: 'Tổng quan' },
+  { to: '/admin/routes', icon: MapIcon, label: 'Quản lý tuyến đường' },
+  { to: '/admin/trips', icon: BusRouteIcon, label: 'Quản lý chuyến xe' },
+  { to: '/admin/buses', icon: BusIcon, label: 'Quản lý xe' },
+  { to: '/admin/tickets', icon: TicketIcon, label: 'Quản lý vé' },
+  { to: '/admin/revenue', icon: ChartIcon, label: 'Thống kê doanh thu' },
+  { to: '/admin/settings', icon: SettingsIcon, label: 'Cài đặt' },
 ];
 
 const Sidebar = () => {
@@ -41,7 +41,7 @@ const Sidebar = () => {
           <NavLink
             key={to}
             to={to}
-            end={to === '/'}
+            end={to === '/admin'}
             className={({ isActive }) =>
               `sidebar__nav-item${isActive ? ' sidebar__nav-item--active' : ''}`
             }

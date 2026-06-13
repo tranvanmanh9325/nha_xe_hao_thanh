@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { PlusIcon, TrashIcon, PauseIcon, PlayIcon, EditIcon } from '../assets/icons';
 import ConfirmModal from '../components/ui/ConfirmModal';
 import RouteFormModal from '../components/RouteFormModal';
+import { authFetch } from '../utils/authService';
 import { toast } from 'react-toastify';
 
 const RouteManagement = () => {
@@ -19,7 +20,7 @@ const RouteManagement = () => {
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/v1/routes');
+        const response = await authFetch('http://localhost:8080/api/v1/routes');
         if (!response.ok) {
           throw new Error('Lỗi khi tải danh sách tuyến đường');
         }
@@ -38,7 +39,7 @@ const RouteManagement = () => {
     e.stopPropagation();
     const newStatus = route.status === 'Đang hoạt động' ? 'Tạm ngưng' : 'Đang hoạt động';
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/routes/${route.id}/status`, {
+      const response = await authFetch(`http://localhost:8080/api/v1/routes/${route.id}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
@@ -65,7 +66,7 @@ const RouteManagement = () => {
     const route = confirmModal.routeToDelete;
     if (!route) return;
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/routes/${route.id}`, { method: 'DELETE' });
+      const response = await authFetch(`http://localhost:8080/api/v1/routes/${route.id}`, { method: 'DELETE' });
       if (!response.ok) {
         const errData = await response.json().catch(() => null);
         throw new Error(errData?.message || 'Không thể xóa tuyến đường');
