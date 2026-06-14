@@ -1,25 +1,57 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 const Select = ({ value, onChange, options, style }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
   const containerRef = useRef(null);
+  const popupRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
+      if (
+        (containerRef.current && !containerRef.current.contains(event.target)) &&
+        (popupRef.current && !popupRef.current.contains(event.target))
+      ) {
         setIsOpen(false);
       }
     };
+
+    const handleScrollOrResize = (e) => {
+      // Bỏ qua nếu cuộn bên trong chính dropdown
+      if (popupRef.current && popupRef.current.contains(e.target)) return;
+      if (isOpen) setIsOpen(false);
+    };
+
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    window.addEventListener('resize', handleScrollOrResize);
+    window.addEventListener('scroll', handleScrollOrResize, true); // Bắt sự kiện scroll trên tất cả phần tử (capture phase)
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('resize', handleScrollOrResize);
+      window.removeEventListener('scroll', handleScrollOrResize, true);
+    };
+  }, [isOpen]);
+
+  const toggleOpen = () => {
+    if (!isOpen) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setDropdownPos({
+        top: rect.bottom + window.scrollY + 4, // 4px margin top
+        left: rect.left + window.scrollX,
+        width: rect.width
+      });
+    }
+    setIsOpen(!isOpen);
+  };
 
   const selectedOption = options.find(opt => opt.value === value) || options[0];
 
   return (
     <div ref={containerRef} style={{ position: 'relative', ...style }}>
       <div 
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={toggleOpen}
         style={{
           padding: 'var(--space-2) 32px var(--space-2) var(--space-3)',
           border: '1px solid',
@@ -35,16 +67,20 @@ const Select = ({ value, onChange, options, style }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          userSelect: 'none'
+          userSelect: 'none',
+          height: '42px',
+          boxSizing: 'border-box'
         }}
       >
-        <span>{selectedOption?.label}</span>
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {selectedOption?.label}
+        </span>
         <svg 
           width="16" height="16" viewBox="0 0 24 24" fill="none" 
           stroke="var(--neutral-500)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
           style={{
             position: 'absolute',
-            right: '10px',
+            right: '12px',
             transform: isOpen ? 'rotate(180deg)' : 'none',
             transition: 'transform var(--transition-fast)'
           }}
@@ -53,20 +89,22 @@ const Select = ({ value, onChange, options, style }) => {
         </svg>
       </div>
 
-      {isOpen && (
-        <div style={{
-          position: 'absolute',
-          top: '100%',
-          left: 0,
-          right: 0,
-          marginTop: '4px',
-          backgroundColor: 'var(--white)',
-          border: '1px solid var(--neutral-200)',
-          borderRadius: 'var(--radius-md)',
-          boxShadow: 'var(--shadow-lg)',
-          zIndex: 50,
-          overflow: 'hidden'
-        }}>
+      {isOpen && createPortal(
+        <div 
+          ref={popupRef}
+          style={{
+            position: 'absolute',
+            top: `${dropdownPos.top}px`,
+            left: `${dropdownPos.left}px`,
+            width: `${dropdownPos.width}px`,
+            backgroundColor: 'var(--white)',
+            border: '1px solid var(--neutral-200)',
+            borderRadius: 'var(--radius-md)',
+            boxShadow: 'var(--shadow-lg)',
+            zIndex: 9999, // Render trên tất cả các Modal
+            maxHeight: '250px',
+            overflowY: 'auto'
+          }}>
           {options.map((option) => (
             <div
               key={option.value}
@@ -97,7 +135,8 @@ const Select = ({ value, onChange, options, style }) => {
               {option.label}
             </div>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

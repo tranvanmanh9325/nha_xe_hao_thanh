@@ -1,24 +1,50 @@
 import { useState } from 'react';
 import { CloseIcon } from '../../assets/icons';
+import Select from '../ui/Select';
+import DatePicker from '../ui/DatePicker';
+import TimePicker from '../ui/TimePicker';
 
-const AddTripModal = ({ isOpen, onClose, onSave }) => {
+const AddTripModal = ({ isOpen, onClose, onSave, routes = [], buses = [] }) => {
   const [formData, setFormData] = useState({
     code: '',
     route: '',
     departureDate: '',
     departureTime: '',
-    vehicleType: '',
+    busNumber: '',
+    licensePlate: '',
     driver: ''
   });
+
+  const routeOptions = [
+    { value: '', label: '-- Chọn tuyến đường --' },
+    ...routes.map(r => ({
+      value: `${r.origin} - ${r.destination}`,
+      label: `${r.origin} - ${r.destination}`
+    }))
+  ];
 
   if (!isOpen) return null;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    if (name === 'busNumber') {
+      const selectedBus = buses.find(b => b.busNumber === value);
+      setFormData(prev => ({
+        ...prev,
+        busNumber: value,
+        licensePlate: selectedBus ? selectedBus.licensePlate : ''
+      }));
+    } else if (name === 'licensePlate') {
+      const selectedBus = buses.find(b => b.licensePlate === value);
+      setFormData(prev => ({
+        ...prev,
+        licensePlate: value,
+        busNumber: selectedBus ? selectedBus.busNumber : ''
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = (e) => {
@@ -30,7 +56,8 @@ const AddTripModal = ({ isOpen, onClose, onSave }) => {
       route: '',
       departureDate: '',
       departureTime: '',
-      vehicleType: '',
+      busNumber: '',
+      licensePlate: '',
       driver: ''
     });
   };
@@ -63,67 +90,62 @@ const AddTripModal = ({ isOpen, onClose, onSave }) => {
               </div>
               <div className="form-group">
                 <label htmlFor="route">Tuyến đường</label>
-                <select 
-                  id="route" 
-                  name="route"
-                  className="form-control"
+                <Select 
                   value={formData.route}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">-- Chọn tuyến đường --</option>
-                  <option value="Sài Gòn - Đà Lạt">Sài Gòn - Đà Lạt</option>
-                  <option value="Đà Lạt - Sài Gòn">Đà Lạt - Sài Gòn</option>
-                  <option value="Sài Gòn - Nha Trang">Sài Gòn - Nha Trang</option>
-                  <option value="Nha Trang - Sài Gòn">Nha Trang - Sài Gòn</option>
-                </select>
+                  onChange={(val) => handleChange({ target: { name: 'route', value: val } })}
+                  options={routeOptions}
+                  style={{ width: '100%' }}
+                />
               </div>
             </div>
 
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="departureDate">Ngày khởi hành</label>
-                <input 
-                  type="date" 
-                  id="departureDate" 
-                  name="departureDate"
-                  className="form-control"
+                <DatePicker 
                   value={formData.departureDate}
-                  onChange={handleChange}
-                  required
+                  onChange={(val) => handleChange({ target: { name: 'departureDate', value: val } })}
+                  style={{ width: '100%' }}
                 />
               </div>
               <div className="form-group">
                 <label htmlFor="departureTime">Giờ khởi hành</label>
-                <input 
-                  type="time" 
-                  id="departureTime" 
-                  name="departureTime"
-                  className="form-control"
+                <TimePicker 
                   value={formData.departureTime}
-                  onChange={handleChange}
-                  required
+                  onChange={(val) => handleChange({ target: { name: 'departureTime', value: val } })}
+                  style={{ width: '100%' }}
                 />
               </div>
             </div>
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="vehicleType">Loại xe</label>
-                <select 
-                  id="vehicleType" 
-                  name="vehicleType"
-                  className="form-control"
-                  value={formData.vehicleType}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">-- Chọn loại xe --</option>
-                  <option value="Giường nằm 40">Giường nằm 40 chỗ</option>
-                  <option value="Limousine 34">Limousine 34 phòng</option>
-                  <option value="Phòng nằm 22">Phòng nằm 22 cabin</option>
-                </select>
+                <label htmlFor="busNumber">Số xe</label>
+                <Select 
+                  value={formData.busNumber}
+                  onChange={(val) => handleChange({ target: { name: 'busNumber', value: val } })}
+                  options={[
+                    { value: '', label: '-- Chọn số xe --' },
+                    ...(buses || []).map(b => ({ value: b.busNumber, label: b.busNumber }))
+                  ]}
+                  style={{ width: '100%' }}
+                />
               </div>
+              <div className="form-group">
+                <label htmlFor="licensePlate">Biển số xe</label>
+                <Select 
+                  value={formData.licensePlate}
+                  onChange={(val) => handleChange({ target: { name: 'licensePlate', value: val } })}
+                  options={[
+                    { value: '', label: '-- Chọn biển số xe --' },
+                    ...(buses || []).map(b => ({ value: b.licensePlate, label: b.licensePlate }))
+                  ]}
+                  style={{ width: '100%' }}
+                />
+              </div>
+            </div>
+            
+            <div className="form-row">
               <div className="form-group">
                 <label htmlFor="driver">Tài xế phụ trách</label>
                 <input 
@@ -137,6 +159,7 @@ const AddTripModal = ({ isOpen, onClose, onSave }) => {
                   required
                 />
               </div>
+              <div className="form-group"></div>
             </div>
           </div>
 

@@ -16,6 +16,7 @@ import BusDetail from './pages/BusDetail';
 import Tickets from './pages/Tickets';
 import Revenue from './pages/Revenue';
 import Settings from './pages/Settings';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => {
   return (
@@ -28,20 +29,22 @@ const App = () => {
           <Route path="/" element={<GuestHomepage />} />
 
           {/* Admin Routes (B2B) */}
-          <Route path="/admin" element={<DashboardLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="routes" element={<RouteManagement />} />
-            <Route path="trips">
-              <Route index element={<Trips />} />
-              <Route path=":id/seats" element={<TripSeatMap />} />
+          <Route path="/admin" element={<ProtectedRoute />}>
+            <Route element={<DashboardLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="routes" element={<RouteManagement />} />
+              <Route path="trips">
+                <Route index element={<Trips />} />
+                <Route path=":id/seats" element={<TripSeatMap />} />
+              </Route>
+              <Route path="buses">
+                <Route index element={<Buses />} />
+                <Route path=":busId" element={<BusDetail />} />
+              </Route>
+              <Route path="tickets" element={<Tickets />} />
+              <Route path="revenue" element={<Revenue />} />
+              <Route path="settings" element={<Settings />} />
             </Route>
-            <Route path="buses">
-              <Route index element={<Buses />} />
-              <Route path=":busId" element={<BusDetail />} />
-            </Route>
-            <Route path="tickets" element={<Tickets />} />
-            <Route path="revenue" element={<Revenue />} />
-            <Route path="settings" element={<Settings />} />
           </Route>
 
         </Routes>

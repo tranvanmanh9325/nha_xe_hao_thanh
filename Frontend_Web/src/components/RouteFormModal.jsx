@@ -1,5 +1,54 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { authFetch } from '../utils/authService';
+import { toast } from 'react-toastify';
+import { MapContainer, TileLayer, Marker, Polyline, useMap } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix for default leaflet marker icon not showing correctly in some bundlers
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
+// Helper component to auto-fit bounds when markers change
+const MapBounds = ({ originCoords, destCoords }) => {
+  const map = useMap();
+  useEffect(() => {
+    if (originCoords && destCoords) {
+      const bounds = L.latLngBounds([originCoords, destCoords]);
+      map.fitBounds(bounds, { padding: [50, 50] });
+    } else if (originCoords) {
+      map.setView(originCoords, 10);
+    } else if (destCoords) {
+      map.setView(destCoords, 10);
+    }
+  }, [originCoords, destCoords, map]);
+  return null;
+};
+
+const handleGeocode = async (address, setCoordsFunc) => {
+  if (!address) {
+    setCoordsFunc(null);
+    return;
+  }
+  try {
+    // Sử dụng Photon API (dữ liệu mở, không cần API Key, không chứa domain openstreetmap)
+    const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(address)}&limit=1`);
+    const data = await res.json();
+    if (data && data.features && data.features.length > 0) {
+      const coords = data.features[0].geometry.coordinates;
+      // GeoJSON trả về [longitude, latitude], Leaflet cần [latitude, longitude]
+      setCoordsFunc([coords[1], coords[0]]);
+    } else {
+      setCoordsFunc(null); // Not found
+    }
+  } catch (err) {
+    console.error("Geocoding failed:", err);
+  }
+};
 
 const RouteFormModal = ({ isOpen, onClose, onSaved, initialData }) => {
   const [formData, setFormData] = useState({
@@ -12,11 +61,107 @@ const RouteFormModal = ({ isOpen, onClose, onSaved, initialData }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
+  const [originCoords, setOriginCoords] = useState(null);
+  const [destCoords, setDestCoords] = useState(null);
+  const [routePath, setRoutePath] = useState(null);
+
+  // Lưu trữ prop initialData và isOpen để reset state khi chúng thay đổi
+  const [prevInitialData, setPrevInitialData] = useState(initialData);
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  const [prevOriginCoords, setPrevOriginCoords] = useState(originCoords);
+  const [prevDestCoords, setPrevDestCoords] = useState(destCoords);
+
+  // Derive state during render: Cập nhật state ngay trong lúc render nếu props thay đổi
+  if (initialData !== prevInitialData || isOpen !== prevIsOpen) {
+    setPrevInitialData(initialData);
+    setPrevIsOpen(isOpen);
+    
+    if (isOpen) {
+      setFormData({
+        routeCode: initialData?.routeCode || '',
+        origin: initialData?.origin || '',
+        destination: initialData?.destination || '',
+        distance: initialData?.distance || '',
+        estimatedDuration: initialData?.estimatedDuration || ''
+      });
+      setError(null);
+      setOriginCoords(null);
+      setDestCoords(null);
+      setRoutePath(null);
+    }
+  }
+
+  // Derive state cho routePath khi originCoords hoặc destCoords thay đổi
+  if (originCoords !== prevOriginCoords || destCoords !== prevDestCoords) {
+    setPrevOriginCoords(originCoords);
+    setPrevDestCoords(destCoords);
+    setRoutePath(null); // Xóa đường cũ ngay lập tức khi tọa độ bị đổi
+  }
+
+  // Lắng nghe khi có đủ 2 tọa độ thì gọi API vẽ đường (100% Async)
+  useEffect(() => {
+    let isMounted = true;
+    if (originCoords && destCoords) {
+      const fetchDrivingRoute = async () => {
+        try {
+          const OSRM_BASE_URL = import.meta.env.VITE_OSRM_API_URL || 'https://router.project-osrm.org';
+          const url = `${OSRM_BASE_URL}/route/v1/driving/${originCoords[1]},${originCoords[0]};${destCoords[1]},${destCoords[0]}?overview=full&geometries=geojson`;
+          const res = await fetch(url);
+          if (!res.ok) {
+            throw new Error(`Routing API failed with status: ${res.status}`);
+          }
+          const data = await res.json();
+          if (isMounted) {
+            if (data && data.routes && data.routes.length > 0) {
+              const coords = data.routes[0].geometry.coordinates;
+              const mappedCoordinates = coords.map(c => [c[1], c[0]]);
+              setRoutePath(mappedCoordinates);
+            } else {
+              setRoutePath(null);
+            }
+          }
+        } catch (err) {
+          console.error("Routing failed:", err);
+          if (isMounted) setRoutePath(null);
+        }
+      };
+      
+      fetchDrivingRoute();
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [originCoords, destCoords]);
+
+  // Gọi API (Async) an toàn trong useEffect, không có setState đồng bộ
+  useEffect(() => {
+    if (isOpen) {
+      if (initialData?.origin) {
+        handleGeocode(initialData.origin, setOriginCoords);
+      }
+      if (initialData?.destination) {
+        handleGeocode(initialData.destination, setDestCoords);
+      }
+    }
+  }, [isOpen, initialData]);
+
   if (!isOpen) return null;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleBlur = (field) => {
+    if (field === 'origin' && formData.origin) {
+      handleGeocode(formData.origin, setOriginCoords);
+    } else if (field === 'destination' && formData.destination) {
+      handleGeocode(formData.destination, setDestCoords);
+    } else if (field === 'origin' && !formData.origin) {
+      setOriginCoords(null);
+    } else if (field === 'destination' && !formData.destination) {
+      setDestCoords(null);
+    }
   };
 
   const handleSave = async () => {
@@ -52,7 +197,7 @@ const RouteFormModal = ({ isOpen, onClose, onSaved, initialData }) => {
         throw new Error(errData?.message || 'Lỗi khi lưu tuyến đường. Mã tuyến có thể đã tồn tại.');
       }
 
-      setFormData({ routeCode: '', origin: '', destination: '', distance: '', estimatedDuration: '' });
+      toast.success(isEdit ? 'Cập nhật tuyến đường thành công!' : 'Thêm tuyến đường mới thành công!');
       if (onSaved) onSaved();
       onClose();
     } catch (err) {
@@ -75,113 +220,124 @@ const RouteFormModal = ({ isOpen, onClose, onSaved, initialData }) => {
   const labelStyle = { display: 'block', fontSize: 'var(--text-sm)', fontWeight: '500', marginBottom: 'var(--space-2)' };
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0, left: 0, right: 0, bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000
-    }}>
-      <div style={{
-        backgroundColor: 'var(--white)',
-        borderRadius: 'var(--radius-lg)',
-        padding: 'var(--space-6)',
-        width: '600px',
-        maxWidth: '95%',
-        maxHeight: '90vh',
-        overflowY: 'auto',
-        boxShadow: 'var(--shadow-lg)'
-      }}>
-        <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: '600', marginBottom: 'var(--space-4)', color: 'var(--neutral-900)' }}>
-          {initialData ? 'Sửa tuyến đường' : 'Thêm tuyến đường mới'}
-        </h2>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] p-4">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-6xl max-h-[95vh] flex flex-col overflow-hidden">
         
-        {error && (
-          <div style={{ marginBottom: 'var(--space-4)', padding: 'var(--space-2) var(--space-3)', backgroundColor: '#fee2e2', color: '#991b1b', borderRadius: 'var(--radius-md)', fontSize: 'var(--text-sm)' }}>
-            {error}
-          </div>
-        )}
-        
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
-          <div style={{ gridColumn: '1 / -1' }}>
-            <label style={labelStyle}>Mã tuyến *</label>
-            <input 
-              type="text" name="routeCode" value={formData.routeCode} onChange={handleChange}
-              placeholder="VD: HN-DL" style={inputStyle}
-              onFocus={(e) => e.target.style.borderColor = 'var(--brand-500)'}
-              onBlur={(e) => e.target.style.borderColor = 'var(--neutral-300)'}
-            />
-          </div>
-          <div>
-            <label style={labelStyle}>Điểm khởi hành *</label>
-            <input 
-              type="text" name="origin" value={formData.origin} onChange={handleChange}
-              placeholder="VD: Hà Nội" style={inputStyle}
-              onFocus={(e) => e.target.style.borderColor = 'var(--brand-500)'}
-              onBlur={(e) => e.target.style.borderColor = 'var(--neutral-300)'}
-            />
-          </div>
-          <div>
-            <label style={labelStyle}>Điểm đến *</label>
-            <input 
-              type="text" name="destination" value={formData.destination} onChange={handleChange}
-              placeholder="VD: Đà Lạt" style={inputStyle}
-              onFocus={(e) => e.target.style.borderColor = 'var(--brand-500)'}
-              onBlur={(e) => e.target.style.borderColor = 'var(--neutral-300)'}
-            />
-          </div>
-          <div>
-            <label style={labelStyle}>Quãng đường (km)</label>
-            <input 
-              type="number" step="0.1" name="distance" value={formData.distance} onChange={handleChange}
-              placeholder="VD: 1500" style={inputStyle}
-              onFocus={(e) => e.target.style.borderColor = 'var(--brand-500)'}
-              onBlur={(e) => e.target.style.borderColor = 'var(--neutral-300)'}
-            />
-          </div>
-          <div>
-            <label style={labelStyle}>Thời gian dự kiến (giờ)</label>
-            <input 
-              type="number" step="0.1" name="estimatedDuration" value={formData.estimatedDuration} onChange={handleChange}
-              placeholder="VD: 24.5" style={inputStyle}
-              onFocus={(e) => e.target.style.borderColor = 'var(--brand-500)'}
-              onBlur={(e) => e.target.style.borderColor = 'var(--neutral-300)'}
-            />
+        <div className="p-6 pb-4 border-b border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-900">
+            {initialData ? 'Sửa tuyến đường' : 'Thêm tuyến đường mới'}
+          </h2>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-6">
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
+              {error}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Cột trái: Form nhập liệu */}
+            <div className="space-y-4">
+              <div>
+                <label style={labelStyle}>Mã tuyến *</label>
+                <input 
+                  type="text" name="routeCode" value={formData.routeCode} onChange={handleChange}
+                  placeholder="VD: HN-DL" style={inputStyle}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--brand-500)'}
+                  onBlur={(e) => e.target.style.borderColor = 'var(--neutral-300)'}
+                />
+              </div>
+
+              <div>
+                <label style={labelStyle}>Điểm khởi hành *</label>
+                <input 
+                  type="text" name="origin" value={formData.origin} onChange={handleChange}
+                  placeholder="VD: Hà Nội" style={inputStyle}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--brand-500)'}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'var(--neutral-300)';
+                    handleBlur('origin');
+                  }}
+                />
+                <p className="text-xs text-gray-500 mt-1">Hệ thống sẽ tự động tìm điểm trên bản đồ khi bạn nhập xong.</p>
+              </div>
+
+              <div>
+                <label style={labelStyle}>Điểm đến *</label>
+                <input 
+                  type="text" name="destination" value={formData.destination} onChange={handleChange}
+                  placeholder="VD: Đà Lạt" style={inputStyle}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--brand-500)'}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'var(--neutral-300)';
+                    handleBlur('destination');
+                  }}
+                />
+                <p className="text-xs text-gray-500 mt-1">Hệ thống sẽ tự động tìm điểm trên bản đồ khi bạn nhập xong.</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label style={labelStyle}>Quãng đường (km)</label>
+                  <input 
+                    type="number" step="0.1" name="distance" value={formData.distance} onChange={handleChange}
+                    placeholder="VD: 1500" style={inputStyle}
+                    onFocus={(e) => e.target.style.borderColor = 'var(--brand-500)'}
+                    onBlur={(e) => e.target.style.borderColor = 'var(--neutral-300)'}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Thời gian dự kiến (giờ)</label>
+                  <input 
+                    type="number" step="0.1" name="estimatedDuration" value={formData.estimatedDuration} onChange={handleChange}
+                    placeholder="VD: 24.5" style={inputStyle}
+                    onFocus={(e) => e.target.style.borderColor = 'var(--brand-500)'}
+                    onBlur={(e) => e.target.style.borderColor = 'var(--neutral-300)'}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Cột phải: Bản đồ */}
+            <div className="h-[400px] lg:h-full min-h-[400px] rounded-xl overflow-hidden border border-gray-200 shadow-sm relative">
+              <div className="absolute top-2 left-2 z-[400] bg-white px-3 py-1 rounded-md shadow-md text-sm font-medium text-gray-700 pointer-events-none">
+                Bản đồ tuyến đường
+              </div>
+              <MapContainer 
+                center={[16.047079, 108.206230]} // Trung tâm Việt Nam (Đà Nẵng)
+                zoom={5} 
+                style={{ height: '100%', width: '100%', zIndex: 1 }}
+              >
+                <TileLayer
+                  attribution='&copy; Google Maps'
+                  url="https://mt0.google.com/vt/lyrs=m&hl=vi&x={x}&y={y}&z={z}"
+                />
+                {originCoords && <Marker position={originCoords} />}
+                {destCoords && <Marker position={destCoords} />}
+                {routePath && (
+                  <Polyline positions={routePath} color="#3b82f6" weight={4} opacity={0.7} />
+                )}
+                <MapBounds originCoords={originCoords} destCoords={destCoords} />
+              </MapContainer>
+            </div>
           </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-3)', marginTop: 'var(--space-6)', borderTop: '1px solid var(--neutral-200)', paddingTop: 'var(--space-4)' }}>
+        <div className="p-4 border-t border-gray-200 flex justify-end gap-3 rounded-b-xl">
           <button 
             onClick={onClose}
-            style={{
-              padding: 'var(--space-2) var(--space-4)',
-              borderRadius: 'var(--radius-md)',
-              border: '1px solid var(--neutral-300)',
-              backgroundColor: 'white',
-              color: 'var(--neutral-700)',
-              fontWeight: '500',
-              cursor: 'pointer',
-              transition: 'background-color var(--transition-fast)'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--neutral-100)'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
+            className="px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-50 transition-colors"
           >
             Hủy
           </button>
           <button 
             onClick={handleSave}
             disabled={isSubmitting}
+            className="px-4 py-2 rounded-md border-none text-white font-medium transition-colors"
             style={{
-              padding: 'var(--space-2) var(--space-4)',
-              borderRadius: 'var(--radius-md)',
-              border: 'none',
               backgroundColor: isSubmitting ? 'var(--neutral-400)' : 'var(--brand-500)',
-              color: 'white',
-              fontWeight: '500',
-              cursor: isSubmitting ? 'not-allowed' : 'pointer',
-              transition: 'background-color var(--transition-fast)'
+              cursor: isSubmitting ? 'not-allowed' : 'pointer'
             }}
             onMouseEnter={(e) => { if (!isSubmitting) e.currentTarget.style.backgroundColor = 'var(--brand-600)'; }}
             onMouseLeave={(e) => { if (!isSubmitting) e.currentTarget.style.backgroundColor = 'var(--brand-500)'; }}

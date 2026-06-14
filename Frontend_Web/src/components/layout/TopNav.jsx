@@ -1,4 +1,4 @@
-import { SearchIcon, BellIcon, ChevronDownIcon } from '../../assets/icons';
+import { BellIcon, ChevronDownIcon } from '../../assets/icons';
 import '../../styles/topnav.css';
 
 const TopNav = ({ title = 'Tổng quan' }) => {
@@ -7,14 +7,6 @@ const TopNav = ({ title = 'Tổng quan' }) => {
       {/* Left — Page title + Search */}
       <div className="topnav__left">
         <h1 className="topnav__title">{title}</h1>
-        <div className="topnav__search">
-          <SearchIcon size={18} className="topnav__search-icon" />
-          <input
-            type="text"
-            className="topnav__search-input"
-            placeholder="Tìm kiếm chuyến xe, vé, khách hàng..."
-          />
-        </div>
       </div>
 
       {/* Right — Notifications + User */}

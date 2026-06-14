@@ -20,6 +20,9 @@ public class Bus {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "bus_number", length = 50)
+    private String busNumber;
+
     @Column(name = "license_plate", nullable = false, unique = true, length = 50)
     private String licensePlate;
 

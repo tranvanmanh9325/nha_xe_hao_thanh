@@ -1,9 +1,11 @@
 import { useState, useRef } from 'react';
 import ImageCropperModal from './ImageCropperModal';
 import { authFetch } from '../utils/authService';
+import { toast } from 'react-toastify';
 
 const EditBusModal = ({ isOpen, onClose, onBusUpdated, busInfo }) => {
   const [formData, setFormData] = useState({
+    busNumber: busInfo?.busNumber || '',
     licensePlate: busInfo?.licensePlate || '',
     busType: busInfo?.busType || '',
     totalSeats: busInfo?.totalSeats || '',
@@ -22,6 +24,18 @@ const EditBusModal = ({ isOpen, onClose, onBusUpdated, busInfo }) => {
   const fileInputRef = useRef(null);
 
   if (!isOpen) return null;
+
+  const isDirty = 
+    formData.busNumber !== (busInfo?.busNumber || '') ||
+    formData.licensePlate !== (busInfo?.licensePlate || '') ||
+    formData.busType !== (busInfo?.busType || '') ||
+    String(formData.totalSeats) !== String(busInfo?.totalSeats || '') ||
+    formData.description !== (busInfo?.description || '') ||
+    String(formData.manufactureYear) !== String(busInfo?.manufactureYear || '') ||
+    formData.color !== (busInfo?.color || '') ||
+    formData.image !== null;
+
+  const isSaveDisabled = isSubmitting || !isDirty;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,8 +69,8 @@ const EditBusModal = ({ isOpen, onClose, onBusUpdated, busInfo }) => {
   };
 
   const handleSave = async () => {
-    if (!formData.licensePlate || !formData.totalSeats) {
-      setError('Vui lòng điền biển số xe và tổng số ghế');
+    if (!formData.licensePlate || !formData.totalSeats || !formData.busNumber) {
+      setError('Vui lòng điền số xe nội bộ, biển số xe và tổng số ghế');
       return;
     }
     
@@ -65,6 +79,7 @@ const EditBusModal = ({ isOpen, onClose, onBusUpdated, busInfo }) => {
     
     try {
       const formDataObj = new FormData();
+      formDataObj.append('busNumber', formData.busNumber);
       formDataObj.append('licensePlate', formData.licensePlate);
       formDataObj.append('busType', formData.busType);
       formDataObj.append('totalSeats', formData.totalSeats);
@@ -87,6 +102,7 @@ const EditBusModal = ({ isOpen, onClose, onBusUpdated, busInfo }) => {
         throw new Error(errData?.message || 'Lỗi khi cập nhật thông tin xe.');
       }
 
+      toast.success('Cập nhật thông tin xe thành công!');
       if (onBusUpdated) onBusUpdated();
       onClose();
     } catch (err) {
@@ -176,7 +192,16 @@ const EditBusModal = ({ isOpen, onClose, onBusUpdated, busInfo }) => {
 
           {/* Cột phải: Form nhập liệu */}
           <div style={{ flex: 1, minWidth: '300px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
+              <div>
+                <label style={labelStyle}>Số xe nội bộ *</label>
+                <input 
+                  type="text" name="busNumber" value={formData.busNumber} onChange={handleChange}
+                  placeholder="VD: 01, VIP-01" style={inputStyle}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--brand-500)'}
+                  onBlur={(e) => e.target.style.borderColor = 'var(--neutral-300)'}
+                />
+              </div>
               <div>
                 <label style={labelStyle}>Biển số xe *</label>
                 <input 
@@ -260,19 +285,19 @@ const EditBusModal = ({ isOpen, onClose, onBusUpdated, busInfo }) => {
           </button>
           <button 
             onClick={handleSave}
-            disabled={isSubmitting}
+            disabled={isSaveDisabled}
             style={{
               padding: 'var(--space-2) var(--space-4)',
               borderRadius: 'var(--radius-md)',
               border: 'none',
-              backgroundColor: isSubmitting ? 'var(--neutral-400)' : 'var(--brand-500)',
+              backgroundColor: isSaveDisabled ? 'var(--neutral-400)' : 'var(--brand-500)',
               color: 'white',
               fontWeight: '500',
-              cursor: isSubmitting ? 'not-allowed' : 'pointer',
+              cursor: isSaveDisabled ? 'not-allowed' : 'pointer',
               transition: 'background-color var(--transition-fast)'
             }}
-            onMouseEnter={(e) => { if (!isSubmitting) e.currentTarget.style.backgroundColor = 'var(--brand-600)'; }}
-            onMouseLeave={(e) => { if (!isSubmitting) e.currentTarget.style.backgroundColor = 'var(--brand-500)'; }}
+            onMouseEnter={(e) => { if (!isSaveDisabled) e.currentTarget.style.backgroundColor = 'var(--brand-600)'; }}
+            onMouseLeave={(e) => { if (!isSaveDisabled) e.currentTarget.style.backgroundColor = 'var(--brand-500)'; }}
           >
             {isSubmitting ? 'Đang lưu...' : 'Lưu'}
           </button>

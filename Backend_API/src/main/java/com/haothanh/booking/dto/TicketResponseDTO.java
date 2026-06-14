@@ -1,7 +1,9 @@
 package com.haothanh.booking.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -12,6 +14,8 @@ import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TicketResponseDTO {
     private Long id;
     private String ticketCode;

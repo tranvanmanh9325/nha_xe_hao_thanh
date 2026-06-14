@@ -9,6 +9,7 @@ import {
   SettingsIcon,
   LogoutIcon,
 } from '../../assets/icons';
+import { logout } from '../../utils/authService';
 import '../../styles/sidebar.css';
 
 /* Navigation items config — single source of truth for sidebar menu */
@@ -54,7 +55,7 @@ const Sidebar = () => {
 
       {/* Logout */}
       <div className="sidebar__footer">
-        <button className="sidebar__logout" type="button">
+        <button className="sidebar__logout" type="button" onClick={logout}>
           <LogoutIcon size={20} />
           <span>Đăng xuất</span>
         </button>

@@ -8,6 +8,8 @@ import '../styles/trips.css';
 
 const Trips = () => {
   const [tripsData, setTripsData] = useState([]);
+  const [routes, setRoutes] = useState([]);
+  const [buses, setBuses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -18,18 +20,35 @@ const Trips = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // Fetch trips data from backend API
+  // Fetch trips data and routes from backend API
   useEffect(() => {
-    const fetchTrips = async () => {
+    const fetchData = async () => {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await authFetch('http://localhost:8080/api/v1/trips');
-        if (!response.ok) {
+        
+        const [tripsResponse, routesResponse, busesResponse] = await Promise.all([
+          authFetch('http://localhost:8080/api/v1/trips'),
+          authFetch('http://localhost:8080/api/v1/routes'),
+          authFetch('http://localhost:8080/api/v1/buses')
+        ]);
+
+        if (!tripsResponse.ok) {
           throw new Error('Không thể tải dữ liệu chuyến xe từ máy chủ.');
         }
-        const data = await response.json();
-        setTripsData(data);
+        
+        const tripsData = await tripsResponse.json();
+        setTripsData(tripsData);
+
+        if (routesResponse.ok) {
+          const routesData = await routesResponse.json();
+          setRoutes(routesData);
+        }
+        
+        if (busesResponse.ok) {
+          const busesData = await busesResponse.json();
+          setBuses(busesData);
+        }
       } catch (err) {
         setError(err.message);
       } finally {
@@ -37,7 +56,7 @@ const Trips = () => {
       }
     };
 
-    fetchTrips();
+    fetchData();
   }, []);
 
   // Filter logic
@@ -89,7 +108,8 @@ const Trips = () => {
       code: newTripData.code,
       route: newTripData.route,
       departure: `${newTripData.departureTime} - ${formattedDate}`,
-      vehicleType: newTripData.vehicleType,
+      licensePlate: newTripData.licensePlate,
+      busNumber: newTripData.busNumber,
       driver: newTripData.driver,
       status: 'upcoming'
     };
@@ -110,6 +130,7 @@ const Trips = () => {
         onRouteFilterChange={handleRouteFilterChange}
         statusFilter={statusFilter}
         onStatusFilterChange={handleStatusFilterChange}
+        routes={routes}
       />
 
       <TripsTable 
@@ -125,6 +146,8 @@ const Trips = () => {
         isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
         onSave={handleSaveTrip} 
+        routes={routes}
+        buses={buses}
       />
     </div>
   );

@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { authFetch } from '../utils/authService';
+import { toast } from 'react-toastify';
 
 const AddBusModal = ({ isOpen, onClose, onBusAdded }) => {
   const [formData, setFormData] = useState({
+    busNumber: '',
     licensePlate: '',
     busType: '',
     totalSeats: '',
@@ -34,8 +36,8 @@ const AddBusModal = ({ isOpen, onClose, onBusAdded }) => {
   };
 
   const handleSave = async () => {
-    if (!formData.licensePlate || !formData.totalSeats) {
-      setError('Vui lòng điền biển số xe và tổng số ghế');
+    if (!formData.licensePlate || !formData.totalSeats || !formData.busNumber) {
+      setError('Vui lòng điền số xe nội bộ, biển số xe và tổng số ghế');
       return;
     }
     
@@ -44,6 +46,7 @@ const AddBusModal = ({ isOpen, onClose, onBusAdded }) => {
     
     try {
       const formDataObj = new FormData();
+      formDataObj.append('busNumber', formData.busNumber);
       formDataObj.append('licensePlate', formData.licensePlate);
       formDataObj.append('busType', formData.busType);
       formDataObj.append('totalSeats', formData.totalSeats);
@@ -67,9 +70,10 @@ const AddBusModal = ({ isOpen, onClose, onBusAdded }) => {
       }
 
       setFormData({ 
-        licensePlate: '', busType: '', totalSeats: '',
+        busNumber: '', licensePlate: '', busType: '', totalSeats: '',
         description: '', manufactureYear: '', color: '', image: null, imagePreview: null 
       });
+      toast.success('Thêm xe mới thành công!');
       if (onBusAdded) onBusAdded();
       onClose();
     } catch (err) {
@@ -158,7 +162,16 @@ const AddBusModal = ({ isOpen, onClose, onBusAdded }) => {
 
           {/* Cột phải: Form nhập liệu */}
           <div style={{ flex: 1, minWidth: '300px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
+              <div>
+                <label style={labelStyle}>Số xe nội bộ *</label>
+                <input 
+                  type="text" name="busNumber" value={formData.busNumber} onChange={handleChange}
+                  placeholder="VD: 01, VIP-01" style={inputStyle}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--brand-500)'}
+                  onBlur={(e) => e.target.style.borderColor = 'var(--neutral-300)'}
+                />
+              </div>
               <div>
                 <label style={labelStyle}>Biển số xe *</label>
                 <input 

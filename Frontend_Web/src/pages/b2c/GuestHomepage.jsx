@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { isAuthenticated } from '../../utils/authService';
 import AuthModal from '../../components/b2c/AuthModal';
 import { 
   LocationIcon, DateIcon, BusIcon, WifiIcon, VipSeatIcon, PhoneIcon,
@@ -8,6 +10,26 @@ import {
 const GuestHomepage = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('login') === 'true' || params.get('sessionExpired') === 'true') {
+      const timer = setTimeout(() => {
+        setIsAuthModalOpen(true);
+        // Xóa query param để không bị mở lại modal khi reload
+        navigate(location.pathname, { replace: true });
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [location, navigate]);
+
+  // Nếu người dùng đã đăng nhập, tự động chuyển hướng vào trang quản trị
+  if (isAuthenticated()) {
+    return <Navigate to="/admin" replace />;
+  }
 
   const toggleFaq = (index) => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);

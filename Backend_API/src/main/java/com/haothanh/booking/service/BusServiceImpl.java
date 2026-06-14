@@ -4,6 +4,7 @@ import com.haothanh.booking.dto.BusRequestDTO;
 import com.haothanh.booking.dto.BusResponseDTO;
 import com.haothanh.booking.entity.Bus;
 import com.haothanh.booking.repository.BusRepository;
+import com.haothanh.booking.exception.DuplicateResourceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -59,8 +60,11 @@ public class BusServiceImpl implements BusService {
     @Override
     @CacheEvict(value = "buses", allEntries = true)
     public BusResponseDTO createBus(BusRequestDTO request) {
+        if (busRepository.existsByBusNumber(request.getBusNumber())) {
+            throw new DuplicateResourceException("Số xe nội bộ đã tồn tại");
+        }
         if (busRepository.existsByLicensePlate(request.getLicensePlate())) {
-            throw new RuntimeException("Biển số xe đã tồn tại");
+            throw new DuplicateResourceException("Biển số xe đã tồn tại");
         }
         
         String imageUrl = null;
@@ -74,6 +78,7 @@ public class BusServiceImpl implements BusService {
         }
         
         Bus newBus = Bus.builder()
+                .busNumber(request.getBusNumber())
                 .licensePlate(request.getLicensePlate())
                 .busType(request.getBusType())
                 .totalSeats(request.getTotalSeats())
@@ -100,9 +105,16 @@ public class BusServiceImpl implements BusService {
 
         if (!bus.getLicensePlate().equals(request.getLicensePlate())) {
             if (busRepository.existsByLicensePlate(request.getLicensePlate())) {
-                throw new RuntimeException("Biển số xe đã tồn tại");
+                throw new DuplicateResourceException("Biển số xe đã tồn tại");
             }
             bus.setLicensePlate(request.getLicensePlate());
+        }
+
+        if (bus.getBusNumber() == null || !bus.getBusNumber().equals(request.getBusNumber())) {
+            if (busRepository.existsByBusNumber(request.getBusNumber())) {
+                throw new DuplicateResourceException("Số xe nội bộ đã tồn tại");
+            }
+            bus.setBusNumber(request.getBusNumber());
         }
 
         bus.setBusType(request.getBusType());
@@ -154,6 +166,7 @@ public class BusServiceImpl implements BusService {
     private BusResponseDTO mapToDTO(Bus bus) {
         return BusResponseDTO.builder()
                 .id(bus.getId())
+                .busNumber(bus.getBusNumber())
                 .licensePlate(bus.getLicensePlate())
                 .busType(bus.getBusType())
                 .totalSeats(bus.getTotalSeats())

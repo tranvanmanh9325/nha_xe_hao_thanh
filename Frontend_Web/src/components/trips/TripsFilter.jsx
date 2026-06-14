@@ -1,6 +1,6 @@
 import { SearchIcon, ChevronDownIcon } from '../../assets/icons';
 
-const TripsFilter = ({ searchTerm, onSearchChange, routeFilter, onRouteFilterChange, statusFilter, onStatusFilterChange }) => {
+const TripsFilter = ({ searchTerm, onSearchChange, routeFilter, onRouteFilterChange, statusFilter, onStatusFilterChange, routes = [] }) => {
   return (
     <div className="trips-filter">
       <div className="trips-filter__search">
@@ -21,9 +21,11 @@ const TripsFilter = ({ searchTerm, onSearchChange, routeFilter, onRouteFilterCha
           onChange={(e) => onRouteFilterChange(e.target.value)}
         >
           <option value="all">Tất cả tuyến đường</option>
-          <option value="Sài Gòn - Đà Lạt">Sài Gòn - Đà Lạt</option>
-          <option value="Đà Lạt - Sài Gòn">Đà Lạt - Sài Gòn</option>
-          <option value="Sài Gòn - Nha Trang">Sài Gòn - Nha Trang</option>
+          {routes.map((route, index) => (
+            <option key={index} value={`${route.origin} - ${route.destination}`}>
+              {route.origin} - {route.destination}
+            </option>
+          ))}
         </select>
         <ChevronDownIcon size={16} className="trips-filter__select-icon" />
       </div>

@@ -13,6 +13,9 @@ import jakarta.validation.constraints.Min;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BusRequestDTO {
+    @NotBlank(message = "Số xe không được để trống")
+    private String busNumber;
+
     @NotBlank(message = "Biển số xe không được để trống")
     private String licensePlate;
     

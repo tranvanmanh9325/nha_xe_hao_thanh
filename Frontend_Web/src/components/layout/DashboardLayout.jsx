@@ -5,12 +5,13 @@ import '../../styles/layout.css';
 
 /* Map pathname to Vietnamese page title for the top nav */
 const pageTitles = {
-  '/': 'Tổng quan',
-  '/trips': 'Quản lý chuyến xe',
-  '/seat-map': 'Sơ đồ ghế',
-  '/tickets': 'Quản lý vé',
-  '/revenue': 'Thống kê doanh thu',
-  '/settings': 'Cài đặt',
+  '/admin': 'Tổng quan',
+  '/admin/routes': 'Quản lý tuyến đường',
+  '/admin/trips': 'Quản lý chuyến xe',
+  '/admin/buses': 'Quản lý xe',
+  '/admin/tickets': 'Quản lý vé',
+  '/admin/revenue': 'Thống kê doanh thu',
+  '/admin/settings': 'Cài đặt',
 };
 
 const DashboardLayout = () => {

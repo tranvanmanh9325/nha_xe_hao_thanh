@@ -8,6 +8,7 @@ import EditBusModal from '../components/EditBusModal';
 import { authFetch } from '../utils/authService';
 import { useRef } from 'react';
 import '../components/seat-map/SeatMap.css';
+import { toast } from 'react-toastify';
 
 const BusDetail = () => {
   const { busId } = useParams();
@@ -86,7 +87,7 @@ const BusDetail = () => {
   if (error || !busInfo || !currentConfig) {
     return (
       <div style={{ padding: 'var(--space-6)' }}>
-        <button onClick={() => navigate('/buses')} className="btn" style={{ marginBottom: 'var(--space-4)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <button onClick={() => navigate('/admin/buses')} className="btn" style={{ marginBottom: 'var(--space-4)', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <ChevronLeftIcon size={20} /> Quay lại danh sách xe
         </button>
         <div>{error || 'Không tìm thấy thông tin xe hoặc dữ liệu sơ đồ ghế.'}</div>
@@ -100,7 +101,7 @@ const BusDetail = () => {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
           <button 
-            onClick={() => navigate('/buses')} 
+            onClick={() => navigate('/admin/buses')} 
             style={{ 
               background: 'none', border: 'none', cursor: 'pointer', 
               display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -207,6 +208,10 @@ const BusDetail = () => {
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed var(--neutral-200)', paddingBottom: '8px' }}>
+              <span style={{ color: 'var(--neutral-500)' }}>Số xe nội bộ:</span>
+              <span style={{ fontWeight: 'var(--font-weight-bold)', color: 'var(--brand-600)' }}>{busInfo.busNumber || 'Chưa cập nhật'}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed var(--neutral-200)', paddingBottom: '8px' }}>
               <span style={{ color: 'var(--neutral-500)' }}>Biển số:</span>
               <span style={{ fontWeight: 'var(--font-weight-bold)', color: 'var(--neutral-900)' }}>{busInfo.licensePlate}</span>
             </div>
@@ -256,6 +261,7 @@ const BusDetail = () => {
               onSaveSuccess={(updatedBus) => {
                 setBusInfo(updatedBus);
                 setIsBuilderMode(false);
+                toast.success('Lưu sơ đồ ghế thành công!');
               }}
               onSavingChange={(status) => setIsSavingBuilder(status)}
             />

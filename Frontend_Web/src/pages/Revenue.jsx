@@ -25,9 +25,8 @@ const revenueData = [
 
 // Mock Data for Doughnut Chart
 const routeData = [
-  { name: 'Sài Gòn - Đà Lạt', value: 45 },
-  { name: 'Nha Trang - Sài Gòn', value: 30 },
-  { name: 'Sài Gòn - Vũng Tàu', value: 15 },
+  { name: 'Hà Nội - Nghệ An', value: 55 },
+  { name: 'Nghệ An - Hà Nội', value: 35 },
   { name: 'Khác', value: 10 },
 ];
 

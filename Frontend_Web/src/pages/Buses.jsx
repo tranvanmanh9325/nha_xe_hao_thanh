@@ -208,7 +208,23 @@ const Buses = () => {
               {/* Content Section */}
               <div style={{ padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', flex: 1 }}>
                 <div style={{ marginBottom: 'var(--space-4)' }}>
-                  <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: '600', color: 'var(--primary-color)' }}>{bus.licensePlate}</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                    <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: '600', color: 'var(--primary-color)', margin: 0 }}>{bus.licensePlate}</h3>
+                    {bus.busNumber && (
+                      <span style={{ 
+                        padding: '2px 8px', 
+                        backgroundColor: 'var(--brand-100)', 
+                        color: 'var(--brand-700)', 
+                        borderRadius: 'var(--radius-sm)', 
+                        fontSize: 'var(--text-xs)', 
+                        fontWeight: '700',
+                        border: '1px solid var(--brand-200)',
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                      }}>
+                        Xe: {bus.busNumber}
+                      </span>
+                    )}
+                  </div>
                   <div style={{ fontSize: 'var(--text-sm)', color: 'var(--neutral-500)', marginTop: '4px', lineHeight: '1.5' }}>
                     <span>
                       {bus.busType === 'LIMOUSINE_34' ? 'Limousine 34 Phòng' : 
