@@ -3,7 +3,8 @@ import TicketsToolbar from '../components/tickets/TicketsToolbar';
 import TicketsFilter from '../components/tickets/TicketsFilter';
 import TicketsTable from '../components/tickets/TicketsTable';
 import TicketDetailsModal from '../components/tickets/TicketDetailsModal';
-import { authFetch } from '../utils/authService';
+import ConfirmModal from '../components/ui/ConfirmModal';
+import { authFetch, API_BASE_URL } from '../utils/authService';
 import '../styles/tickets.css';
 
 const Tickets = () => {
@@ -17,13 +18,15 @@ const Tickets = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [ticketToCancel, setTicketToCancel] = useState(null);
   
   const itemsPerPage = 5;
 
   // Fetch data from API
   const fetchTickets = async () => {
     try {
-        const response = await authFetch('http://localhost:8080/api/v1/tickets');
+        const response = await authFetch(`${API_BASE_URL}/api/v1/tickets`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -175,25 +178,32 @@ const Tickets = () => {
     setIsModalOpen(true);
   };
 
-  const handleCancelTicket = async (ticket) => {
-    if (window.confirm('Bạn có chắc chắn muốn hủy vé này không?')) {
-      try {
-        const response = await authFetch(`http://localhost:8080/api/v1/tickets/${ticket.originalId}/cancel`, {
-          method: 'PUT'
-        });
-        
-        if (response.ok) {
-          setTicketsList(prev => prev.map(t => 
-            t.originalId === ticket.originalId ? { ...t, status: 'cancelled' } : t
-          ));
-        } else {
-          const errorData = await response.json();
-          alert(`Lỗi: ${errorData.error || 'Không thể hủy vé'}`);
-        }
-      } catch (err) {
-        console.error("Error cancelling ticket:", err);
-        alert("Lỗi kết nối đến server");
+  const handleCancelTicket = (ticket) => {
+    setTicketToCancel(ticket);
+    setIsConfirmOpen(true);
+  };
+
+  const executeCancelTicket = async () => {
+    if (!ticketToCancel) return;
+    try {
+      const response = await authFetch(`${API_BASE_URL}/api/v1/tickets/${ticketToCancel.originalId}/cancel`, {
+        method: 'PUT'
+      });
+      
+      if (response.ok) {
+        setTicketsList(prev => prev.map(t => 
+          t.originalId === ticketToCancel.originalId ? { ...t, status: 'cancelled' } : t
+        ));
+      } else {
+        const errorData = await response.json();
+        alert(`Lỗi: ${errorData.error || 'Không thể hủy vé'}`);
       }
+    } catch (err) {
+      console.error("Error cancelling ticket:", err);
+      alert("Lỗi kết nối đến server");
+    } finally {
+      setIsConfirmOpen(false);
+      setTicketToCancel(null);
     }
   };
 
@@ -250,6 +260,20 @@ const Tickets = () => {
         onClose={() => setIsModalOpen(false)}
         ticket={selectedTicket}
         onUpdateSuccess={handleUpdateSuccess}
+      />
+
+      <ConfirmModal 
+        isOpen={isConfirmOpen}
+        onClose={() => {
+          setIsConfirmOpen(false);
+          setTicketToCancel(null);
+        }}
+        onConfirm={executeCancelTicket}
+        title="Xác nhận hủy vé"
+        message={`Bạn có chắc chắn muốn hủy vé ${ticketToCancel?.id} của khách hàng ${ticketToCancel?.customerName} không?`}
+        confirmText="Hủy vé"
+        cancelText="Đóng"
+        type="danger"
       />
     </div>
   );

@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 /**
  * Core fetch wrapper that auto-attaches JWT token from localStorage.
@@ -58,3 +58,18 @@ export const logout = () => {
 export const isAuthenticated = () => {
   return !!localStorage.getItem('accessToken');
 };
+
+export const changePassword = async (oldPassword, newPassword) => {
+  const response = await authFetch(`${API_BASE_URL}/api/v1/auth/change-password`, {
+    method: 'PUT',
+    body: JSON.stringify({ oldPassword, newPassword }),
+  });
+
+  const data = await response.json();
+  if (!response.ok || !data.success) {
+    throw new Error(data.message || 'Không thể đổi mật khẩu');
+  }
+  
+  return data;
+};
+

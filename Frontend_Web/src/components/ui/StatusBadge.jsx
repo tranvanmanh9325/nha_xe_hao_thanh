@@ -30,6 +30,7 @@ const normalizeStatus = (status) => {
   if (s === 'scheduled') return 'upcoming';
   if (s === 'in_progress' || s === 'active') return 'running';
   if (s === 'canceled') return 'cancelled';
+  if (s === 'pending') return 'unpaid';
   return s;
 };
 

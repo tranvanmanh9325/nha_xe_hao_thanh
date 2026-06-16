@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
+import { fetchSettings, updateSettings } from '../utils/settingsService';
+import { changePassword } from '../utils/authService';
 import '../styles/settings.css';
 
 // --- Custom SVG Icons ---
@@ -27,6 +30,114 @@ const ConfigIcon = () => (
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('info');
+
+  // Info State
+  const [info, setInfo] = useState({
+    companyName: '',
+    hotline: '',
+    address: '',
+    email: ''
+  });
+
+  // Security State
+  const [security, setSecurity] = useState({
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+
+  // Config State
+  const [config, setConfig] = useState({
+    notifyNewTicket: false,
+    autoCancelUnpaid: false
+  });
+
+  // Fetch data on mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const data = await fetchSettings();
+        if (data) {
+          setInfo({
+            companyName: data.companyName || '',
+            hotline: data.hotline || '',
+            address: data.address || '',
+            email: data.email || ''
+          });
+          setConfig({
+            notifyNewTicket: data.notifyNewTicket || false,
+            autoCancelUnpaid: data.autoCancelUnpaid || false
+          });
+        }
+      } catch (error) {
+        toast.error(error.message || 'Lỗi khi tải cài đặt hệ thống');
+      }
+    };
+    loadData();
+  }, []);
+
+  const handleInfoChange = (e) => {
+    const { id, value } = e.target;
+    setInfo(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleSecurityChange = (e) => {
+    const { id, value } = e.target;
+    setSecurity(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleConfigChange = (e) => {
+    const { id, checked } = e.target;
+    setConfig(prev => ({ ...prev, [id]: checked }));
+  };
+
+  const handleSaveInfo = async (e) => {
+    e.preventDefault();
+    if (!info.companyName || !info.hotline || !info.address || !info.email) {
+      toast.error('Vui lòng điền đầy đủ thông tin nhà xe.');
+      return;
+    }
+    
+    try {
+      await updateSettings({ ...info, ...config });
+      toast.success('Đã lưu thông tin nhà xe thành công!');
+    } catch (error) {
+      toast.error(error.message || 'Lỗi khi lưu thông tin');
+    }
+  };
+
+  const handleSaveSecurity = async (e) => {
+    e.preventDefault();
+    if (!security.oldPassword || !security.newPassword || !security.confirmPassword) {
+      toast.error('Vui lòng điền đầy đủ thông tin mật khẩu.');
+      return;
+    }
+    if (security.newPassword !== security.confirmPassword) {
+      toast.error('Mật khẩu mới và xác nhận mật khẩu không khớp.');
+      return;
+    }
+    if (security.newPassword.length < 6) {
+      toast.error('Mật khẩu mới phải có ít nhất 6 ký tự.');
+      return;
+    }
+    
+    try {
+      await changePassword(security.oldPassword, security.newPassword);
+      toast.success('Đã đổi mật khẩu thành công!');
+      setSecurity({ oldPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (error) {
+      toast.error(error.message || 'Lỗi khi đổi mật khẩu');
+    }
+  };
+
+  const handleSaveConfig = async () => {
+    try {
+      await updateSettings({ ...info, ...config });
+      toast.success('Đã lưu cấu hình hệ thống thành công!');
+    } catch (error) {
+      toast.error(error.message || 'Lỗi khi lưu cấu hình');
+    }
+  };
 
   return (
     <div className="settings-container">
@@ -68,22 +179,46 @@ const Settings = () => {
           {activeTab === 'info' && (
             <div className="tab-pane fade-in">
               <h2 className="settings-panel-title">Thông tin chung</h2>
-              <form onSubmit={(e) => e.preventDefault()}>
+              <form onSubmit={handleSaveInfo}>
                 <div className="settings-form-group">
                   <label htmlFor="companyName">Tên nhà xe</label>
-                  <input type="text" id="companyName" placeholder="Nhập tên nhà xe" defaultValue="Nhà Xe Hào Thanh" />
+                  <input 
+                    type="text" 
+                    id="companyName" 
+                    placeholder="Nhập tên nhà xe" 
+                    value={info.companyName} 
+                    onChange={handleInfoChange} 
+                  />
                 </div>
                 <div className="settings-form-group">
                   <label htmlFor="hotline">Hotline liên hệ</label>
-                  <input type="text" id="hotline" placeholder="Nhập số điện thoại hotline" defaultValue="1900 1234" />
+                  <input 
+                    type="text" 
+                    id="hotline" 
+                    placeholder="Nhập số điện thoại hotline" 
+                    value={info.hotline} 
+                    onChange={handleInfoChange} 
+                  />
                 </div>
                 <div className="settings-form-group">
                   <label htmlFor="address">Địa chỉ văn phòng</label>
-                  <input type="text" id="address" placeholder="Nhập địa chỉ văn phòng chính" defaultValue="123 Đường ABC, Quận X, TP.HCM" />
+                  <input 
+                    type="text" 
+                    id="address" 
+                    placeholder="Nhập địa chỉ văn phòng chính" 
+                    value={info.address} 
+                    onChange={handleInfoChange} 
+                  />
                 </div>
                 <div className="settings-form-group">
                   <label htmlFor="email">Email liên hệ</label>
-                  <input type="email" id="email" placeholder="Nhập email" defaultValue="contact@haothanh.com" />
+                  <input 
+                    type="email" 
+                    id="email" 
+                    placeholder="Nhập email" 
+                    value={info.email} 
+                    onChange={handleInfoChange} 
+                  />
                 </div>
                 
                 <div className="settings-form-actions">
@@ -97,18 +232,36 @@ const Settings = () => {
           {activeTab === 'security' && (
             <div className="tab-pane fade-in">
               <h2 className="settings-panel-title">Đổi mật khẩu</h2>
-              <form onSubmit={(e) => e.preventDefault()}>
+              <form onSubmit={handleSaveSecurity}>
                 <div className="settings-form-group">
                   <label htmlFor="oldPassword">Mật khẩu cũ</label>
-                  <input type="password" id="oldPassword" placeholder="Nhập mật khẩu hiện tại" />
+                  <input 
+                    type="password" 
+                    id="oldPassword" 
+                    placeholder="Nhập mật khẩu hiện tại" 
+                    value={security.oldPassword} 
+                    onChange={handleSecurityChange} 
+                  />
                 </div>
                 <div className="settings-form-group">
                   <label htmlFor="newPassword">Mật khẩu mới</label>
-                  <input type="password" id="newPassword" placeholder="Nhập mật khẩu mới" />
+                  <input 
+                    type="password" 
+                    id="newPassword" 
+                    placeholder="Nhập mật khẩu mới" 
+                    value={security.newPassword} 
+                    onChange={handleSecurityChange} 
+                  />
                 </div>
                 <div className="settings-form-group">
                   <label htmlFor="confirmPassword">Xác nhận mật khẩu mới</label>
-                  <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu mới" />
+                  <input 
+                    type="password" 
+                    id="confirmPassword" 
+                    placeholder="Nhập lại mật khẩu mới" 
+                    value={security.confirmPassword} 
+                    onChange={handleSecurityChange} 
+                  />
                 </div>
                 
                 <div className="settings-form-actions">
@@ -130,7 +283,12 @@ const Settings = () => {
                     <p>Hệ thống sẽ gửi thông báo âm thanh và popup khi có khách đặt vé trực tuyến.</p>
                   </div>
                   <label className="toggle-switch">
-                    <input type="checkbox" defaultChecked />
+                    <input 
+                      type="checkbox" 
+                      id="notifyNewTicket" 
+                      checked={config.notifyNewTicket} 
+                      onChange={handleConfigChange} 
+                    />
                     <span className="toggle-slider"></span>
                   </label>
                 </div>
@@ -141,14 +299,19 @@ const Settings = () => {
                     <p>Hủy các vé đã đặt nhưng chưa được thanh toán sau 24 giờ.</p>
                   </div>
                   <label className="toggle-switch">
-                    <input type="checkbox" defaultChecked />
+                    <input 
+                      type="checkbox" 
+                      id="autoCancelUnpaid" 
+                      checked={config.autoCancelUnpaid} 
+                      onChange={handleConfigChange} 
+                    />
                     <span className="toggle-slider"></span>
                   </label>
                 </div>
               </div>
 
               <div className="settings-form-actions">
-                <button type="button" className="btn-save">Lưu cấu hình</button>
+                <button type="button" className="btn-save" onClick={handleSaveConfig}>Lưu cấu hình</button>
               </div>
             </div>
           )}
@@ -160,3 +323,4 @@ const Settings = () => {
 };
 
 export default Settings;
+

@@ -39,9 +39,16 @@ const DatePicker = ({ value, onChange, style }) => {
   const toggleOpen = () => {
     if (!isOpen) {
       const rect = containerRef.current.getBoundingClientRect();
+      let leftPos = rect.left + window.scrollX;
+      
+      const popupWidth = 280; 
+      if (rect.left + popupWidth > window.innerWidth) {
+        leftPos = rect.right + window.scrollX - popupWidth;
+      }
+
       setDropdownPos({
         top: rect.bottom + window.scrollY + 4,
-        left: rect.left + window.scrollX,
+        left: leftPos,
         width: rect.width
       });
       setCurrentMonth(value && isValid(parseISO(value)) ? parseISO(value) : new Date());

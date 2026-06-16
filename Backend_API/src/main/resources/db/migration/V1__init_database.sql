@@ -85,6 +85,16 @@ CREATE TABLE booking_seats (
     CONSTRAINT fk_booking_seat_booking FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
 );
 
+CREATE TABLE system_settings (
+    id BIGSERIAL PRIMARY KEY,
+    company_name VARCHAR(255) NOT NULL,
+    hotline VARCHAR(50) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    notify_new_ticket BOOLEAN DEFAULT TRUE,
+    auto_cancel_unpaid BOOLEAN DEFAULT TRUE,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
 
 -- Performance indexes for high-traffic query patterns
 CREATE INDEX IF NOT EXISTS idx_trips_route ON trips(route);
@@ -95,6 +105,7 @@ CREATE INDEX IF NOT EXISTS idx_trips_bus_id ON trips(bus_id);
 CREATE INDEX IF NOT EXISTS idx_tickets_trip_id ON tickets(trip_id);
 CREATE INDEX IF NOT EXISTS idx_tickets_user_id ON tickets(user_id);
 CREATE INDEX IF NOT EXISTS idx_tickets_payment_status ON tickets(payment_status);
+CREATE INDEX IF NOT EXISTS idx_tickets_created_at_date ON tickets (CAST(created_at AS DATE));
 
 CREATE INDEX IF NOT EXISTS idx_bookings_trip_id ON bookings(trip_id);
 CREATE INDEX IF NOT EXISTS idx_booking_seats_booking_id ON booking_seats(booking_id);
@@ -163,33 +174,33 @@ VALUES
 
 -- 5. Insert mock tickets (Vé cá nhân lẻ)
 -- Lưu ý: Các mã ghế phải map chính xác với layout của xe tương ứng chuyến đi.
-INSERT INTO tickets (trip_id, user_id, ticket_code, seat_code, total_price, payment_status) 
+INSERT INTO tickets (trip_id, user_id, ticket_code, seat_code, total_price, payment_status, created_at) 
 VALUES 
 -- Vé cho Trip 1 (Xe 01: Limousine 34 Phòng) - Khách: Nguyễn Văn Khách
-((SELECT id FROM trips WHERE driver = 'Lê Hữu Đạt' LIMIT 1), (SELECT id FROM users WHERE phone = '0911111111'), 'T-10024', 'A-1', 250000.00, 'PAID'),
-((SELECT id FROM trips WHERE driver = 'Lê Hữu Đạt' LIMIT 1), (SELECT id FROM users WHERE phone = '0911111111'), 'T-10025', 'C-1', 250000.00, 'PAID'),
+((SELECT id FROM trips WHERE driver = 'Lê Hữu Đạt' LIMIT 1), (SELECT id FROM users WHERE phone = '0911111111'), 'T-10024', 'A-1', 250000.00, 'PAID', '2026-06-14 10:00:00+07'),
+((SELECT id FROM trips WHERE driver = 'Lê Hữu Đạt' LIMIT 1), (SELECT id FROM users WHERE phone = '0911111111'), 'T-10025', 'C-1', 250000.00, 'PAID', '2026-06-14 10:00:00+07'),
 
 -- Vé cho Trip 2 (Xe 01: Limousine 34 Phòng) - Khách: Trần Thị Diệu
-((SELECT id FROM trips WHERE driver = 'Trần Văn Mạnh' LIMIT 1), (SELECT id FROM users WHERE phone = '0922222222'), 'T-10026', 'A-2', 250000.00, 'PENDING'),
-((SELECT id FROM trips WHERE driver = 'Trần Văn Mạnh' LIMIT 1), (SELECT id FROM users WHERE phone = '0922222222'), 'T-10027', 'E-2', 250000.00, 'CANCELLED'),
+((SELECT id FROM trips WHERE driver = 'Trần Văn Mạnh' LIMIT 1), (SELECT id FROM users WHERE phone = '0922222222'), 'T-10026', 'A-2', 250000.00, 'PENDING', '2026-06-15 15:30:00+07'),
+((SELECT id FROM trips WHERE driver = 'Trần Văn Mạnh' LIMIT 1), (SELECT id FROM users WHERE phone = '0922222222'), 'T-10027', 'E-2', 250000.00, 'CANCELLED', '2026-06-15 15:30:00+07'),
 
 -- Vé cho Trip 3 (Xe 02: Mobihome 40 Phòng) - Khách: Lê Hoàng Nam
-((SELECT id FROM trips WHERE driver = 'Hoàng Thái Hưng' LIMIT 1), (SELECT id FROM users WHERE phone = '0933333333'), 'T-10028', 'D-4', 250000.00, 'PAID'),
-((SELECT id FROM trips WHERE driver = 'Hoàng Thái Hưng' LIMIT 1), (SELECT id FROM users WHERE phone = '0933333333'), 'T-10029', 'F-4', 250000.00, 'PAID'),
-((SELECT id FROM trips WHERE driver = 'Hoàng Thái Hưng' LIMIT 1), (SELECT id FROM users WHERE phone = '0933333333'), 'T-10030', 'H-4', 250000.00, 'PAID'),
+((SELECT id FROM trips WHERE driver = 'Hoàng Thái Hưng' LIMIT 1), (SELECT id FROM users WHERE phone = '0933333333'), 'T-10028', 'D-4', 250000.00, 'PAID', '2026-06-15 09:00:00+07'),
+((SELECT id FROM trips WHERE driver = 'Hoàng Thái Hưng' LIMIT 1), (SELECT id FROM users WHERE phone = '0933333333'), 'T-10029', 'F-4', 250000.00, 'PAID', '2026-06-15 09:00:00+07'),
+((SELECT id FROM trips WHERE driver = 'Hoàng Thái Hưng' LIMIT 1), (SELECT id FROM users WHERE phone = '0933333333'), 'T-10030', 'H-4', 250000.00, 'PAID', '2026-06-15 09:00:00+07'),
 
 -- Vé cho Trip 4 (Xe 02: Mobihome 40 Phòng) - Khách: Phạm Quang Khải
-((SELECT id FROM trips WHERE driver = 'Phạm Minh Đức' LIMIT 1), (SELECT id FROM users WHERE phone = '0944444444'), 'T-10031', 'C-7', 250000.00, 'PENDING'),
+((SELECT id FROM trips WHERE driver = 'Phạm Minh Đức' LIMIT 1), (SELECT id FROM users WHERE phone = '0944444444'), 'T-10031', 'C-7', 250000.00, 'PENDING', '2026-06-16 08:00:00+07'),
 
 -- Vé cho Trip 6 (Xe 03: Town 24 Ghế)
-((SELECT id FROM trips WHERE driver = 'Đinh Tiến Vũ' LIMIT 1), (SELECT id FROM users WHERE phone = '0911111111'), 'T-10032', 'A-4', 250000.00, 'PAID'),
-((SELECT id FROM trips WHERE driver = 'Đinh Tiến Vũ' LIMIT 1), (SELECT id FROM users WHERE phone = '0922222222'), 'T-10033', 'C-5', 250000.00, 'PAID');
+((SELECT id FROM trips WHERE driver = 'Đinh Tiến Vũ' LIMIT 1), (SELECT id FROM users WHERE phone = '0911111111'), 'T-10032', 'A-4', 250000.00, 'PAID', '2026-06-14 09:15:00+07'),
+((SELECT id FROM trips WHERE driver = 'Đinh Tiến Vũ' LIMIT 1), (SELECT id FROM users WHERE phone = '0922222222'), 'T-10033', 'C-5', 250000.00, 'PAID', '2026-06-14 14:20:00+07');
 
 -- 6. Insert mock bookings (Vé đoàn)
 -- Booking cho Trip 2 (Xe 01: Limousine 34 Phòng)
-INSERT INTO bookings (trip_id, customer_name, customer_phone, payment_status, total_amount)
+INSERT INTO bookings (trip_id, customer_name, customer_phone, payment_status, total_amount, created_at)
 VALUES
-((SELECT id FROM trips WHERE driver = 'Trần Văn Mạnh' LIMIT 1), 'Đoàn Khách Du Lịch', '0987654321', 'PAID', 250000.00 * 10);
+((SELECT id FROM trips WHERE driver = 'Trần Văn Mạnh' LIMIT 1), 'Đoàn Khách Du Lịch', '0987654321', 'PAID', 250000.00 * 10, '2026-06-15 10:00:00+07');
 
 INSERT INTO booking_seats (booking_id, seat_number)
 VALUES
@@ -203,3 +214,7 @@ VALUES
 ((SELECT id FROM bookings WHERE customer_name = 'Đoàn Khách Du Lịch' LIMIT 1), 'H-2'),
 ((SELECT id FROM bookings WHERE customer_name = 'Đoàn Khách Du Lịch' LIMIT 1), 'H-3'),
 ((SELECT id FROM bookings WHERE customer_name = 'Đoàn Khách Du Lịch' LIMIT 1), 'A-3');
+
+-- 7. Insert mock system settings
+INSERT INTO system_settings (company_name, hotline, address, email, notify_new_ticket, auto_cancel_unpaid)
+VALUES ('Nhà Xe Hào Thanh', '1900 1234', '123 Đường ABC, Quận X, TP.HCM', 'contact@haothanh.com', true, true);
