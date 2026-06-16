@@ -29,5 +29,10 @@ public class TicketResponseDTO {
     @JsonSerialize(using = OffsetDateTimeSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private OffsetDateTime departureTime;
+    
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private OffsetDateTime createdAt;
+    
     private Long tripId;
 }

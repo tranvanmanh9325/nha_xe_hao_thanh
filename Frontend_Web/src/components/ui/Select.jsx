@@ -119,7 +119,8 @@ const Select = ({ value, onChange, options, style }) => {
                 backgroundColor: option.value === value ? 'var(--brand-50)' : 'transparent',
                 cursor: 'pointer',
                 transition: 'background-color var(--transition-fast)',
-                userSelect: 'none'
+                userSelect: 'none',
+                whiteSpace: 'nowrap'
               }}
               onMouseEnter={(e) => {
                 if (option.value !== value) {

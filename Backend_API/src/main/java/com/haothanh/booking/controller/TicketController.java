@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.haothanh.booking.dto.TicketRequestDTO;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -24,6 +25,7 @@ public class TicketController {
     private final TicketService ticketService;
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<TicketResponseDTO>> getAllTickets() {
         return ResponseEntity.ok(ticketService.getAllTickets());
     }
@@ -43,4 +45,14 @@ public class TicketController {
         }
     }
 
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateTicket(@PathVariable Long id, @Valid @RequestBody com.haothanh.booking.dto.TicketUpdateRequestDTO request) {
+        try {
+            TicketResponseDTO updatedTicket = ticketService.updateTicket(id, request);
+            return ResponseEntity.ok(updatedTicket);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
+        }
+    }
 }

@@ -59,6 +59,7 @@ public class TicketServiceImpl implements TicketService {
                 .customerPhone(ticket.getUser().getPhone())
                 .route(ticket.getTrip().getRoute())
                 .departureTime(ticket.getTrip().getDepartureTime())
+                .createdAt(ticket.getCreatedAt())
                 .tripId(ticket.getTrip().getId())
                 .build();
     }
@@ -171,5 +172,67 @@ public class TicketServiceImpl implements TicketService {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Bị gián đoạn khi đang giữ chỗ.");
         }
+    }
+
+    @Override
+    @Transactional
+    public TicketResponseDTO updateTicket(Long ticketId, com.haothanh.booking.dto.TicketUpdateRequestDTO request) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy vé"));
+
+        String newStatus = request.getPaymentStatus();
+        if ("paid".equalsIgnoreCase(newStatus)) {
+            newStatus = "PAID";
+        } else if ("unpaid".equalsIgnoreCase(newStatus) || "pending".equalsIgnoreCase(newStatus)) {
+            newStatus = "PENDING";
+        } else if ("cancelled".equalsIgnoreCase(newStatus)) {
+            newStatus = "CANCELLED";
+        }
+
+        String currentSeat = ticket.getSeatCode();
+        String newSeat = request.getNewSeatCode();
+
+        if (newSeat != null && !newSeat.equals(currentSeat)) {
+            // Need to change seat
+            String lockKey = "lock:seat:" + ticket.getTrip().getId() + ":" + newSeat;
+            RLock lock = redissonClient.getLock(lockKey);
+
+            try {
+                boolean isLocked = lock.tryLock(3, 10, TimeUnit.SECONDS);
+                if (!isLocked) {
+                    throw new RuntimeException("Ghế mới đang được xử lý bởi người khác, vui lòng thử lại.");
+                }
+
+                try {
+                    List<String> bookedSeats = ticketRepository.findBookedSeatsByTripId(
+                            ticket.getTrip().getId(), 
+                            java.util.Arrays.asList("PAID", "PENDING")
+                    );
+                    
+                    if (bookedSeats.contains(newSeat)) {
+                        throw new RuntimeException("Ghế " + newSeat + " đã có người đặt.");
+                    }
+
+                    ticket.setSeatCode(newSeat);
+                } finally {
+                    if (lock.isHeldByCurrentThread()) {
+                        lock.unlock();
+                    }
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Bị gián đoạn khi đang giữ ghế mới.");
+            }
+        }
+
+        ticket.setPaymentStatus(newStatus);
+        ticketRepository.save(ticket);
+
+        var cache = cacheManager.getCache("trip-seat-map");
+        if (cache != null) {
+            cache.evict(ticket.getTrip().getId());
+        }
+
+        return mapToDTO(ticket);
     }
 }

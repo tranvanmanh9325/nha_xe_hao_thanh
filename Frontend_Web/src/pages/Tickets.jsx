@@ -13,6 +13,7 @@ const Tickets = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [tripFilter, setTripFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,10 +21,8 @@ const Tickets = () => {
   const itemsPerPage = 5;
 
   // Fetch data from API
-  useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        setIsLoading(true);
+  const fetchTickets = async () => {
+    try {
         const response = await authFetch('http://localhost:8080/api/v1/tickets');
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -38,13 +37,24 @@ const Tickets = () => {
             hour: '2-digit', minute: '2-digit'
           });
 
+          let formattedBookingDate = 'Chưa xác định';
+          if (t.createdAt) {
+            const createdDateObj = new Date(t.createdAt);
+            formattedBookingDate = createdDateObj.toLocaleString('vi-VN', {
+              day: '2-digit', month: '2-digit', year: 'numeric',
+              hour: '2-digit', minute: '2-digit'
+            });
+          }
+
           return {
             id: t.ticketCode,
             customerName: t.customerName,
             customerPhone: t.customerPhone,
             route: t.route,
             departureTime: formattedDate,
-            tripCode: `TRIP-${t.tripId}`,
+            bookingDate: formattedBookingDate,
+            rawDate: t.createdAt,
+            tripCode: t.tripId.toString(),
             seat: t.seatCode,
             price: t.totalPrice,
             status: t.paymentStatus.toLowerCase(),
@@ -62,8 +72,28 @@ const Tickets = () => {
       }
     };
 
+  useEffect(() => {
+    // eslint-disable-next-line
     fetchTickets();
   }, []);
+
+  const handleUpdateSuccess = () => {
+    fetchTickets();
+  };
+
+
+  // Compute unique trips for filter dropdown
+  const uniqueTrips = useMemo(() => {
+    const trips = new Set();
+    const tripOptions = [];
+    ticketsList.forEach(ticket => {
+      if (!trips.has(ticket.tripCode)) {
+        trips.add(ticket.tripCode);
+        tripOptions.push({ value: ticket.tripCode, label: `${ticket.tripCode} (${ticket.route})` });
+      }
+    });
+    return tripOptions;
+  }, [ticketsList]);
 
   // Filter logic
   const filteredTickets = useMemo(() => {
@@ -79,11 +109,39 @@ const Tickets = () => {
       const matchesTrip = tripFilter === 'all' || ticket.tripCode === tripFilter;
       
       // Status filter
-      const matchesStatus = statusFilter === 'all' || ticket.status === statusFilter;
+      let statusToMatch = statusFilter;
+      // Map 'pending' from db to 'unpaid' in filter if needed, or update filter options
+      if (statusFilter === 'unpaid') statusToMatch = 'pending';
+      const matchesStatus = statusFilter === 'all' || ticket.status === statusToMatch;
 
-      return matchesSearch && matchesTrip && matchesStatus;
+      // Date filter
+      let matchesDate = true;
+      if (dateFilter !== 'all' && ticket.rawDate) {
+        const ticketDate = new Date(ticket.rawDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Start of today
+        
+        const ticketDay = new Date(ticketDate);
+        ticketDay.setHours(0, 0, 0, 0);
+
+        if (dateFilter === 'today') {
+          matchesDate = ticketDay.getTime() === today.getTime();
+        } else if (dateFilter === 'yesterday') {
+          const yesterday = new Date(today);
+          yesterday.setDate(yesterday.getDate() - 1);
+          matchesDate = ticketDay.getTime() === yesterday.getTime();
+        } else if (dateFilter === 'this_week') {
+          const startOfWeek = new Date(today);
+          startOfWeek.setDate(today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1)); // Monday
+          matchesDate = ticketDay >= startOfWeek;
+        } else if (dateFilter === 'this_month') {
+          matchesDate = ticketDay.getMonth() === today.getMonth() && ticketDay.getFullYear() === today.getFullYear();
+        }
+      }
+
+      return matchesSearch && matchesTrip && matchesStatus && matchesDate;
     });
-  }, [searchTerm, tripFilter, statusFilter, ticketsList]);
+  }, [searchTerm, tripFilter, statusFilter, dateFilter, ticketsList]);
 
   // Pagination logic
   const totalPages = Math.ceil(filteredTickets.length / itemsPerPage) || 1;
@@ -104,6 +162,11 @@ const Tickets = () => {
 
   const handleStatusFilterChange = (val) => {
     setStatusFilter(val);
+    setCurrentPage(1);
+  };
+
+  const handleDateFilterChange = (val) => {
+    setDateFilter(val);
     setCurrentPage(1);
   };
 
@@ -167,6 +230,9 @@ const Tickets = () => {
         onTripFilterChange={handleTripFilterChange}
         statusFilter={statusFilter}
         onStatusFilterChange={handleStatusFilterChange}
+        dateFilter={dateFilter}
+        onDateFilterChange={handleDateFilterChange}
+        uniqueTrips={uniqueTrips}
       />
 
       <TicketsTable 
@@ -179,9 +245,11 @@ const Tickets = () => {
       />
 
       <TicketDetailsModal 
+        key={isModalOpen ? 'open' : 'closed'}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         ticket={selectedTicket}
+        onUpdateSuccess={handleUpdateSuccess}
       />
     </div>
   );

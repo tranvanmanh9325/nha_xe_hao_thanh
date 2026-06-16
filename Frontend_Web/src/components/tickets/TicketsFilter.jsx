@@ -1,4 +1,5 @@
-import { SearchIcon, ChevronDownIcon } from '../../assets/icons';
+import { SearchIcon } from '../../assets/icons';
+import Select from '../ui/Select';
 
 const TicketsFilter = ({ 
   searchTerm, 
@@ -6,8 +7,31 @@ const TicketsFilter = ({
   tripFilter, 
   onTripFilterChange,
   statusFilter,
-  onStatusFilterChange
+  onStatusFilterChange,
+  dateFilter,
+  onDateFilterChange,
+  uniqueTrips = []
 }) => {
+  const tripOptions = [
+    { value: 'all', label: 'Tất cả chuyến xe' },
+    ...uniqueTrips
+  ];
+
+  const statusOptions = [
+    { value: 'all', label: 'Tất cả trạng thái' },
+    { value: 'paid', label: 'Đã thanh toán' },
+    { value: 'unpaid', label: 'Chưa thanh toán' },
+    { value: 'cancelled', label: 'Đã hủy' }
+  ];
+
+  const dateOptions = [
+    { value: 'all', label: 'Tất cả thời gian' },
+    { value: 'today', label: 'Ngày đặt: Hôm nay' },
+    { value: 'yesterday', label: 'Ngày đặt: Hôm qua' },
+    { value: 'this_week', label: 'Ngày đặt: Tuần này' },
+    { value: 'this_month', label: 'Ngày đặt: Tháng này' }
+  ];
+
   return (
     <div className="tickets-filter">
       <div className="tickets-filter__search">
@@ -21,45 +45,26 @@ const TicketsFilter = ({
         />
       </div>
 
-      <div className="tickets-filter__select-wrapper">
-        <select 
-          className="tickets-filter__select"
-          value={tripFilter}
-          onChange={(e) => onTripFilterChange(e.target.value)}
-        >
-          <option value="all">Tất cả chuyến xe</option>
-          <option value="HT-2401">HT-2401 (TP.HCM - Đà Lạt)</option>
-          <option value="HT-2402">HT-2402 (TP.HCM - Nha Trang)</option>
-          <option value="HT-2403">HT-2403 (Đà Lạt - TP.HCM)</option>
-          <option value="HT-2404">HT-2404 (TP.HCM - BMT)</option>
-          <option value="HT-2405">HT-2405 (Nha Trang - TP.HCM)</option>
-        </select>
-        <ChevronDownIcon size={16} className="tickets-filter__select-icon" />
-      </div>
+      <Select 
+        value={tripFilter}
+        onChange={onTripFilterChange}
+        options={tripOptions}
+        style={{ minWidth: '180px' }}
+      />
 
-      <div className="tickets-filter__select-wrapper">
-        <select 
-          className="tickets-filter__select"
-          value={statusFilter}
-          onChange={(e) => onStatusFilterChange(e.target.value)}
-        >
-          <option value="all">Tất cả trạng thái</option>
-          <option value="paid">Đã thanh toán</option>
-          <option value="unpaid">Chưa thanh toán</option>
-          <option value="cancelled">Đã hủy</option>
-        </select>
-        <ChevronDownIcon size={16} className="tickets-filter__select-icon" />
-      </div>
+      <Select 
+        value={statusFilter}
+        onChange={onStatusFilterChange}
+        options={statusOptions}
+        style={{ minWidth: '180px' }}
+      />
 
-      <div className="tickets-filter__select-wrapper">
-        <select className="tickets-filter__select">
-          <option value="today">Ngày đặt: Hôm nay</option>
-          <option value="yesterday">Ngày đặt: Hôm qua</option>
-          <option value="this_week">Ngày đặt: Tuần này</option>
-          <option value="this_month">Ngày đặt: Tháng này</option>
-        </select>
-        <ChevronDownIcon size={16} className="tickets-filter__select-icon" />
-      </div>
+      <Select 
+        value={dateFilter}
+        onChange={onDateFilterChange}
+        options={dateOptions}
+        style={{ minWidth: '180px' }}
+      />
     </div>
   );
 };

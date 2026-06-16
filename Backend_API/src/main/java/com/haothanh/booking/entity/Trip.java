@@ -37,6 +37,9 @@ public class Trip {
     @Column(nullable = false, length = 50)
     private String status;
 
+    @Column(name = "driver", length = 255)
+    private String driver;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;

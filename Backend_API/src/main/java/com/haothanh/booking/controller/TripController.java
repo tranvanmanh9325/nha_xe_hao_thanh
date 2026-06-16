@@ -40,4 +40,16 @@ public class TripController {
     public ResponseEntity<com.haothanh.booking.dto.TripSeatMapResponseDTO> getTripSeatMap(@PathVariable Long id) {
         return ResponseEntity.ok(tripService.getTripSeatMap(id));
     }
+
+    /**
+     * Endpoint to cancel a specific trip.
+     *
+     * @param id The ID of the trip
+     * @return Success message
+     */
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<String> cancelTrip(@PathVariable Long id) {
+        tripService.cancelTrip(id);
+        return ResponseEntity.ok("Chuyến xe đã được hủy thành công");
+    }
 }

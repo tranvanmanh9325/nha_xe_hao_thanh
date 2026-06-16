@@ -1,6 +1,36 @@
-import { SearchIcon, ChevronDownIcon } from '../../assets/icons';
+import { SearchIcon } from '../../assets/icons';
+import Select from '../ui/Select';
 
-const TripsFilter = ({ searchTerm, onSearchChange, routeFilter, onRouteFilterChange, statusFilter, onStatusFilterChange, routes = [] }) => {
+const TripsFilter = ({ 
+  searchTerm, onSearchChange, 
+  routeFilter, onRouteFilterChange, 
+  statusFilter, onStatusFilterChange, 
+  timeFilter, onTimeFilterChange,
+  routes = [] 
+}) => {
+  const routeOptions = [
+    { value: 'all', label: 'Tất cả tuyến đường' },
+    ...routes.map((route) => ({
+      value: `${route.origin} - ${route.destination}`,
+      label: `${route.origin} - ${route.destination}`
+    }))
+  ];
+
+  const statusOptions = [
+    { value: 'all', label: 'Tất cả trạng thái' },
+    { value: 'SCHEDULED', label: 'Sắp chạy' },
+    { value: 'IN_PROGRESS', label: 'Đang chạy' },
+    { value: 'COMPLETED', label: 'Hoàn thành' },
+    { value: 'CANCELLED', label: 'Hủy' }
+  ];
+
+  const timeOptions = [
+    { value: 'all', label: 'Tất cả thời gian' },
+    { value: 'today', label: 'Hôm nay' },
+    { value: 'tomorrow', label: 'Ngày mai' },
+    { value: 'this_week', label: 'Tuần này' }
+  ];
+
   return (
     <div className="trips-filter">
       <div className="trips-filter__search">
@@ -14,45 +44,26 @@ const TripsFilter = ({ searchTerm, onSearchChange, routeFilter, onRouteFilterCha
         />
       </div>
 
-      <div className="trips-filter__select-wrapper">
-        <select 
-          className="trips-filter__select"
-          value={routeFilter}
-          onChange={(e) => onRouteFilterChange(e.target.value)}
-        >
-          <option value="all">Tất cả tuyến đường</option>
-          {routes.map((route, index) => (
-            <option key={index} value={`${route.origin} - ${route.destination}`}>
-              {route.origin} - {route.destination}
-            </option>
-          ))}
-        </select>
-        <ChevronDownIcon size={16} className="trips-filter__select-icon" />
-      </div>
+      <Select 
+        value={routeFilter}
+        onChange={onRouteFilterChange}
+        options={routeOptions}
+        style={{ minWidth: '200px' }}
+      />
 
-      <div className="trips-filter__select-wrapper">
-        <select 
-          className="trips-filter__select"
-          value={statusFilter}
-          onChange={(e) => onStatusFilterChange(e.target.value)}
-        >
-          <option value="all">Tất cả trạng thái</option>
-          <option value="upcoming">Sắp chạy</option>
-          <option value="running">Đang chạy</option>
-          <option value="completed">Hoàn thành</option>
-          <option value="cancelled">Hủy</option>
-        </select>
-        <ChevronDownIcon size={16} className="trips-filter__select-icon" />
-      </div>
+      <Select 
+        value={statusFilter}
+        onChange={onStatusFilterChange}
+        options={statusOptions}
+        style={{ minWidth: '160px' }}
+      />
 
-      <div className="trips-filter__select-wrapper">
-        <select className="trips-filter__select">
-          <option value="today">Hôm nay</option>
-          <option value="tomorrow">Ngày mai</option>
-          <option value="this_week">Tuần này</option>
-        </select>
-        <ChevronDownIcon size={16} className="trips-filter__select-icon" />
-      </div>
+      <Select 
+        value={timeFilter}
+        onChange={onTimeFilterChange}
+        options={timeOptions}
+        style={{ minWidth: '160px' }}
+      />
     </div>
   );
 };

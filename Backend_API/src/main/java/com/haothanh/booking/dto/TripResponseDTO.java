@@ -27,4 +27,6 @@ public class TripResponseDTO {
     private BigDecimal basePrice;
     private String status;
     private String licensePlate;
+    private String busNumber;
+    private String driver;
 }

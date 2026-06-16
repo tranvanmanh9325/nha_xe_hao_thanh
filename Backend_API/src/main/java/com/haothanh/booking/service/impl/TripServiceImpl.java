@@ -3,6 +3,7 @@ package com.haothanh.booking.service.impl;
 import com.haothanh.booking.dto.TripResponseDTO;
 import com.haothanh.booking.dto.TripSeatMapResponseDTO;
 import com.haothanh.booking.entity.Trip;
+import com.haothanh.booking.repository.BookingSeatRepository;
 import com.haothanh.booking.repository.TicketRepository;
 import com.haothanh.booking.repository.TripRepository;
 import com.haothanh.booking.service.TripService;
@@ -20,6 +21,7 @@ public class TripServiceImpl implements TripService {
 
     private final TripRepository tripRepository;
     private final TicketRepository ticketRepository;
+    private final BookingSeatRepository bookingSeatRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -48,6 +50,8 @@ public class TripServiceImpl implements TripService {
                 .status(trip.getStatus())
                 // Safe navigation in case trip.getBus() is somehow null (though DB constraints say nullable=false)
                 .licensePlate(trip.getBus() != null ? trip.getBus().getLicensePlate() : null)
+                .busNumber(trip.getBus() != null ? trip.getBus().getBusNumber() : null)
+                .driver(trip.getDriver())
                 .build();
     }
 
@@ -59,8 +63,12 @@ public class TripServiceImpl implements TripService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy chuyến xe"));
         com.haothanh.booking.entity.Bus bus = trip.getBus();
         
-        List<String> statuses = java.util.Arrays.asList("PAID", "PENDING");
-        List<String> bookedSeats = ticketRepository.findBookedSeatsByTripId(java.util.Objects.requireNonNull(tripId), statuses);
+        List<String> statuses = java.util.Arrays.asList("PAID", "PENDING", "paid", "unpaid");
+        List<String> bookedSeats = new java.util.ArrayList<>();
+        bookedSeats.addAll(ticketRepository.findBookedSeatsByTripId(java.util.Objects.requireNonNull(tripId), statuses));
+        bookedSeats.addAll(bookingSeatRepository.findBookedSeatsByTripId(java.util.Objects.requireNonNull(tripId), statuses));
+        
+        bookedSeats = bookedSeats.stream().distinct().collect(Collectors.toList());
         
         return TripSeatMapResponseDTO.builder()
                 .tripId(tripId)
@@ -72,5 +80,18 @@ public class TripServiceImpl implements TripService {
                 .basePrice(trip.getBasePrice())
                 .bookedSeats(bookedSeats)
                 .build();
+    }
+
+    @Override
+    @Transactional
+    @org.springframework.cache.annotation.CacheEvict(value = {"trips", "trip-seat-map"}, allEntries = true)
+    public void cancelTrip(Long tripId) {
+        Trip trip = tripRepository.findById(java.util.Objects.requireNonNull(tripId))
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy chuyến xe"));
+        if (!"SCHEDULED".equals(trip.getStatus())) {
+            throw new RuntimeException("Chỉ có thể hủy các chuyến xe Sắp chạy");
+        }
+        trip.setStatus("CANCELLED");
+        tripRepository.save(trip);
     }
 }

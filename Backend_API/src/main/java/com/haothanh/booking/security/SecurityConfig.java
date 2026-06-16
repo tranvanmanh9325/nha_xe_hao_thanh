@@ -41,6 +41,7 @@ public class SecurityConfig {
             .csrf(org.springframework.security.config.Customizer.withDefaults())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow CORS preflight requests
                 .requestMatchers("/api/v1/auth/**").permitAll() // Login/Register
                 .requestMatchers(HttpMethod.GET, "/api/v1/buses", "/api/v1/buses/**").permitAll() // View buses
                 .requestMatchers(HttpMethod.GET, "/api/v1/routes", "/api/v1/routes/**").permitAll() // View routes

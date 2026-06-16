@@ -3,7 +3,12 @@ import TripsToolbar from '../components/trips/TripsToolbar';
 import TripsFilter from '../components/trips/TripsFilter';
 import TripsTable from '../components/trips/TripsTable';
 import AddTripModal from '../components/trips/AddTripModal';
+import EditTripModal from '../components/trips/EditTripModal';
+import ConfirmDeleteModal from '../components/ui/ConfirmDeleteModal';
+import ConfirmCancelModal from '../components/ui/ConfirmCancelModal';
+import AdminBookingModal from '../components/trips/AdminBookingModal';
 import { authFetch } from '../utils/authService';
+import { toast } from 'react-toastify';
 import '../styles/trips.css';
 
 const Trips = () => {
@@ -14,9 +19,15 @@ const Trips = () => {
   const [error, setError] = useState(null);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingTrip, setEditingTrip] = useState(null);
+  const [deletingTrip, setDeletingTrip] = useState(null);
+  const [cancellingTrip, setCancellingTrip] = useState(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [bookingTrip, setBookingTrip] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [routeFilter, setRouteFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [timeFilter, setTimeFilter] = useState('today');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -59,6 +70,42 @@ const Trips = () => {
     fetchData();
   }, []);
 
+  // Helper for date filter
+  const isDateMatches = (departureTime, filterValue) => {
+    if (filterValue === 'all') return true;
+    if (!departureTime) return false;
+    
+    const depDate = new Date(departureTime);
+    if (isNaN(depDate)) return false;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const depDateOnly = new Date(depDate);
+    depDateOnly.setHours(0, 0, 0, 0);
+
+    if (filterValue === 'today') {
+      return depDateOnly.getTime() === today.getTime();
+    } else if (filterValue === 'tomorrow') {
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      return depDateOnly.getTime() === tomorrow.getTime();
+    } else if (filterValue === 'this_week') {
+      const firstDayOfWeek = new Date(today);
+      const day = today.getDay();
+      const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+      firstDayOfWeek.setDate(diff);
+      firstDayOfWeek.setHours(0, 0, 0, 0);
+      
+      const lastDayOfWeek = new Date(firstDayOfWeek);
+      lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+      lastDayOfWeek.setHours(23, 59, 59, 999);
+      
+      return depDate >= firstDayOfWeek && depDate <= lastDayOfWeek;
+    }
+    return true;
+  };
+
   // Filter logic
   const filteredTrips = useMemo(() => {
     return tripsData.filter((trip) => {
@@ -69,14 +116,18 @@ const Trips = () => {
         (trip.licensePlate && trip.licensePlate.toLowerCase().includes(searchLower));
       
       // Route filter
-      const matchesRoute = routeFilter === 'all' || trip.route === routeFilter;
+      const tripRouteStr = typeof trip.route === 'object' ? `${trip.route.origin} - ${trip.route.destination}` : trip.route;
+      const matchesRoute = routeFilter === 'all' || tripRouteStr === routeFilter;
       
       // Status filter
       const matchesStatus = statusFilter === 'all' || trip.status === statusFilter;
 
-      return matchesSearch && matchesRoute && matchesStatus;
+      // Time filter
+      const matchesTime = isDateMatches(trip.departureTime, timeFilter);
+
+      return matchesSearch && matchesRoute && matchesStatus && matchesTime;
     });
-  }, [searchTerm, routeFilter, statusFilter, tripsData]);
+  }, [searchTerm, routeFilter, statusFilter, timeFilter, tripsData]);
 
   // Pagination logic
   const totalPages = Math.ceil(filteredTrips.length / itemsPerPage) || 1;
@@ -100,6 +151,11 @@ const Trips = () => {
     setCurrentPage(1);
   };
 
+  const handleTimeFilterChange = (val) => {
+    setTimeFilter(val);
+    setCurrentPage(1);
+  };
+
   const handleSaveTrip = (newTripData) => {
     // Format date from YYYY-MM-DD to DD/MM/YYYY
     const formattedDate = newTripData.departureDate.split('-').reverse().join('/');
@@ -119,6 +175,52 @@ const Trips = () => {
     setIsAddModalOpen(false);
   };
 
+  const handleEditSave = (updatedTripData) => {
+    let updatedTrip = { ...updatedTripData };
+    if (updatedTripData.departureDate && updatedTripData.departureTime) {
+      const formattedDate = updatedTripData.departureDate.split('-').reverse().join('/');
+      updatedTrip.departure = `${updatedTripData.departureTime} - ${formattedDate}`;
+    }
+    setTripsData(prev => prev.map(t => t.id === updatedTrip.id ? { ...t, ...updatedTrip } : t));
+    setEditingTrip(null);
+  };
+
+  const handleDelete = (trip) => {
+    setDeletingTrip(trip);
+  };
+
+  const handleCancel = (trip) => {
+    setCancellingTrip(trip);
+  };
+
+  const confirmCancel = async () => {
+    if (!cancellingTrip) return;
+    setIsCancelling(true);
+    try {
+      const response = await authFetch(`http://localhost:8080/api/v1/trips/${cancellingTrip.id}/cancel`, {
+        method: 'PATCH'
+      });
+      if (!response.ok) {
+        throw new Error('Có lỗi xảy ra khi hủy chuyến');
+      }
+      toast.success('Hủy chuyến thành công!');
+      setTripsData(prev => prev.map(t => t.id === cancellingTrip.id ? { ...t, status: 'CANCELLED' } : t));
+    } catch (err) {
+      toast.error(err.message || 'Có lỗi xảy ra khi hủy chuyến');
+    } finally {
+      setIsCancelling(false);
+      setCancellingTrip(null);
+    }
+  };
+
+  const confirmDelete = () => {
+    if (deletingTrip) {
+      // Assuming a frontend mock deletion
+      setTripsData(prev => prev.filter(t => t.id !== deletingTrip.id));
+      setDeletingTrip(null);
+    }
+  };
+
   return (
     <div className="trips-page">
       <TripsToolbar onAddClick={() => setIsAddModalOpen(true)} />
@@ -130,6 +232,8 @@ const Trips = () => {
         onRouteFilterChange={handleRouteFilterChange}
         statusFilter={statusFilter}
         onStatusFilterChange={handleStatusFilterChange}
+        timeFilter={timeFilter}
+        onTimeFilterChange={handleTimeFilterChange}
         routes={routes}
       />
 
@@ -140,6 +244,10 @@ const Trips = () => {
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
+        onEdit={(trip) => setEditingTrip(trip)}
+        onDelete={handleDelete}
+        onCancel={handleCancel}
+        onBookTicket={(trip) => setBookingTrip(trip)}
       />
 
       <AddTripModal 
@@ -148,6 +256,39 @@ const Trips = () => {
         onSave={handleSaveTrip} 
         routes={routes}
         buses={buses}
+      />
+
+      <EditTripModal 
+        key={editingTrip ? editingTrip.id : 'empty'}
+        isOpen={!!editingTrip} 
+        onClose={() => setEditingTrip(null)} 
+        onSave={handleEditSave} 
+        trip={editingTrip}
+        routes={routes}
+        buses={buses}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={!!deletingTrip}
+        onClose={() => setDeletingTrip(null)}
+        onConfirm={confirmDelete}
+        trip={deletingTrip}
+      />
+
+      <ConfirmCancelModal
+        isOpen={!!cancellingTrip}
+        onClose={() => setCancellingTrip(null)}
+        onConfirm={confirmCancel}
+        trip={cancellingTrip}
+        isCancelling={isCancelling}
+      />
+
+      <AdminBookingModal
+        key={bookingTrip ? bookingTrip.id : 'empty-pos'}
+        isOpen={!!bookingTrip}
+        onClose={() => setBookingTrip(null)}
+        trip={bookingTrip}
+        onSuccess={() => setBookingTrip(null)}
       />
     </div>
   );

@@ -23,4 +23,11 @@ public interface TripService {
      * @return TripSeatMapResponseDTO containing seat details
      */
     TripSeatMapResponseDTO getTripSeatMap(Long tripId);
+
+    /**
+     * Cancels a trip by setting its status to CANCELLED.
+     *
+     * @param tripId The ID of the trip to cancel
+     */
+    void cancelTrip(Long tripId);
 }
