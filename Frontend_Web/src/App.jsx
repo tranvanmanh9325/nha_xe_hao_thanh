@@ -4,6 +4,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // B2C Pages
 import GuestHomepage from './pages/b2c/GuestHomepage';
+import Schedule from './pages/b2c/Schedule';
+import SearchResults from './pages/b2c/SearchResults';
 
 // B2B Admin Pages & Layout
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -27,6 +29,8 @@ const App = () => {
           
           {/* Public Routes (B2C) */}
           <Route path="/" element={<GuestHomepage />} />
+          <Route path="/lich-trinh" element={<Schedule />} />
+          <Route path="/tra-cuu-ve" element={<SearchResults />} />
 
           {/* Admin Routes (B2B) */}
           <Route path="/admin" element={<ProtectedRoute />}>

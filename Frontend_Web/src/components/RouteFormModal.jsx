@@ -13,6 +13,24 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
+const originIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+const destIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
 // Helper component to auto-fit bounds when markers change
 const MapBounds = ({ originCoords, destCoords }) => {
   const map = useMap();
@@ -113,9 +131,21 @@ const RouteFormModal = ({ isOpen, onClose, onSaved, initialData }) => {
           const data = await res.json();
           if (isMounted) {
             if (data && data.routes && data.routes.length > 0) {
-              const coords = data.routes[0].geometry.coordinates;
+              const route = data.routes[0];
+              const coords = route.geometry.coordinates;
               const mappedCoordinates = coords.map(c => [c[1], c[0]]);
               setRoutePath(mappedCoordinates);
+              
+              // Tự động cập nhật quãng đường và thời gian dự kiến từ API OSRM
+              if (route.distance !== undefined && route.duration !== undefined) {
+                const distanceKm = (route.distance / 1000).toFixed(1);
+                const durationHr = (route.duration / 3600).toFixed(1);
+                setFormData(prev => ({
+                  ...prev,
+                  distance: distanceKm,
+                  estimatedDuration: durationHr
+                }));
+              }
             } else {
               setRoutePath(null);
             }
@@ -219,6 +249,17 @@ const RouteFormModal = ({ isOpen, onClose, onSaved, initialData }) => {
 
   const labelStyle = { display: 'block', fontSize: 'var(--text-sm)', fontWeight: '500', marginBottom: 'var(--space-2)' };
 
+  const hasChanges = !initialData || (
+    formData.routeCode !== (initialData.routeCode || '') ||
+    formData.origin !== (initialData.origin || '') ||
+    formData.destination !== (initialData.destination || '') ||
+    String(formData.distance || '') !== String(initialData.distance || '') ||
+    String(formData.estimatedDuration || '') !== String(initialData.estimatedDuration || '')
+  );
+
+  const isFormValid = formData.routeCode?.trim() !== '' && formData.origin?.trim() !== '' && formData.destination?.trim() !== '';
+  const isSaveDisabled = isSubmitting || !hasChanges || !isFormValid;
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] p-4">
       <div className="bg-white rounded-xl shadow-xl w-full max-w-6xl max-h-[95vh] flex flex-col overflow-hidden">
@@ -301,7 +342,7 @@ const RouteFormModal = ({ isOpen, onClose, onSaved, initialData }) => {
 
             {/* Cột phải: Bản đồ */}
             <div className="h-[400px] lg:h-full min-h-[400px] rounded-xl overflow-hidden border border-gray-200 shadow-sm relative">
-              <div className="absolute top-2 left-2 z-[400] bg-white px-3 py-1 rounded-md shadow-md text-sm font-medium text-gray-700 pointer-events-none">
+              <div className="absolute top-2 right-2 z-[400] bg-white px-3 py-1 rounded-md shadow-md text-sm font-medium text-gray-700 pointer-events-none">
                 Bản đồ tuyến đường
               </div>
               <MapContainer 
@@ -313,8 +354,8 @@ const RouteFormModal = ({ isOpen, onClose, onSaved, initialData }) => {
                   attribution='&copy; Google Maps'
                   url="https://mt0.google.com/vt/lyrs=m&hl=vi&x={x}&y={y}&z={z}"
                 />
-                {originCoords && <Marker position={originCoords} />}
-                {destCoords && <Marker position={destCoords} />}
+                {originCoords && <Marker position={originCoords} icon={originIcon} />}
+                {destCoords && <Marker position={destCoords} icon={destIcon} />}
                 {routePath && (
                   <Polyline positions={routePath} color="#3b82f6" weight={4} opacity={0.7} />
                 )}
@@ -333,14 +374,14 @@ const RouteFormModal = ({ isOpen, onClose, onSaved, initialData }) => {
           </button>
           <button 
             onClick={handleSave}
-            disabled={isSubmitting}
+            disabled={isSaveDisabled}
             className="px-4 py-2 rounded-md border-none text-white font-medium transition-colors"
             style={{
-              backgroundColor: isSubmitting ? 'var(--neutral-400)' : 'var(--brand-500)',
-              cursor: isSubmitting ? 'not-allowed' : 'pointer'
+              backgroundColor: isSaveDisabled ? 'var(--neutral-400)' : 'var(--brand-500)',
+              cursor: isSaveDisabled ? 'not-allowed' : 'pointer'
             }}
-            onMouseEnter={(e) => { if (!isSubmitting) e.currentTarget.style.backgroundColor = 'var(--brand-600)'; }}
-            onMouseLeave={(e) => { if (!isSubmitting) e.currentTarget.style.backgroundColor = 'var(--brand-500)'; }}
+            onMouseEnter={(e) => { if (!isSaveDisabled) e.currentTarget.style.backgroundColor = 'var(--brand-600)'; }}
+            onMouseLeave={(e) => { if (!isSaveDisabled) e.currentTarget.style.backgroundColor = 'var(--brand-500)'; }}
           >
             {isSubmitting ? 'Đang lưu...' : 'Lưu'}
           </button>

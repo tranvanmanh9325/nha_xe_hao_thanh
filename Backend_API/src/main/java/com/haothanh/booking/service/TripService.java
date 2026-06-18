@@ -3,7 +3,7 @@ package com.haothanh.booking.service;
 import com.haothanh.booking.dto.TripResponseDTO;
 import com.haothanh.booking.dto.TripSeatMapResponseDTO;
 
-import java.util.List;
+
 
 public interface TripService {
 
@@ -14,7 +14,7 @@ public interface TripService {
      * @param route Optional search term for filtering trips by route
      * @return List of TripResponseDTO
      */
-    List<TripResponseDTO> getTrips(String route);
+    org.springframework.data.domain.Page<TripResponseDTO> getTrips(String route, String status, java.time.OffsetDateTime startDate, java.time.OffsetDateTime endDate, String searchTerm, org.springframework.data.domain.Pageable pageable);
 
     /**
      * Retrieves the seat map for a specific trip.

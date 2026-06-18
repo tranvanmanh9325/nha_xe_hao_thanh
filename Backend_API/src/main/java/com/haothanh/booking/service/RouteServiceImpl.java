@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +39,10 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    @CacheEvict(value = "routes", allEntries = true)
+    @Caching(evict = {
+        @CacheEvict(value = "routes", allEntries = true),
+        @CacheEvict(value = "routeLocations", allEntries = true)
+    })
     public RouteResponseDTO createRoute(RouteRequestDTO requestDTO) {
         if (routeRepository.existsByRouteCode(requestDTO.getRouteCode())) {
             throw new RuntimeException("Mã tuyến đường đã tồn tại");
@@ -55,7 +59,10 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    @CacheEvict(value = "routes", allEntries = true)
+    @Caching(evict = {
+        @CacheEvict(value = "routes", allEntries = true),
+        @CacheEvict(value = "routeLocations", allEntries = true)
+    })
     public RouteResponseDTO updateRoute(Long id, RouteRequestDTO requestDTO) {
         Route route = routeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy tuyến đường"));
@@ -78,7 +85,10 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    @CacheEvict(value = "routes", allEntries = true)
+    @Caching(evict = {
+        @CacheEvict(value = "routes", allEntries = true),
+        @CacheEvict(value = "routeLocations", allEntries = true)
+    })
     public RouteResponseDTO updateRouteStatus(Long id, String status) {
         Route route = routeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy tuyến đường"));
@@ -87,7 +97,10 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    @CacheEvict(value = "routes", allEntries = true)
+    @Caching(evict = {
+        @CacheEvict(value = "routes", allEntries = true),
+        @CacheEvict(value = "routeLocations", allEntries = true)
+    })
     public void deleteRoute(Long id) {
         Route route = routeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy tuyến đường"));
@@ -99,6 +112,17 @@ public class RouteServiceImpl implements RouteService {
         }
 
         routeRepository.delete(route);
+    }
+
+    @Override
+    @Cacheable("routeLocations")
+    public java.util.Map<String, java.util.List<String>> getLocations() {
+        java.util.List<String> origins = routeRepository.findDistinctOrigins("Đang hoạt động");
+        java.util.List<String> destinations = routeRepository.findDistinctDestinations("Đang hoạt động");
+        java.util.Map<String, java.util.List<String>> locations = new java.util.HashMap<>();
+        locations.put("origins", origins);
+        locations.put("destinations", destinations);
+        return locations;
     }
 
     private RouteResponseDTO mapToDTO(Route route) {

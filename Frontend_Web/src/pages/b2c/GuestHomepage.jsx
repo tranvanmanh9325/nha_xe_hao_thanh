@@ -1,15 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
-import { isAuthenticated } from '../../utils/authService';
+import { toast } from 'react-toastify';
+import { isAuthenticated, API_BASE_URL } from '../../utils/authService';
+import { fetchSettings } from '../../utils/settingsService';
 import AuthModal from '../../components/b2c/AuthModal';
+import GuestNavbar from '../../components/b2c/GuestNavbar';
+import GuestFooter from '../../components/b2c/GuestFooter';
 import { 
-  LocationIcon, DateIcon, BusIcon, WifiIcon, VipSeatIcon, PhoneIcon,
+  LocationIcon, DateIcon, BusIcon, WifiIcon, VipSeatIcon,
   SearchIcon, WalletIcon, SmileIcon, StarIcon, PlusIcon, MinusIcon
 } from '../../components/icons/CustomIcons';
 
 const GuestHomepage = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
+  const [settings, setSettings] = useState(null);
+  const [locations, setLocations] = useState({ origins: [], destinations: [] });
+  const [searchForm, setSearchForm] = useState({ from: '', to: '', date: '' });
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -25,6 +32,55 @@ const GuestHomepage = () => {
       return () => clearTimeout(timer);
     }
   }, [location, navigate]);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const data = await fetchSettings();
+        if (data) {
+          setSettings(data);
+        }
+      } catch (error) {
+        console.error("Lỗi khi tải cài đặt:", error);
+      }
+    };
+    loadSettings();
+
+    const fetchLocations = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/routes/locations`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data.origins && data.destinations) {
+            setLocations({ origins: data.origins, destinations: data.destinations });
+          }
+        }
+      } catch (err) {
+        console.error("Lỗi tải danh sách địa điểm:", err);
+      }
+    };
+    fetchLocations();
+  }, []);
+
+  const handleSearch = () => {
+    if (!searchForm.from) {
+      toast.warning('Vui lòng chọn Điểm đi');
+      return;
+    }
+    if (!searchForm.to) {
+      toast.warning('Vui lòng chọn Điểm đến');
+      return;
+    }
+    if (!searchForm.date) {
+      toast.warning('Vui lòng chọn Ngày đi');
+      return;
+    }
+    if (searchForm.from === searchForm.to) {
+      toast.warning('Điểm đi và Điểm đến không được trùng nhau');
+      return;
+    }
+    navigate(`/tra-cuu-ve?from=${encodeURIComponent(searchForm.from)}&to=${encodeURIComponent(searchForm.to)}&date=${encodeURIComponent(searchForm.date)}`);
+  };
 
   // Nếu người dùng đã đăng nhập, tự động chuyển hướng vào trang quản trị
   if (isAuthenticated()) {
@@ -82,43 +138,7 @@ const GuestHomepage = () => {
     <div className="min-h-screen bg-neutral-50 font-sans text-neutral-900">
       
       {/* Header */}
-      <header className="fixed top-0 inset-x-0 z-40 bg-white/90 backdrop-blur-md shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            {/* Logo */}
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center text-white">
-                <BusIcon className="w-6 h-6" />
-              </div>
-              <span className="text-2xl font-bold text-brand-600 tracking-tight">HÀO THANH</span>
-            </div>
-
-            {/* Navigation (Desktop) */}
-            <nav className="hidden md:flex items-center space-x-8">
-              <a href="#" className="text-brand-600 font-semibold">Trang chủ</a>
-              <a href="#" className="text-neutral-600 hover:text-brand-500 font-medium transition-colors">Lịch trình</a>
-              <a href="#" className="text-neutral-600 hover:text-brand-500 font-medium transition-colors">Tra cứu vé</a>
-              <a href="#" className="text-neutral-600 hover:text-brand-500 font-medium transition-colors">Khuyến mãi</a>
-            </nav>
-
-            {/* Login Button */}
-            <div className="flex items-center space-x-4">
-              <button 
-                onClick={() => setIsAuthModalOpen(true)}
-                className="hidden md:block px-4 py-2 text-brand-600 font-semibold hover:bg-brand-50 rounded-lg transition-colors"
-              >
-                Đăng nhập
-              </button>
-              <button 
-                onClick={() => setIsAuthModalOpen(true)}
-                className="px-6 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl shadow-md shadow-brand-500/20 transition-all hover:shadow-brand-500/40 active:scale-95"
-              >
-                Đăng ký
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <GuestNavbar onOpenAuthModal={() => setIsAuthModalOpen(true)} />
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
@@ -154,11 +174,19 @@ const GuestHomepage = () => {
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-brand-500">
                   <LocationIcon className="w-5 h-5" />
                 </div>
-                <input 
-                  type="text" 
-                  placeholder="Ví dụ: Hà Nội" 
-                  className="w-full pl-11 pr-4 py-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-neutral-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-lg transition-all"
-                />
+                <select 
+                  value={searchForm.from}
+                  onChange={(e) => setSearchForm({...searchForm, from: e.target.value})}
+                  className="w-full pl-11 pr-10 py-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-neutral-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-lg transition-all appearance-none"
+                >
+                  <option value="">Chọn điểm đi</option>
+                  {locations.origins.map(loc => (
+                    <option key={loc} value={loc}>{loc}</option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-neutral-400">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
               </div>
             </div>
             
@@ -169,11 +197,19 @@ const GuestHomepage = () => {
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-brand-500">
                   <LocationIcon className="w-5 h-5" />
                 </div>
-                <input 
-                  type="text" 
-                  placeholder="Ví dụ: Vinh" 
-                  className="w-full pl-11 pr-4 py-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-neutral-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-lg transition-all"
-                />
+                <select 
+                  value={searchForm.to}
+                  onChange={(e) => setSearchForm({...searchForm, to: e.target.value})}
+                  className="w-full pl-11 pr-10 py-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-neutral-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-lg transition-all appearance-none"
+                >
+                  <option value="">Chọn điểm đến</option>
+                  {locations.destinations.map(loc => (
+                    <option key={loc} value={loc}>{loc}</option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-neutral-400">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
               </div>
             </div>
 
@@ -186,6 +222,9 @@ const GuestHomepage = () => {
                 </div>
                 <input 
                   type="date" 
+                  value={searchForm.date}
+                  onChange={(e) => setSearchForm({...searchForm, date: e.target.value})}
+                  min={new Date().toISOString().split('T')[0]}
                   className="w-full pl-11 pr-4 py-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-neutral-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-medium text-lg transition-all"
                 />
               </div>
@@ -193,7 +232,10 @@ const GuestHomepage = () => {
 
             {/* Button */}
             <div>
-              <button className="w-full h-[54px] bg-brand-500 hover:bg-brand-600 text-white font-bold text-lg rounded-xl shadow-lg shadow-brand-500/30 transition-all hover:shadow-brand-500/50 active:scale-[0.98] flex items-center justify-center space-x-2">
+              <button 
+                onClick={handleSearch}
+                className="w-full h-[54px] bg-brand-500 hover:bg-brand-600 text-white font-bold text-lg rounded-xl shadow-lg shadow-brand-500/30 transition-all hover:shadow-brand-500/50 active:scale-[0.98] flex items-center justify-center space-x-2"
+              >
                 <span>TÌM CHUYẾN</span>
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -382,43 +424,8 @@ const GuestHomepage = () => {
         </div>
       </section>
 
-      {/* Footer (Minimal) */}
-      <footer className="bg-neutral-900 text-neutral-400 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-2 mb-6">
-              <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center text-white">
-                <BusIcon className="w-5 h-5" />
-              </div>
-              <span className="text-xl font-bold text-white tracking-tight">HÀO THANH</span>
-            </div>
-            <p className="mb-4 max-w-sm">Dịch vụ vận tải hành khách cao cấp tuyến Hà Nội - Nghệ An - Hà Tĩnh.</p>
-            <div className="flex items-center space-x-2">
-              <PhoneIcon className="w-4 h-4 text-brand-500" />
-              <span className="text-white font-semibold">Hotline: 1900 xxxx</span>
-            </div>
-          </div>
-          <div>
-            <h4 className="text-white font-bold mb-4">Về Chúng Tôi</h4>
-            <ul className="space-y-2">
-              <li><a href="#" className="hover:text-brand-400 transition-colors">Giới thiệu</a></li>
-              <li><a href="#" className="hover:text-brand-400 transition-colors">Tuyển dụng</a></li>
-              <li><a href="#" className="hover:text-brand-400 transition-colors">Tin tức</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-white font-bold mb-4">Hỗ Trợ</h4>
-            <ul className="space-y-2">
-              <li><a href="#" className="hover:text-brand-400 transition-colors">Quy định chung</a></li>
-              <li><a href="#" className="hover:text-brand-400 transition-colors">Chính sách bảo mật</a></li>
-              <li><a href="#" className="hover:text-brand-400 transition-colors">Câu hỏi thường gặp</a></li>
-            </ul>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-neutral-800 text-center text-sm">
-          <p>&copy; {new Date().getFullYear()} Nhà Xe Hào Thanh. All rights reserved.</p>
-        </div>
-      </footer>
+      {/* Footer */}
+      <GuestFooter settings={settings} />
 
       {/* Auth Modal Integraton */}
       <AuthModal 

@@ -24,6 +24,11 @@ public class RouteController {
         return ResponseEntity.ok(routeService.getAllRoutes());
     }
 
+    @GetMapping("/locations")
+    public ResponseEntity<Map<String, List<String>>> getLocations() {
+        return ResponseEntity.ok(routeService.getLocations());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<RouteResponseDTO> getRouteById(@PathVariable Long id) {
         return ResponseEntity.ok(routeService.getRouteById(id));

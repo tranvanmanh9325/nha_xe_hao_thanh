@@ -25,20 +25,36 @@ public class TripServiceImpl implements TripService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "trips", key = "#route != null ? #route : 'all'")
-    public List<TripResponseDTO> getTrips(String route) {
-        List<Trip> trips;
-        
-        // Use custom query if route filter is provided, otherwise fetch all trips
-        if (route != null && !route.trim().isEmpty()) {
-            trips = tripRepository.findByRouteContainingIgnoreCase(route.trim());
-        } else {
-            trips = tripRepository.findAll();
-        }
+    public org.springframework.data.domain.Page<TripResponseDTO> getTrips(String route, String status, java.time.OffsetDateTime startDate, java.time.OffsetDateTime endDate, String searchTerm, org.springframework.data.domain.Pageable pageable) {
+        org.springframework.data.jpa.domain.Specification<Trip> spec = (root, query, cb) -> {
+            java.util.List<jakarta.persistence.criteria.Predicate> predicates = new java.util.ArrayList<>();
+            
+            if (route != null && !route.trim().isEmpty() && !route.equals("all")) {
+                predicates.add(cb.equal(root.get("route"), route.trim()));
+            }
+            if (status != null && !status.trim().isEmpty() && !status.equals("all")) {
+                predicates.add(cb.equal(root.get("status"), status.trim()));
+            }
+            if (startDate != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("departureTime"), startDate));
+            }
+            if (endDate != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("departureTime"), endDate));
+            }
+            if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+                String pattern = "%" + searchTerm.trim().toLowerCase() + "%";
+                predicates.add(cb.or(
+                    cb.like(root.get("id").as(String.class), pattern),
+                    cb.like(cb.lower(root.join("bus").get("licensePlate")), pattern)
+                ));
+            }
+            
+            return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        };
 
-        return trips.stream()
-                .map(this::mapToResponseDTO)
-                .collect(Collectors.toList());
+        org.springframework.data.domain.Pageable safePageable = pageable != null ? pageable : org.springframework.data.domain.Pageable.unpaged();
+        org.springframework.data.domain.Page<Trip> trips = tripRepository.findAll(spec, safePageable);
+        return trips.map(this::mapToResponseDTO);
     }
 
     private TripResponseDTO mapToResponseDTO(Trip trip) {

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import TripsToolbar from '../components/trips/TripsToolbar';
 import TripsFilter from '../components/trips/TripsFilter';
 import TripsTable from '../components/trips/TripsTable';
@@ -29,37 +29,93 @@ const Trips = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [timeFilter, setTimeFilter] = useState('today');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  // Fetch trips data and routes from backend API
+  // Helper for date filter API params
+  const getDatesFromFilter = (filterValue) => {
+    if (filterValue === 'all') return { startDate: null, endDate: null };
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const formatToOffset = (date) => {
+      // Create a string that can be parsed by OffsetDateTime, e.g. "2026-06-18T00:00:00+07:00"
+      // Wait, simple toISOString() uses Z, which is fine for OffsetDateTime
+      return date.toISOString();
+    };
+
+    if (filterValue === 'today') {
+      const end = new Date(today);
+      end.setHours(23, 59, 59, 999);
+      return { startDate: formatToOffset(today), endDate: formatToOffset(end) };
+    } else if (filterValue === 'tomorrow') {
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const end = new Date(tomorrow);
+      end.setHours(23, 59, 59, 999);
+      return { startDate: formatToOffset(tomorrow), endDate: formatToOffset(end) };
+    } else if (filterValue === 'this_week') {
+      const firstDayOfWeek = new Date(today);
+      const day = today.getDay();
+      const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+      firstDayOfWeek.setDate(diff);
+      
+      const lastDayOfWeek = new Date(firstDayOfWeek);
+      lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+      lastDayOfWeek.setHours(23, 59, 59, 999);
+      
+      return { startDate: formatToOffset(firstDayOfWeek), endDate: formatToOffset(lastDayOfWeek) };
+    }
+    return { startDate: null, endDate: null };
+  };
+
+  // 1. Fetch lookups once
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchLookups = async () => {
+      try {
+        const [routesResponse, busesResponse] = await Promise.all([
+          authFetch('http://localhost:8080/api/v1/routes'),
+          authFetch('http://localhost:8080/api/v1/buses')
+        ]);
+        if (routesResponse.ok) setRoutes(await routesResponse.json());
+        if (busesResponse.ok) setBuses(await busesResponse.json());
+      } catch (err) {
+        console.error("Error fetching lookups", err);
+      }
+    };
+    fetchLookups();
+  }, []);
+
+  // 2. Fetch trips when filters/pagination change
+  useEffect(() => {
+    const fetchTrips = async () => {
       try {
         setIsLoading(true);
         setError(null);
         
-        const [tripsResponse, routesResponse, busesResponse] = await Promise.all([
-          authFetch('http://localhost:8080/api/v1/trips'),
-          authFetch('http://localhost:8080/api/v1/routes'),
-          authFetch('http://localhost:8080/api/v1/buses')
-        ]);
+        const params = new URLSearchParams();
+        params.append('page', currentPage - 1); // Spring Data page is 0-indexed
+        params.append('size', itemsPerPage);
+        
+        if (routeFilter !== 'all') params.append('route', routeFilter);
+        if (statusFilter !== 'all') params.append('status', statusFilter);
+        if (searchTerm) params.append('searchTerm', searchTerm);
+        
+        const dates = getDatesFromFilter(timeFilter);
+        if (dates.startDate) params.append('startDate', dates.startDate);
+        if (dates.endDate) params.append('endDate', dates.endDate);
 
-        if (!tripsResponse.ok) {
+        const response = await authFetch(`http://localhost:8080/api/v1/trips?${params.toString()}`);
+        if (!response.ok) {
           throw new Error('Không thể tải dữ liệu chuyến xe từ máy chủ.');
         }
         
-        const tripsData = await tripsResponse.json();
-        setTripsData(tripsData);
-
-        if (routesResponse.ok) {
-          const routesData = await routesResponse.json();
-          setRoutes(routesData);
-        }
-        
-        if (busesResponse.ok) {
-          const busesData = await busesResponse.json();
-          setBuses(busesData);
-        }
+        const data = await response.json();
+        setTripsData(data.content || []);
+        setTotalPages(data.totalPages || 1);
+        setTotalItems(data.totalElements || 0);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -67,74 +123,9 @@ const Trips = () => {
       }
     };
 
-    fetchData();
-  }, []);
-
-  // Helper for date filter
-  const isDateMatches = (departureTime, filterValue) => {
-    if (filterValue === 'all') return true;
-    if (!departureTime) return false;
-    
-    const depDate = new Date(departureTime);
-    if (isNaN(depDate)) return false;
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const depDateOnly = new Date(depDate);
-    depDateOnly.setHours(0, 0, 0, 0);
-
-    if (filterValue === 'today') {
-      return depDateOnly.getTime() === today.getTime();
-    } else if (filterValue === 'tomorrow') {
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      return depDateOnly.getTime() === tomorrow.getTime();
-    } else if (filterValue === 'this_week') {
-      const firstDayOfWeek = new Date(today);
-      const day = today.getDay();
-      const diff = today.getDate() - day + (day === 0 ? -6 : 1);
-      firstDayOfWeek.setDate(diff);
-      firstDayOfWeek.setHours(0, 0, 0, 0);
-      
-      const lastDayOfWeek = new Date(firstDayOfWeek);
-      lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
-      lastDayOfWeek.setHours(23, 59, 59, 999);
-      
-      return depDate >= firstDayOfWeek && depDate <= lastDayOfWeek;
-    }
-    return true;
-  };
-
-  // Filter logic
-  const filteredTrips = useMemo(() => {
-    return tripsData.filter((trip) => {
-      // Text search (ID or License Plate)
-      const searchLower = searchTerm.toLowerCase();
-      const matchesSearch = 
-        trip.id?.toString().toLowerCase().includes(searchLower) || 
-        (trip.licensePlate && trip.licensePlate.toLowerCase().includes(searchLower));
-      
-      // Route filter
-      const tripRouteStr = typeof trip.route === 'object' ? `${trip.route.origin} - ${trip.route.destination}` : trip.route;
-      const matchesRoute = routeFilter === 'all' || tripRouteStr === routeFilter;
-      
-      // Status filter
-      const matchesStatus = statusFilter === 'all' || trip.status === statusFilter;
-
-      // Time filter
-      const matchesTime = isDateMatches(trip.departureTime, timeFilter);
-
-      return matchesSearch && matchesRoute && matchesStatus && matchesTime;
-    });
-  }, [searchTerm, routeFilter, statusFilter, timeFilter, tripsData]);
-
-  // Pagination logic
-  const totalPages = Math.ceil(filteredTrips.length / itemsPerPage) || 1;
-  const paginatedTrips = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredTrips.slice(startIndex, startIndex + itemsPerPage);
-  }, [filteredTrips, currentPage]);
+    const timeoutId = setTimeout(() => fetchTrips(), 300);
+    return () => clearTimeout(timeoutId);
+  }, [currentPage, itemsPerPage, searchTerm, routeFilter, statusFilter, timeFilter]);
 
   const handleSearchChange = (val) => {
     setSearchTerm(val);
@@ -238,12 +229,15 @@ const Trips = () => {
       />
 
       <TripsTable 
-        data={paginatedTrips}
+        data={tripsData}
         isLoading={isLoading}
         error={error}
         currentPage={currentPage}
         totalPages={totalPages}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
         onPageChange={setCurrentPage}
+        onItemsPerPageChange={setItemsPerPage}
         onEdit={(trip) => setEditingTrip(trip)}
         onDelete={handleDelete}
         onCancel={handleCancel}
