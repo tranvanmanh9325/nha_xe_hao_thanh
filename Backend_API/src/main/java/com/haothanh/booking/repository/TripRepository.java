@@ -4,10 +4,11 @@ import com.haothanh.booking.entity.Trip;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface TripRepository extends JpaRepository<Trip, Long> {
+public interface TripRepository extends JpaRepository<Trip, Long>, JpaSpecificationExecutor<Trip> {
 
-    List<Trip> findByRouteContainingIgnoreCase(String route);
+    org.springframework.data.domain.Page<Trip> findByRouteContainingIgnoreCase(String route, org.springframework.data.domain.Pageable pageable);
     boolean existsByBusId(Long busId);
     boolean existsByRoute(String route);
 

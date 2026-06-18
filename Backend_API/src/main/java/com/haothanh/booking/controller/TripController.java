@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/v1/trips")
@@ -23,10 +23,17 @@ public class TripController {
      * @return List of TripResponseDTOs wrapped in ResponseEntity
      */
     @GetMapping
-    public ResponseEntity<List<TripResponseDTO>> getTrips(
-            @RequestParam(required = false) String route) {
+    public ResponseEntity<org.springframework.data.domain.Page<TripResponseDTO>> getTrips(
+            @RequestParam(required = false, defaultValue = "all") String route,
+            @RequestParam(required = false, defaultValue = "all") String status,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.OffsetDateTime startDate,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.OffsetDateTime endDate,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         
-        List<TripResponseDTO> trips = tripService.getTrips(route);
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Page<TripResponseDTO> trips = tripService.getTrips(route, status, startDate, endDate, searchTerm, pageable);
         return ResponseEntity.ok(trips);
     }
 

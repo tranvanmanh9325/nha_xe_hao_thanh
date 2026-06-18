@@ -32,12 +32,14 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState('info');
 
   // Info State
-  const [info, setInfo] = useState({
+  const defaultInfo = {
     companyName: '',
     hotline: '',
     address: '',
     email: ''
-  });
+  };
+  const [info, setInfo] = useState(defaultInfo);
+  const [initialInfo, setInitialInfo] = useState(defaultInfo);
 
   // Security State
   const [security, setSecurity] = useState({
@@ -47,10 +49,12 @@ const Settings = () => {
   });
 
   // Config State
-  const [config, setConfig] = useState({
+  const defaultConfig = {
     notifyNewTicket: false,
     autoCancelUnpaid: false
-  });
+  };
+  const [config, setConfig] = useState(defaultConfig);
+  const [initialConfig, setInitialConfig] = useState(defaultConfig);
 
   // Fetch data on mount
   useEffect(() => {
@@ -58,16 +62,20 @@ const Settings = () => {
       try {
         const data = await fetchSettings();
         if (data) {
-          setInfo({
+          const fetchedInfo = {
             companyName: data.companyName || '',
             hotline: data.hotline || '',
             address: data.address || '',
             email: data.email || ''
-          });
-          setConfig({
+          };
+          const fetchedConfig = {
             notifyNewTicket: data.notifyNewTicket || false,
             autoCancelUnpaid: data.autoCancelUnpaid || false
-          });
+          };
+          setInfo(fetchedInfo);
+          setInitialInfo(fetchedInfo);
+          setConfig(fetchedConfig);
+          setInitialConfig(fetchedConfig);
         }
       } catch (error) {
         toast.error(error.message || 'Lỗi khi tải cài đặt hệ thống');
@@ -101,6 +109,7 @@ const Settings = () => {
     try {
       await updateSettings({ ...info, ...config });
       toast.success('Đã lưu thông tin nhà xe thành công!');
+      setInitialInfo(info);
     } catch (error) {
       toast.error(error.message || 'Lỗi khi lưu thông tin');
     }
@@ -134,10 +143,15 @@ const Settings = () => {
     try {
       await updateSettings({ ...info, ...config });
       toast.success('Đã lưu cấu hình hệ thống thành công!');
+      setInitialConfig(config);
     } catch (error) {
       toast.error(error.message || 'Lỗi khi lưu cấu hình');
     }
   };
+
+  const isInfoChanged = JSON.stringify(info) !== JSON.stringify(initialInfo);
+  const isSecurityChanged = security.oldPassword !== '' || security.newPassword !== '' || security.confirmPassword !== '';
+  const isConfigChanged = JSON.stringify(config) !== JSON.stringify(initialConfig);
 
   return (
     <div className="settings-container">
@@ -222,7 +236,7 @@ const Settings = () => {
                 </div>
                 
                 <div className="settings-form-actions">
-                  <button type="submit" className="btn-save">Lưu thay đổi</button>
+                  <button type="submit" className="btn-save" disabled={!isInfoChanged}>Lưu thay đổi</button>
                 </div>
               </form>
             </div>
@@ -265,7 +279,7 @@ const Settings = () => {
                 </div>
                 
                 <div className="settings-form-actions">
-                  <button type="submit" className="btn-save">Lưu mật khẩu</button>
+                  <button type="submit" className="btn-save" disabled={!isSecurityChanged}>Lưu mật khẩu</button>
                 </div>
               </form>
             </div>
@@ -311,7 +325,7 @@ const Settings = () => {
               </div>
 
               <div className="settings-form-actions">
-                <button type="button" className="btn-save" onClick={handleSaveConfig}>Lưu cấu hình</button>
+                <button type="button" className="btn-save" onClick={handleSaveConfig} disabled={!isConfigChanged}>Lưu cấu hình</button>
               </div>
             </div>
           )}
@@ -323,4 +337,3 @@ const Settings = () => {
 };
 
 export default Settings;
-

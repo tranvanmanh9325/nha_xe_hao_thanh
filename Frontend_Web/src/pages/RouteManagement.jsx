@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { PlusIcon, TrashIcon, PauseIcon, PlayIcon, EditIcon } from '../assets/icons';
 import ConfirmModal from '../components/ui/ConfirmModal';
 import RouteFormModal from '../components/RouteFormModal';
+import RouteMapPreview from '../components/RouteMapPreview';
 import { authFetch } from '../utils/authService';
 import { toast } from 'react-toastify';
 
@@ -116,10 +117,31 @@ const RouteManagement = () => {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 'var(--space-4)' }}>
           {routes.map((route) => (
-            <div key={route.id} className="card" style={{ 
+            <div key={route.id} className="card route-card-item" style={{ 
               backgroundColor: 'white', borderRadius: 'var(--radius-lg)', boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-              border: '1px solid var(--neutral-200)', display: 'flex', flexDirection: 'column'
+              border: '1px solid var(--neutral-200)', display: 'flex', flexDirection: 'column',
+              overflow: 'hidden'
             }}>
+              {/* Image Section */}
+              <div style={{ height: '200px', backgroundColor: 'var(--neutral-100)', position: 'relative' }}>
+                <RouteMapPreview origin={route.origin} destination={route.destination} />
+                <span style={{
+                  position: 'absolute',
+                  top: 'var(--space-3)',
+                  right: 'var(--space-3)',
+                  padding: '4px 8px',
+                  borderRadius: '999px',
+                  fontSize: 'var(--text-xs)',
+                  fontWeight: '500',
+                  backgroundColor: route.status === 'Đang hoạt động' ? '#dcfce7' : '#fee2e2',
+                  color: route.status === 'Đang hoạt động' ? '#166534' : '#991b1b',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                  zIndex: 2
+                }}>
+                  {route.status}
+                </span>
+              </div>
+              
               <div style={{ padding: 'var(--space-4)', flex: 1 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-3)' }}>
                   <div>
@@ -128,13 +150,6 @@ const RouteManagement = () => {
                       {route.origin} - {route.destination}
                     </h3>
                   </div>
-                  <span style={{
-                    padding: '4px 8px', borderRadius: '999px', fontSize: '11px', fontWeight: '500',
-                    backgroundColor: route.status === 'Đang hoạt động' ? '#dcfce7' : '#fee2e2',
-                    color: route.status === 'Đang hoạt động' ? '#166534' : '#991b1b'
-                  }}>
-                    {route.status}
-                  </span>
                 </div>
                 
                 <div style={{ display: 'flex', gap: 'var(--space-4)', color: 'var(--neutral-600)', fontSize: 'var(--text-sm)', marginBottom: 'var(--space-2)' }}>

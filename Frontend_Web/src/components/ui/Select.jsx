@@ -3,12 +3,18 @@ import { createPortal } from 'react-dom';
 
 const Select = ({ value, onChange, options, style }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0, isUp: false });
   const containerRef = useRef(null);
   const popupRef = useRef(null);
 
   useEffect(() => {
+    if (!isOpen) return;
+
+    let isActive = true;
+    const mountTime = Date.now();
+
     const handleClickOutside = (event) => {
+      if (!isActive) return;
       if (
         (containerRef.current && !containerRef.current.contains(event.target)) &&
         (popupRef.current && !popupRef.current.contains(event.target))
@@ -18,16 +24,25 @@ const Select = ({ value, onChange, options, style }) => {
     };
 
     const handleScrollOrResize = (e) => {
-      // Bỏ qua nếu cuộn bên trong chính dropdown
-      if (popupRef.current && popupRef.current.contains(e.target)) return;
-      if (isOpen) setIsOpen(false);
+      if (!isActive) return;
+      
+      // Bỏ qua nếu là sự kiện được trigger quá gần lúc mở dropdown (inertia scroll)
+      if (Date.now() - mountTime < 150) return;
+
+      // Bỏ qua nếu là sự kiện resize (e.target là window không phải Node) 
+      // Hoặc nếu cuộn bên trong chính dropdown
+      if (popupRef.current && e.target instanceof Node && popupRef.current.contains(e.target)) {
+        return;
+      }
+      setIsOpen(false);
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     window.addEventListener('resize', handleScrollOrResize);
-    window.addEventListener('scroll', handleScrollOrResize, true); // Bắt sự kiện scroll trên tất cả phần tử (capture phase)
+    window.addEventListener('scroll', handleScrollOrResize, true);
 
     return () => {
+      isActive = false;
       document.removeEventListener('mousedown', handleClickOutside);
       window.removeEventListener('resize', handleScrollOrResize);
       window.removeEventListener('scroll', handleScrollOrResize, true);
@@ -37,10 +52,17 @@ const Select = ({ value, onChange, options, style }) => {
   const toggleOpen = () => {
     if (!isOpen) {
       const rect = containerRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      
+      // Nếu không đủ chỗ phía dưới (ít hơn 200px) và phía trên rộng hơn
+      const isUp = spaceBelow < 200 && spaceAbove > spaceBelow;
+
       setDropdownPos({
-        top: rect.bottom + window.scrollY + 4, // 4px margin top
+        top: isUp ? rect.top + window.scrollY - 4 : rect.bottom + window.scrollY + 4,
         left: rect.left + window.scrollX,
-        width: rect.width
+        width: rect.width,
+        isUp
       });
     }
     setIsOpen(!isOpen);
@@ -97,6 +119,7 @@ const Select = ({ value, onChange, options, style }) => {
             top: `${dropdownPos.top}px`,
             left: `${dropdownPos.left}px`,
             width: `${dropdownPos.width}px`,
+            transform: dropdownPos.isUp ? 'translateY(-100%)' : 'none',
             backgroundColor: 'var(--white)',
             border: '1px solid var(--neutral-200)',
             borderRadius: 'var(--radius-md)',

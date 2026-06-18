@@ -12,4 +12,5 @@ public interface RouteService {
     RouteResponseDTO updateRoute(Long id, RouteRequestDTO requestDTO);
     RouteResponseDTO updateRouteStatus(Long id, String status);
     void deleteRoute(Long id);
+    java.util.Map<String, java.util.List<String>> getLocations();
 }

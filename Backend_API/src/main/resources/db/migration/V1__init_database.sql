@@ -105,7 +105,7 @@ CREATE INDEX IF NOT EXISTS idx_trips_bus_id ON trips(bus_id);
 CREATE INDEX IF NOT EXISTS idx_tickets_trip_id ON tickets(trip_id);
 CREATE INDEX IF NOT EXISTS idx_tickets_user_id ON tickets(user_id);
 CREATE INDEX IF NOT EXISTS idx_tickets_payment_status ON tickets(payment_status);
-CREATE INDEX IF NOT EXISTS idx_tickets_created_at_date ON tickets (CAST(created_at AS DATE));
+CREATE INDEX IF NOT EXISTS idx_tickets_created_at_date ON tickets (created_at);
 
 CREATE INDEX IF NOT EXISTS idx_bookings_trip_id ON bookings(trip_id);
 CREATE INDEX IF NOT EXISTS idx_booking_seats_booking_id ON booking_seats(booking_id);
@@ -152,8 +152,8 @@ VALUES
 -- 3. Insert mock routes (Tuyến đường)
 INSERT INTO routes (route_code, origin, destination, distance, estimated_duration) 
 VALUES 
-('HN-NA', 'Hà Nội', 'Nghệ An', 300.0, 6.0),
-('NA-HN', 'Nghệ An', 'Hà Nội', 300.0, 6.0);
+('HN-NA', 'Hà Nội', 'Nghệ An', 306.0, 4.3),
+('NA-HN', 'Nghệ An', 'Hà Nội', 305.5, 4.2);
 
 -- 4. Insert mock trips (Chuyến xe)
 -- Giả sử hôm nay là ngày 16/06/2026. Data sẽ được thiết lập xung quanh ngày này.
@@ -217,4 +217,36 @@ VALUES
 
 -- 7. Insert mock system settings
 INSERT INTO system_settings (company_name, hotline, address, email, notify_new_ticket, auto_cancel_unpaid)
-VALUES ('Nhà Xe Hào Thanh', '1900 1234', '123 Đường ABC, Quận X, TP.HCM', 'contact@haothanh.com', true, true);
+VALUES ('Nhà Xe Hào Thanh', '1900 1234', 'Xóm Tân Hưng, Xã Hưng Nguyên, Tỉnh Nghệ An', 'haothanhhungnguyen@gmail.com', true, true);
+
+-- ==========================================
+-- BỔ SUNG DỮ LIỆU SEED CHO B2C (Từ ngày 18/06/2026 đến 25/06/2026)
+-- ==========================================
+
+-- 8. Insert thêm 15 Chuyến xe (Trips) ở tương lai (18/06/2026 - 25/06/2026)
+INSERT INTO trips (bus_id, route, departure_time, base_price, status, driver) 
+VALUES 
+-- Ngày 18/06/2026
+((SELECT id FROM buses WHERE license_plate = '37B-123.45'), 'Hà Nội - Nghệ An', '2026-06-18 08:00:00+07', 250000.00, 'SCHEDULED', 'Lê Hữu Đạt'),
+((SELECT id FROM buses WHERE license_plate = '37B-678.90'), 'Nghệ An - Hà Nội', '2026-06-18 14:00:00+07', 250000.00, 'SCHEDULED', 'Trần Văn Mạnh'),
+((SELECT id FROM buses WHERE license_plate = '37B-999.99'), 'Hà Nội - Nghệ An', '2026-06-18 20:00:00+07', 250000.00, 'SCHEDULED', 'Nguyễn Văn A'),
+
+-- Ngày 19/06/2026
+((SELECT id FROM buses WHERE license_plate = '37B-999.99'), 'Nghệ An - Hà Nội', '2026-06-19 08:00:00+07', 250000.00, 'SCHEDULED', 'Nguyễn Văn B'),
+((SELECT id FROM buses WHERE license_plate = '37B-123.45'), 'Hà Nội - Nghệ An', '2026-06-19 14:00:00+07', 250000.00, 'SCHEDULED', 'Lê Hữu Đạt'),
+((SELECT id FROM buses WHERE license_plate = '37B-678.90'), 'Nghệ An - Hà Nội', '2026-06-19 20:00:00+07', 250000.00, 'SCHEDULED', 'Trần Văn Mạnh'),
+
+-- Ngày 20/06/2026
+((SELECT id FROM buses WHERE license_plate = '37B-999.99'), 'Hà Nội - Nghệ An', '2026-06-20 08:00:00+07', 250000.00, 'SCHEDULED', 'Nguyễn Văn A'),
+((SELECT id FROM buses WHERE license_plate = '37B-999.99'), 'Nghệ An - Hà Nội', '2026-06-20 14:00:00+07', 250000.00, 'SCHEDULED', 'Nguyễn Văn B'),
+((SELECT id FROM buses WHERE license_plate = '37B-123.45'), 'Hà Nội - Nghệ An', '2026-06-20 20:00:00+07', 250000.00, 'SCHEDULED', 'Lê Hữu Đạt'),
+
+-- Ngày 21/06/2026
+((SELECT id FROM buses WHERE license_plate = '37B-678.90'), 'Nghệ An - Hà Nội', '2026-06-21 08:00:00+07', 250000.00, 'SCHEDULED', 'Trần Văn Mạnh'),
+((SELECT id FROM buses WHERE license_plate = '37B-999.99'), 'Hà Nội - Nghệ An', '2026-06-21 14:00:00+07', 250000.00, 'SCHEDULED', 'Nguyễn Văn A'),
+((SELECT id FROM buses WHERE license_plate = '37B-999.99'), 'Nghệ An - Hà Nội', '2026-06-21 20:00:00+07', 250000.00, 'SCHEDULED', 'Nguyễn Văn B'),
+
+-- Ngày 22/06/2026
+((SELECT id FROM buses WHERE license_plate = '37B-123.45'), 'Hà Nội - Nghệ An', '2026-06-22 08:00:00+07', 250000.00, 'SCHEDULED', 'Lê Hữu Đạt'),
+((SELECT id FROM buses WHERE license_plate = '37B-678.90'), 'Nghệ An - Hà Nội', '2026-06-22 14:00:00+07', 250000.00, 'SCHEDULED', 'Trần Văn Mạnh'),
+((SELECT id FROM buses WHERE license_plate = '37B-999.99'), 'Hà Nội - Nghệ An', '2026-06-22 20:00:00+07', 250000.00, 'SCHEDULED', 'Nguyễn Văn A');

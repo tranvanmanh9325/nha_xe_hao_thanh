@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import StatusBadge from '../ui/StatusBadge';
-import { EditIcon, TrashIcon, ChevronLeftIcon, ChevronRightIcon } from '../../assets/icons';
+import { EditIcon, TrashIcon } from '../../assets/icons';
+import Pagination from '../ui/Pagination';
 
 const TripRow = ({ trip, onEdit, onDelete, onCancel, onBookTicket }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -123,79 +124,80 @@ const TripRow = ({ trip, onEdit, onDelete, onCancel, onBookTicket }) => {
   );
 };
 
-const TripsTable = ({ data = [], isLoading, error, currentPage, totalPages, onPageChange, onEdit, onDelete, onCancel, onBookTicket }) => {
+const TripsTable = ({ 
+  data = [], 
+  isLoading, 
+  error, 
+  currentPage,
+  totalItems,
+  itemsPerPage,
+  onPageChange,
+  onItemsPerPageChange,
+  onEdit, 
+  onDelete, 
+  onCancel, 
+  onBookTicket 
+}) => {
   return (
-    <div className="trips-table-container">
-      <table className="trips-table">
-        <thead>
-          <tr>
-            <th>Mã chuyến</th>
-            <th>Tuyến đường</th>
-            <th>Khởi hành</th>
-            <th>Thông tin xe</th>
-            <th>Tài xế</th>
-            <th>Giá vé</th>
-            <th>Trạng thái</th>
-            <th style={{ minWidth: '100px', textAlign: 'center' }}>Thao tác</th>
-          </tr>
-        </thead>
-        <tbody>
-          {isLoading ? (
+    <div className="trips-table-container shadow-sm border border-slate-200 rounded-lg overflow-hidden bg-white">
+      <div className="overflow-x-auto">
+        <table className="trips-table w-full">
+          <thead>
             <tr>
-              <td colSpan="8" style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
-                Đang tải dữ liệu...
-              </td>
+              <th>Mã chuyến</th>
+              <th>Tuyến đường</th>
+              <th>Khởi hành</th>
+              <th>Thông tin xe</th>
+              <th>Tài xế</th>
+              <th>Giá vé</th>
+              <th>Trạng thái</th>
+              <th style={{ minWidth: '100px', textAlign: 'center' }}>Thao tác</th>
             </tr>
-          ) : error ? (
-            <tr>
-              <td colSpan="8" style={{ textAlign: 'center', padding: 'var(--space-8)', color: 'var(--color-danger)' }}>
-                {error}
-              </td>
-            </tr>
-          ) : data.length === 0 ? (
-            <tr>
-              <td colSpan="8" style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
-                Không tìm thấy chuyến xe nào.
-              </td>
-            </tr>
-          ) : (
-            data.map((trip) => (
-              <TripRow 
-                key={trip.id} 
-                trip={trip} 
-                onEdit={onEdit} 
-                onDelete={onDelete} 
-                onCancel={onCancel}
-                onBookTicket={onBookTicket}
-              />
-            ))
-          )}
-        </tbody>
-      </table>
-
-      {/* Pagination */}
-      <div className="trips-pagination">
-        <div className="trips-pagination__info">
-          Hiển thị {(currentPage - 1) * 10 + 1}-{Math.min(currentPage * 10, currentPage * 10 /* mock total */)} trong tổng số nhiều chuyến
-        </div>
-        <div className="trips-pagination__controls">
-          <button 
-            className="trips-pagination__btn" 
-            disabled={currentPage === 1}
-            onClick={() => onPageChange(currentPage - 1)}
-          >
-            <ChevronLeftIcon size={16} />
-          </button>
-          <span className="trips-pagination__page">{currentPage}</span>
-          <button 
-            className="trips-pagination__btn" 
-            disabled={currentPage === totalPages}
-            onClick={() => onPageChange(currentPage + 1)}
-          >
-            <ChevronRightIcon size={16} />
-          </button>
-        </div>
+          </thead>
+          <tbody>
+            {isLoading ? (
+              <tr>
+                <td colSpan="8" style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
+                  Đang tải dữ liệu...
+                </td>
+              </tr>
+            ) : error ? (
+              <tr>
+                <td colSpan="8" style={{ textAlign: 'center', padding: 'var(--space-8)', color: 'var(--color-danger)' }}>
+                  {error}
+                </td>
+              </tr>
+            ) : data.length === 0 ? (
+              <tr>
+                <td colSpan="8" style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
+                  Không tìm thấy chuyến xe nào.
+                </td>
+              </tr>
+            ) : (
+              data.map((trip) => (
+                <TripRow 
+                  key={trip.id} 
+                  trip={trip} 
+                  onEdit={onEdit} 
+                  onDelete={onDelete} 
+                  onCancel={onCancel}
+                  onBookTicket={onBookTicket}
+                />
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
+
+      {!isLoading && !error && data.length > 0 && (
+        <Pagination 
+          currentPage={currentPage}
+          totalItems={totalItems || data.length}
+          itemsPerPage={itemsPerPage}
+          onPageChange={onPageChange}
+          onItemsPerPageChange={onItemsPerPageChange}
+        />
+      )}
     </div>
   );
 };
