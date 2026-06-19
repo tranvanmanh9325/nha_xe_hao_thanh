@@ -116,8 +116,10 @@ CREATE INDEX IF NOT EXISTS idx_booking_seats_seat_number ON booking_seats(seat_n
 CREATE INDEX IF NOT EXISTS idx_tickets_trip_status ON tickets(trip_id, payment_status);
 
 CREATE INDEX IF NOT EXISTS idx_users_phone ON users(phone);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_buses_license_plate ON buses(license_plate);
 CREATE INDEX IF NOT EXISTS idx_routes_route_code ON routes(route_code);
+CREATE INDEX IF NOT EXISTS idx_tickets_trip_seat ON tickets(trip_id, seat_code);
 
 -- UNIQUE partial index to prevent double-booking at DB level (defense-in-depth)
 -- Only allow one active ticket per seat per trip

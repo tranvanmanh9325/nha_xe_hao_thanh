@@ -27,6 +27,10 @@ public class TripServiceImpl implements TripService {
     @Transactional(readOnly = true)
     public org.springframework.data.domain.Page<TripResponseDTO> getTrips(String route, String status, java.time.OffsetDateTime startDate, java.time.OffsetDateTime endDate, String searchTerm, org.springframework.data.domain.Pageable pageable) {
         org.springframework.data.jpa.domain.Specification<Trip> spec = (root, query, cb) -> {
+            // Fix N+1 Query: Fetch relationship exclusively for data queries, not count queries
+            if (query != null && Long.class != query.getResultType() && long.class != query.getResultType()) {
+                root.fetch("bus", jakarta.persistence.criteria.JoinType.LEFT);
+            }
             java.util.List<jakarta.persistence.criteria.Predicate> predicates = new java.util.ArrayList<>();
             
             if (route != null && !route.trim().isEmpty() && !route.equals("all")) {
