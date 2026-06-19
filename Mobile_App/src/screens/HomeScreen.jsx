@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Platform, StyleSheet } from 'react-native';
 import api from '../services/api';
 
 export default function HomeScreen() {
@@ -36,7 +36,7 @@ export default function HomeScreen() {
 
   return (
     <View className="flex-1 bg-gray-100 p-4">
-      <View className="bg-white rounded-xl shadow-md p-4 mb-4">
+      <View className="bg-white rounded-xl p-4 mb-4" style={styles.cardShadow}>
         <Text className="text-xl font-bold text-gray-800 mb-4 text-center">Tìm chuyến xe của bạn</Text>
         
         <View className="mb-3">
@@ -70,7 +70,7 @@ export default function HomeScreen() {
         <ActivityIndicator size="large" color="#2563eb" className="mt-10" />
       ) : (
         <View className="flex-row justify-between">
-          <View className="flex-1 bg-white p-3 rounded-lg shadow-sm mr-2">
+          <View className="flex-1 bg-white p-3 rounded-lg mr-2" style={styles.itemShadow}>
             <Text className="font-bold text-gray-700 border-b border-gray-200 pb-2 mb-2">Xuất phát từ</Text>
             {departurePoints.slice(0, 5).map((point, idx) => (
               <TouchableOpacity key={idx} onPress={() => setDeparture(point)} className="py-2 border-b border-gray-100">
@@ -80,7 +80,7 @@ export default function HomeScreen() {
             {departurePoints.length === 0 && <Text className="text-gray-500 text-sm">Không có dữ liệu</Text>}
           </View>
 
-          <View className="flex-1 bg-white p-3 rounded-lg shadow-sm ml-2">
+          <View className="flex-1 bg-white p-3 rounded-lg ml-2" style={styles.itemShadow}>
             <Text className="font-bold text-gray-700 border-b border-gray-200 pb-2 mb-2">Đi đến</Text>
             {destinationPoints.slice(0, 5).map((point, idx) => (
               <TouchableOpacity key={idx} onPress={() => setDestination(point)} className="py-2 border-b border-gray-100">
@@ -94,3 +94,30 @@ export default function HomeScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  cardShadow: Platform.select({
+    web: {
+      boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+    },
+    default: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+  }),
+  itemShadow: Platform.select({
+    web: {
+      boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
+    },
+    default: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+      elevation: 2,
+    },
+  }),
+});
