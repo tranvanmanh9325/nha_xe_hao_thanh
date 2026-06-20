@@ -18,6 +18,7 @@ import BusDetail from './pages/BusDetail';
 import Tickets from './pages/Tickets';
 import Revenue from './pages/Revenue';
 import Settings from './pages/Settings';
+import SupportChat from './pages/SupportChat';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => {
@@ -47,6 +48,7 @@ const App = () => {
               </Route>
               <Route path="tickets" element={<Tickets />} />
               <Route path="revenue" element={<Revenue />} />
+              <Route path="chat" element={<SupportChat />} />
               <Route path="settings" element={<Settings />} />
             </Route>
           </Route>

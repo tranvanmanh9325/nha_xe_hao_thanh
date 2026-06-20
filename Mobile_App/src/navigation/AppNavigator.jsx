@@ -5,6 +5,8 @@ import SplashScreen from '../screens/SplashScreen';
 import MainTabNavigator from './MainTabNavigator';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
+import SupportScreen from '../screens/SupportScreen';
+import ChatScreen from '../screens/ChatScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +33,16 @@ export default function AppNavigator() {
           name="Main" 
           component={MainTabNavigator} 
           options={{ headerShown: false, animation: 'fade' }}
+        />
+        <Stack.Screen 
+          name="Support" 
+          component={SupportScreen} 
+          options={{ headerShown: false, animation: 'slide_from_right' }}
+        />
+        <Stack.Screen 
+          name="Chat" 
+          component={ChatScreen} 
+          options={{ headerShown: false, animation: 'slide_from_right' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
