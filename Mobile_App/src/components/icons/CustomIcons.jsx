@@ -69,12 +69,9 @@ export const LockIcon = ({ size = 24, color = "currentColor", style }) => (
 );
 
 export const UserIcon = ({ size = 24, color = "currentColor", style }) => (
-  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" style={style}>
-    {/* Geometric avatar */}
-    <Path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21" />
-    <Polygon points="12,4 15,7 15,11 12,13 9,11 9,7" />
-    {/* Cyber line */}
-    <Line x1="12" y1="13" x2="12" y2="15" strokeOpacity="0.5" />
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={style}>
+    <Path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+    <Circle cx="12" cy="8" r="4" />
   </Svg>
 );
 
@@ -192,5 +189,34 @@ export const TicketOutlineIcon = ({ size = 24, color = "currentColor", style }) 
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" style={style}>
     <Path d="M15 5H9a2 2 0 0 0-2 2v2a2 2 0 0 1 0 4v2a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-2a2 2 0 0 1 0-4V7a2 2 0 0 0-2-2z" />
     <Line x1="12" y1="9" x2="12" y2="15" strokeDasharray="2 2" />
+  </Svg>
+);
+
+export const MailIcon = ({ size = 24, color = "currentColor", style }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" style={style}>
+    <Path d="M4 7.00005L10.2 11.65C11.2667 12.45 12.7333 12.45 13.8 11.65L20 7" />
+    <Rect x="3" y="5" width="18" height="14" rx="2" />
+  </Svg>
+);
+
+export const MessageIcon = ({ size = 24, color = "currentColor", style }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" style={style}>
+    <Path d="M21 11.5C21 16.75 16.75 21 11.5 21C9.83 21 8.27 20.56 6.94 19.8L3 21L4.2 17.06C3.44 15.73 3 14.17 3 12.5C3 7.25 7.25 3 12.5 3C17.75 3 21 7.25 21 11.5Z" />
+    <Path d="M8 12H8.01" strokeWidth="2" strokeLinecap="round" />
+    <Path d="M12 12H12.01" strokeWidth="2" strokeLinecap="round" />
+    <Path d="M16 12H16.01" strokeWidth="2" strokeLinecap="round" />
+  </Svg>
+);
+
+export const ChevronDownIcon = ({ size = 24, color = "currentColor", style }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" style={style}>
+    <Polyline points="6 9 12 15 18 9" />
+  </Svg>
+);
+
+export const ArrowLeftIcon = ({ size = 24, color = "currentColor", style }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" style={style}>
+    <Path d="M19 12H5" />
+    <Path d="M12 19L5 12L12 5" />
   </Svg>
 );

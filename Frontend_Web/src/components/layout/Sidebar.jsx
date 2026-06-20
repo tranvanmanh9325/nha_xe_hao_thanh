@@ -8,6 +8,7 @@ import {
   ChartIcon,
   SettingsIcon,
   LogoutIcon,
+  MessageIcon,
 } from '../../assets/icons';
 import { logout } from '../../utils/authService';
 import '../../styles/sidebar.css';
@@ -20,6 +21,7 @@ const navItems = [
   { to: '/admin/buses', icon: BusIcon, label: 'Quản lý xe' },
   { to: '/admin/tickets', icon: TicketIcon, label: 'Quản lý vé' },
   { to: '/admin/revenue', icon: ChartIcon, label: 'Thống kê doanh thu' },
+  { to: '/admin/chat', icon: MessageIcon, label: 'Chat Hỗ trợ' },
   { to: '/admin/settings', icon: SettingsIcon, label: 'Cài đặt' },
 ];
 

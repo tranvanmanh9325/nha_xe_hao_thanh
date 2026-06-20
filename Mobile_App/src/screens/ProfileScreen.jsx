@@ -36,12 +36,12 @@ export default function ProfileScreen({ navigation }) {
       const loadProfile = async () => {
         try {
           const response = await authService.getProfile();
-          if (response && response.data) {
+          if (response) {
             setUserProfile({
-              fullName: response.data.fullName || "Người dùng",
-              phone: response.data.phone || "---",
-              tier: response.data.tier || "Thành viên Bạc",
-              points: response.data.points || 0,
+              fullName: response.fullName || "Người dùng",
+              phone: response.phone || "---",
+              tier: response.tier || "Thành viên Bạc",
+              points: response.points || 0,
             });
           }
         } catch (error) {
@@ -184,7 +184,10 @@ export default function ProfileScreen({ navigation }) {
             <View style={styles.divider} />
             {renderMenuItem(
               (color) => <HelpIcon size={24} color={color} />, 
-              "Trợ giúp & Hỗ trợ"
+              "Trợ giúp & Hỗ trợ",
+              null,
+              false,
+              () => navigation.navigate('Support')
             )}
           </View>
         </View>
