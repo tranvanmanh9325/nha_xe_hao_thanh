@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 
 const getBaseURL = () => {
   if (Platform.OS === 'web') {
-    // Tránh lỗi Private Network Access (PNA) của Chrome khi gọi IP LAN (192.168.x.x) từ localhost
+    // Avoid Chrome Private Network Access (PNA) errors when calling LAN IP from localhost
     return 'http://localhost:8080/api/v1';
   }
   return process.env.EXPO_PUBLIC_API_BASE_URL || 'http://192.168.1.1:8080/api/v1';
@@ -14,41 +14,49 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// Deduplication Map for High Concurrency
-const pendingRequests = new Map();
+// Deduplication for idempotent GET requests only
+const pendingGetRequests = new Map();
 
 api.interceptors.request.use((config) => {
-  const key = `${config.method}:${config.url}?${new URLSearchParams(config.params || {}).toString()}`;
-  if (pendingRequests.has(key)) {
-    return Promise.reject({ message: 'Duplicate request blocked', config, isDuplicate: true });
+  if (config.method !== 'get') return config;
+
+  const key = `${config.url}?${new URLSearchParams(config.params || {}).toString()}`;
+
+  if (pendingGetRequests.has(key)) {
+    const controller = new AbortController();
+    controller.abort();
+    config.signal = controller.signal;
+    return config;
   }
-  pendingRequests.set(key, true);
+
+  pendingGetRequests.set(key, true);
+  config._deduplicationKey = key;
   return config;
 });
 
 // Exponential Backoff Retry & Deduplication Cleanup
 api.interceptors.response.use(
   (response) => {
-    const key = `${response.config.method}:${response.config.url}?${new URLSearchParams(response.config.params || {}).toString()}`;
-    pendingRequests.delete(key);
+    if (response.config._deduplicationKey) {
+      pendingGetRequests.delete(response.config._deduplicationKey);
+    }
     return response;
   },
   async (error) => {
-    if (error.config) {
-      const key = `${error.config.method}:${error.config.url}?${new URLSearchParams(error.config.params || {}).toString()}`;
-      pendingRequests.delete(key);
+    if (error.config?._deduplicationKey) {
+      pendingGetRequests.delete(error.config._deduplicationKey);
     }
-    
-    // Ignore duplicate rejections silently if handled correctly by UI, or just pass it down
-    if (error.isDuplicate) return Promise.reject(error);
+
+    // Silently swallow aborted duplicate requests
+    if (axios.isCancel(error)) return Promise.reject(error);
 
     const config = error.config;
     if (!config) return Promise.reject(error);
 
     config.retryCount = config.retryCount || 0;
     // Retry on 5xx errors or network timeouts
-    const shouldRetry = (error.response && error.response.status >= 500) || 
-                        error.code === 'ECONNABORTED' || 
+    const shouldRetry = (error.response && error.response.status >= 500) ||
+                        error.code === 'ECONNABORTED' ||
                         error.message === 'Network Error';
 
     if (shouldRetry && config.retryCount < 3) {
