@@ -3,9 +3,11 @@ package com.haothanh.booking.controller;
 import com.haothanh.booking.dto.ApiResponse;
 import com.haothanh.booking.dto.AuthRequestDTO;
 import com.haothanh.booking.dto.AuthResponseDTO;
+import com.haothanh.booking.dto.RegisterRequestDTO;
 import com.haothanh.booking.security.JwtTokenProvider;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -42,6 +44,26 @@ public class AuthController {
 
         String jwt = tokenProvider.generateToken(authentication);
         return ResponseEntity.ok(ApiResponse.success("Đăng nhập thành công", new AuthResponseDTO(jwt)));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<AuthResponseDTO>> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequest) {
+        // Persist new user (throws DuplicateResourceException if phone exists)
+        userService.register(registerRequest);
+
+        // Auto-login after successful registration
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        registerRequest.getPhone(),
+                        registerRequest.getPassword()
+                )
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String jwt = tokenProvider.generateToken(authentication);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Đăng ký thành công", new AuthResponseDTO(jwt)));
     }
 
     @PutMapping("/change-password")

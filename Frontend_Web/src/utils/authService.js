@@ -4,7 +4,7 @@ export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:80
  * Core fetch wrapper that auto-attaches JWT token from localStorage.
  * All admin API calls should use this instead of raw fetch().
  */
-export const authFetch = async (url, options = {}) => {
+export const authFetch = async (url, options = {}, retries = 3) => {
   const token = localStorage.getItem('accessToken');
   const headers = {
     ...options.headers,
@@ -20,16 +20,48 @@ export const authFetch = async (url, options = {}) => {
     headers['Content-Type'] = 'application/json';
   }
 
-  const response = await fetch(url, { ...options, headers });
+  const fetchOptions = { ...options, headers };
 
-  // Auto-logout on 401/403 (token expired or invalid)
-  if (response.status === 401) {
-    localStorage.removeItem('accessToken');
-    window.location.href = '/?sessionExpired=true';
-    throw new Error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
-  }
+  // Helper function with Timeout & Exponential Backoff Retry
+  const executeFetch = async (attempt) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+    const configWithTimeout = { ...fetchOptions, signal: controller.signal };
 
-  return response;
+    try {
+      const response = await fetch(url, configWithTimeout);
+      clearTimeout(timeoutId);
+
+      // Auto-logout on 401 (token expired or invalid)
+      if (response.status === 401) {
+        localStorage.removeItem('accessToken');
+        window.location.href = '/?sessionExpired=true';
+        throw new Error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+      }
+
+      // If Server Error (5xx), throw to trigger retry block
+      if (response.status >= 500 && attempt < retries) {
+        throw new Error(`Server Error: ${response.status}`);
+      }
+
+      return response;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      const isNetworkOrTimeout = error.name === 'AbortError' || 
+                                 error.message.includes('Server Error') || 
+                                 error.message === 'Failed to fetch';
+      
+      if (isNetworkOrTimeout && attempt < retries) {
+        // Exponential backoff with jitter
+        const delay = Math.pow(2, attempt) * 1000 + Math.random() * 500;
+        await new Promise(res => setTimeout(res, delay));
+        return executeFetch(attempt + 1);
+      }
+      throw error;
+    }
+  };
+
+  return executeFetch(0);
 };
 
 export const login = async (phone, password) => {
@@ -72,4 +104,3 @@ export const changePassword = async (oldPassword, newPassword) => {
   
   return data;
 };
-

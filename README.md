@@ -1,82 +1,139 @@
-# 🚌 Hệ Thống Quản Lý Đặt Vé - Nhà Xe Hào Thanh
+# 🚌 Hao Thanh Bus Ticketing & Management System
 
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-brightgreen.svg?logo=springboot)](https://spring.io/projects/spring-boot)
 [![React](https://img.shields.io/badge/React-19-blue.svg?logo=react)](https://react.dev/)
+[![React Native](https://img.shields.io/badge/React_Native-0.85-61DAFB.svg?logo=react)](https://reactnative.dev/)
+[![Expo](https://img.shields.io/badge/Expo-56-000020.svg?logo=expo)](https://expo.dev/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED.svg?logo=docker)](https://www.docker.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791.svg?logo=postgresql)](https://www.postgresql.org/)
 [![Redis](https://img.shields.io/badge/Redis-Cache%20%7C%20Lock-DC382D.svg?logo=redis)](https://redis.io/)
 
-Hệ thống quản lý đặt vé xe khách toàn diện được xây dựng với kiến trúc hiện đại, đảm bảo tính mở rộng, hiệu năng cao và xử lý đồng thời tốt (giải quyết triệt để bài toán Race Condition trong đặt vé).
+A comprehensive, high-performance bus ticketing and management system built with a modern microservices-inspired architecture. Designed to handle high concurrent traffic and completely resolve Race Conditions during seat booking. The platform includes a Web Frontend for administrators/users, a Mobile App for customers, and a robust Backend API.
 
 ---
 
-## 🏗 Kiến Trúc Hệ Thống
+## 📑 Table of Contents
 
-Dự án được thiết kế theo mô hình phân tán, kết hợp Load Balancing để đảm bảo High Availability (HA) và khả năng chịu tải tốt:
+- [Introduction](#-introduction)
+- [Architecture](#-architecture)
+- [Screenshots / Demo](#-screenshots--demo)
+- [Features & Highlights](#-features--highlights)
+- [Tech Stack](#-tech-stack)
+- [Folder Structure](#-folder-structure)
+- [Installation & Usage](#-installation--usage-local-development)
+- [Container Management](#-container-management)
+- [Contributing](#-contributing)
+- [License](#-license)
 
-- **Frontend:** Single Page Application (SPA) phát triển bằng React 19 + Vite, mang lại trải nghiệm mượt mà và tối ưu hiệu suất.
-- **Backend:** Ứng dụng RESTful API viết bằng Java 21 & Spring Boot 3.5. Chạy đa bản sao (3 replicas) để phân tải qua Docker Compose.
-- **Database:** PostgreSQL 15 làm cơ sở dữ liệu chính, quản lý cấu trúc schema chuẩn xác qua Flyway.
-- **Cache & Distributed Lock:** Redis được sử dụng để tăng tốc truy xuất dữ liệu. Đặc biệt kết hợp Redisson để thiết lập khóa phân tán (Distributed Lock), ngăn chặn hoàn toàn lỗi trùng lặp/conflict khi nhiều người cùng đặt chung một ghế (Race Conditions).
-- **API Gateway / Load Balancer:** Nginx đóng vai trò là cửa ngõ duy nhất, tự động phân phối các request API từ client chia đều cho các instance của backend.
+---
 
-## 🚀 Công Nghệ Sử Dụng
+## 🌟 Introduction
 
-### Frontend
+The Hao Thanh Bus Ticketing System provides a seamless booking experience for passengers while offering powerful management tools for bus operators. Built to ensure High Availability (HA) and consistency, the system uses Distributed Locks to prevent double-booking (Race Conditions) when multiple users attempt to reserve the same seat simultaneously.
+
+---
+
+## 🏗 Architecture
+
+The project is designed with a distributed mindset, incorporating Load Balancing to ensure High Availability and scalability:
+
+- **Frontend Web:** A Single Page Application (SPA) built with React 19 + Vite, delivering a smooth and highly optimized user experience.
+- **Mobile App:** A cross-platform mobile application developed using React Native and Expo, bringing the booking experience directly to users' smartphones.
+- **Backend API:** A RESTful API built with Java 21 & Spring Boot 3.5. It runs in multiple replicas behind a load balancer to handle high traffic seamlessly.
+- **Database:** PostgreSQL 15 serves as the primary relational database, with schema migrations meticulously managed by Flyway.
+- **Cache & Distributed Lock:** Redis is utilized to accelerate data retrieval. Crucially, Redisson is integrated to implement Distributed Locks, completely eliminating Race Conditions during high-concurrency seat bookings.
+- **API Gateway / Load Balancer:** Nginx acts as the single entry point (Reverse Proxy), automatically distributing incoming API requests across multiple backend instances.
+
+---
+
+## 📸 Screenshots / Demo
+
+<!-- Please insert your application screenshots, GIFs, or demo video links here -->
+
+- **Web Dashboard:** `![Dashboard Screenshot](link-to-image)`
+- **Mobile App Booking Flow:** `![Mobile App Screenshot](link-to-image)`
+- **System Architecture Diagram:** `![Architecture Screenshot](link-to-image)`
+
+---
+
+## ✨ Features & Highlights
+
+- **Real-time Seat Booking:** Prevents race conditions using Redis Distributed Locks (Redisson).
+- **Cross-Platform Accessibility:** Native-feeling mobile app alongside a responsive web application.
+- **High Availability & Load Balancing:** Nginx routes traffic intelligently to multiple backend replicas.
+- **Secure Authentication:** JWT-based stateless authentication integrated with Spring Security.
+- **Interactive Maps & Charts:** Real-time data visualization using Recharts and interactive maps via Leaflet.
+- **Automated Database Migrations:** Hassle-free database schema updates using Flyway.
+- **Cloud Media Storage:** Direct integration with Cloudinary for seamless image uploads.
+
+---
+
+## 🚀 Tech Stack
+
+### Frontend (Web)
 
 - **Core Framework:** React 19, Vite
 - **Routing:** React Router v7
-- **UI Components & Charts:** Lucide React, Recharts, React Smooth
-- **Date Handling:** date-fns
+- **Styling:** Tailwind CSS, PostCSS
+- **UI & Visualization:** Lucide React, Recharts, React Leaflet
 
-### Backend
+### Mobile (App)
 
-- **Ngôn ngữ:** Java 21
-- **Framework Chính:** Spring Boot 3.5.14
+- **Core Framework:** React Native 0.85, Expo ~56
+- **Navigation:** React Navigation v7
+- **Styling:** NativeWind (Tailwind CSS for React Native)
+
+### Backend (API)
+
+- **Language:** Java 21
+- **Framework:** Spring Boot 3.5.15
 - **ORM & Data Access:** Spring Data JPA / Hibernate
 - **Database Migration:** Flyway
 - **Caching & Locking:** Spring Data Redis, Redisson
-- **Công cụ hỗ trợ:** Lombok, Spring Boot Actuator
+- **Security:** Spring Security, JWT (io.jsonwebtoken)
+- **Cloud Storage:** Cloudinary
 
 ### DevOps & Infrastructure
 
 - **Containerization:** Docker & Docker Compose
-- **Database Container:** PostgreSQL 15 (Alpine)
-- **Cache Container:** Redis (Alpine)
+- **Database:** PostgreSQL 15 (Alpine)
+- **Cache:** Redis (Alpine)
 - **Web Server / Reverse Proxy:** Nginx (Alpine)
 
 ---
 
-## 📂 Cấu Trúc Thư Mục
+## 📂 Folder Structure
 
 ```text
 nha_xe_hao_thanh/
-├── Backend_API/          # Source code Spring Boot RESTful API
-├── Frontend_Web/         # Source code React + Vite Frontend
-├── nginx/                # Cấu hình Nginx Load Balancer (Proxy to Backend)
-├── .env                  # Cấu hình biến môi trường dùng chung (Git ignored)
-├── docker-compose.yml    # Cấu hình triển khai hệ thống (Infrastructure)
-└── README.md             # Tài liệu dự án
+├── Backend_API/          # Spring Boot RESTful API source code
+├── Frontend_Web/         # React + Vite Web application source code
+├── Mobile_App/           # React Native + Expo Mobile application source code
+├── nginx/                # Nginx Load Balancer / Reverse Proxy configuration
+├── .env                  # Shared environment variables (Git ignored)
+├── docker-compose.yml    # Infrastructure deployment configuration
+└── README.md             # Project documentation (You are here)
 ```
 
 ---
 
-## ⚡ Hướng Dẫn Cài Đặt Và Vận Hành (Local Development)
+## ⚡ Installation & Usage (Local Development)
 
-Dự án được đóng gói hoàn toàn bằng Docker Compose. Chỉ với một vài lệnh đơn giản, bạn có thể triển khai hệ thống hoàn chỉnh ở bất kỳ đâu.
+The entire infrastructure is containerized using Docker Compose. With just a few commands, you can spin up the full environment.
 
-### 1. Yêu cầu hệ thống
+### 1. Prerequisites
 
-- **Docker Engine** và **Docker Compose** đã được cài đặt và đang chạy.
-- Cổng (Port) `3000` (Frontend), `8080` (Nginx), `5432` (PostgreSQL), `6379` (Redis) trên máy của bạn phải đang trống (không bị chiếm dụng bởi ứng dụng khác).
+- **Docker Engine** and **Docker Compose** must be installed and running.
+- Ensure the following ports are available on your host machine: `3000` (Frontend Web), `8081` (Mobile App Expo), `8080` (Nginx API Gateway), `5432` (PostgreSQL), and `6379` (Redis).
+- Node.js (v18+) & npm/yarn (if you plan to run the Mobile App directly without Docker).
 
-### 2. Thiết lập môi trường
+### 2. Environment Configuration
 
-Nếu bạn vừa pull code về, hãy tạo một file tên `.env` tại thư mục gốc của dự án (ngang hàng với `docker-compose.yml`) và nhập các cấu hình sau:
+Create a `.env` file in the root directory (next to `docker-compose.yml`) and populate it with the required configurations:
 
 ```env
 ### FRONTEND ###
-VITE_API_BASE_URL=http://localhost:8080/api
+VITE_API_BASE_URL=http://localhost:8080/api/v1
 
 ### BACKEND ###
 # Database Variables
@@ -90,49 +147,77 @@ SPRING_DATASOURCE_USERNAME=root
 SPRING_DATASOURCE_PASSWORD=rootpassword
 SPRING_REDIS_HOST=redis
 SPRING_REDIS_PORT=6379
+
+# Cloudinary Integration (Required for image uploads)
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+
+### MOBILE APP ###
+# Your machine's local IP address (e.g., 192.168.1.x) for Expo to connect to the backend
+LOCAL_IP=your_local_ip_address
 ```
 
-### 3. Khởi động toàn bộ hệ thống
+### 3. Spin Up the System
 
-Mở terminal/command prompt tại thư mục gốc của dự án, thực thi lệnh:
+Open a terminal at the project root and run:
 
 ```bash
 docker-compose up -d --build
 ```
 
-Quá trình này sẽ diễn ra tự động bao gồm:
+This automated process will:
 
-1. Kéo các base image cần thiết (Postgres, Redis, Nginx).
-2. Tự động build Docker image cho Frontend Web và Backend API.
-3. Tạo ra các container và kết nối chúng bằng Docker Network nội bộ.
-4. Spin up 3 instances (replicas) của ứng dụng Backend để test Load Balancing.
-5. Thực thi tự động Flyway Migration để khởi tạo cấu trúc Database mới nhất.
+1. Pull necessary base images (PostgreSQL, Redis, Nginx).
+2. Build Docker images for the Frontend Web, Mobile App, and Backend API.
+3. Establish a private Docker network for secure inter-container communication.
+4. Spin up **3 replicas** of the Backend API to demonstrate load balancing.
+5. Automatically execute Flyway Migrations to set up the latest database schema.
 
-### 4. Truy cập ứng dụng
+### 4. Access the Applications
 
-Sau khi terminal báo quá trình chạy thành công, mở trình duyệt và truy cập:
+Once the containers are running healthy:
 
-- **Ứng dụng Web (Frontend):** [http://localhost:3000](http://localhost:3000)
-- **API Server (Truy cập gián tiếp qua Nginx Load Balancer):** [http://localhost:8080/api](http://localhost:8080/api)
+- **Web Application (Frontend):** [http://localhost:3000](http://localhost:3000)
+- **API Gateway (Nginx):** [http://localhost:8080/api/v1](http://localhost:8080/api/v1)
+- **Mobile App (Expo QR Code):** [http://localhost:8081](http://localhost:8081) (Scan the QR code with the Expo Go app on your physical device)
 
 ---
 
-## 🛠 Cách Quản Lý Các Container
+## 🛠 Container Management
 
-- Xem log hoạt động của backend (để kiểm tra quá trình query DB hoặc Redis, load balancing):
+- **View backend logs** (useful for monitoring DB queries, Redis locks, and load balancing):
 
   ```bash
   docker-compose logs -f backend
   ```
 
-- Dừng toàn bộ hệ thống:
+- **Stop the entire system:**
 
   ```bash
   docker-compose down
   ```
 
-- Dừng hệ thống và xóa sạch toàn bộ dữ liệu hiện tại (bao gồm database postgres_data):
+- **Stop the system and wipe all data volumes** (including the PostgreSQL database):
 
   ```bash
   docker-compose down -v
   ```
+
+---
+
+## 🤝 Contributing
+
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. **Fork** the Project
+2. **Create** your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. **Commit** your Changes (`git commit -m 'feat: add some AmazingFeature'`)
+4. **Push** to the Branch (`git push origin feature/AmazingFeature`)
+5. **Open** a Pull Request
+
+---
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.

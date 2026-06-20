@@ -116,8 +116,10 @@ CREATE INDEX IF NOT EXISTS idx_booking_seats_seat_number ON booking_seats(seat_n
 CREATE INDEX IF NOT EXISTS idx_tickets_trip_status ON tickets(trip_id, payment_status);
 
 CREATE INDEX IF NOT EXISTS idx_users_phone ON users(phone);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_buses_license_plate ON buses(license_plate);
 CREATE INDEX IF NOT EXISTS idx_routes_route_code ON routes(route_code);
+CREATE INDEX IF NOT EXISTS idx_tickets_trip_seat ON tickets(trip_id, seat_code);
 
 -- UNIQUE partial index to prevent double-booking at DB level (defense-in-depth)
 -- Only allow one active ticket per seat per trip
@@ -137,10 +139,10 @@ VALUES
 ('Admin Hào Thành', '0901234567', 'admin@haothanh.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUrawRaQiCX2', 'ADMIN'),
 ('Admin Quản Lý', '0999999999', 'admin2@haothanh.com', '$2a$10$gAc/WoS5fNzJGJX1wnFDSOfVPWaVyW8C3jW88Sx1kHa.3eTI5x40O', 'ADMIN'),
 -- Customers
-('Nguyễn Văn Khách', '0911111111', 'khach1@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUrawRaQiCX2', 'USER'),
-('Trần Thị Diệu', '0922222222', 'khach2@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUrawRaQiCX2', 'USER'),
-('Lê Hoàng Nam', '0933333333', 'khach3@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUrawRaQiCX2', 'USER'),
-('Phạm Quang Khải', '0944444444', 'khach4@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUrawRaQiCX2', 'USER');
+('Nguyễn Văn Khách', '0911111111', 'khach1@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUrawRaQiCX2', 'CUSTOMER'),
+('Trần Thị Diệu', '0922222222', 'khach2@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUrawRaQiCX2', 'CUSTOMER'),
+('Lê Hoàng Nam', '0933333333', 'khach3@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUrawRaQiCX2', 'CUSTOMER'),
+('Phạm Quang Khải', '0944444444', 'khach4@gmail.com', '$2a$10$W2neF9.6Agi6kAKVq8q3fec5dHW8KUA.b0VSIGdIZyUrawRaQiCX2', 'CUSTOMER');
 
 -- 2. Insert mock buses (Các xe của nhà xe)
 INSERT INTO buses (bus_number, license_plate, bus_type, total_seats, layout_config, image_url, description, manufacture_year, color) 
@@ -250,3 +252,12 @@ VALUES
 ((SELECT id FROM buses WHERE license_plate = '37B-123.45'), 'Hà Nội - Nghệ An', '2026-06-22 08:00:00+07', 250000.00, 'SCHEDULED', 'Lê Hữu Đạt'),
 ((SELECT id FROM buses WHERE license_plate = '37B-678.90'), 'Nghệ An - Hà Nội', '2026-06-22 14:00:00+07', 250000.00, 'SCHEDULED', 'Trần Văn Mạnh'),
 ((SELECT id FROM buses WHERE license_plate = '37B-999.99'), 'Hà Nội - Nghệ An', '2026-06-22 20:00:00+07', 250000.00, 'SCHEDULED', 'Nguyễn Văn A');
+
+-- 9. Insert thêm 4 tài khoản khách hàng (CUSTOMER) để test Mobile App
+-- Password: 1234567890@123 (BCrypt hash)
+INSERT INTO users (full_name, phone, email, password, role)
+VALUES
+('Võ Minh Tuấn',   '0355001001', 'tuan.vo@gmail.com',    '$2a$10$vYbu9cSct3ex2btgmiBOuePlsmop5jYoVFallxJBVyEbCkVgHOQHm', 'CUSTOMER'),
+('Đặng Thị Hồng',  '0355002002', 'hong.dang@gmail.com',  '$2a$10$vYbu9cSct3ex2btgmiBOuePlsmop5jYoVFallxJBVyEbCkVgHOQHm', 'CUSTOMER'),
+('Bùi Quốc Anh',   '0355003003', 'anh.bui@gmail.com',    '$2a$10$vYbu9cSct3ex2btgmiBOuePlsmop5jYoVFallxJBVyEbCkVgHOQHm', 'CUSTOMER'),
+('Hoàng Thị Mai',   '0355004004', 'mai.hoang@gmail.com',  '$2a$10$vYbu9cSct3ex2btgmiBOuePlsmop5jYoVFallxJBVyEbCkVgHOQHm', 'CUSTOMER');
