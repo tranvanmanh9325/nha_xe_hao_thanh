@@ -33,7 +33,7 @@ export default function SplashScreen({ navigation }) {
       await new Promise(resolve => setTimeout(resolve, 2000));
 
       const isLoggedIn = await authService.isAuthenticated();
-      navigation.replace(isLoggedIn ? 'Home' : 'Login');
+      navigation.replace(isLoggedIn ? 'Main' : 'Login');
     };
 
     checkAuthAndNavigate();

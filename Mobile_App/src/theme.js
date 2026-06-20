@@ -20,6 +20,13 @@ export const COLORS = {
     900: '#111827',
   },
   white: '#FFFFFF',
+  transparent: 'transparent',
+  glass: {
+    light: 'rgba(255, 255, 255, 0.7)',
+    medium: 'rgba(255, 255, 255, 0.5)',
+    heavy: 'rgba(255, 255, 255, 0.2)',
+    dark: 'rgba(17, 24, 39, 0.6)',
+  },
   semantic: {
     success: '#10B981',
     warning: '#F59E0B',
@@ -82,5 +89,19 @@ export const SHADOWS = {
     shadowOpacity: 0.25,
     shadowRadius: 10,
     elevation: 8,
+  },
+  futuristic: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 15,
+  },
+  glow: {
+    shadowColor: '#F05123',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 10,
   }
 };

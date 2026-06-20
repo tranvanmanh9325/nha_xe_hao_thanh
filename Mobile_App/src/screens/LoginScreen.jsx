@@ -49,7 +49,7 @@ export default function LoginScreen({ navigation }) {
 
     try {
       await authService.login(phone.trim(), password);
-      navigation.replace('Home');
+      navigation.replace('Main');
     } catch (error) {
       const message = authService.getErrorMessage(error);
       if (message) {

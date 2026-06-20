@@ -2,11 +2,17 @@ import axios from 'axios';
 import { Platform } from 'react-native';
 
 const getBaseURL = () => {
+  if (process.env.EXPO_PUBLIC_API_BASE_URL) {
+    return process.env.EXPO_PUBLIC_API_BASE_URL;
+  }
+  
   if (Platform.OS === 'web') {
-    // Avoid Chrome Private Network Access (PNA) errors when calling LAN IP from localhost
     return 'http://localhost:8080/api/v1';
   }
-  return process.env.EXPO_PUBLIC_API_BASE_URL || 'http://192.168.1.1:8080/api/v1';
+  
+  console.warn("CẢNH BÁO: Chưa cấu hình EXPO_PUBLIC_API_BASE_URL trong .env. Kết nối API có thể thất bại trên thiết bị thật.");
+  // Dành cho Android Emulator (10.0.2.2) hoặc iOS Simulator (localhost)
+  return 'http://10.0.2.2:8080/api/v1';
 };
 
 const api = axios.create({

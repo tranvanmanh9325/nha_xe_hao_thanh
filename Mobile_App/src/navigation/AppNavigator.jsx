@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SplashScreen from '../screens/SplashScreen';
-import HomeScreen from '../screens/HomeScreen';
+import MainTabNavigator from './MainTabNavigator';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 
@@ -28,8 +28,8 @@ export default function AppNavigator() {
           options={{ headerShown: false, animation: 'slide_from_right' }}
         />
         <Stack.Screen 
-          name="Home" 
-          component={HomeScreen} 
+          name="Main" 
+          component={MainTabNavigator} 
           options={{ headerShown: false, animation: 'fade' }}
         />
       </Stack.Navigator>
