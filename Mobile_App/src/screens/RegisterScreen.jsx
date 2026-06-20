@@ -72,7 +72,7 @@ export default function RegisterScreen({ navigation }) {
 
     try {
       await authService.register(fullName.trim(), phone.trim(), password);
-      navigation.replace('Home');
+      navigation.replace('Main');
     } catch (error) {
       const message = authService.getErrorMessage(error);
       if (message) {

@@ -5,6 +5,8 @@ CREATE TABLE users (
     email VARCHAR(255),
     password VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL,
+    tier VARCHAR(50) DEFAULT 'Thành viên Mới',
+    points INTEGER DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -257,7 +259,7 @@ VALUES
 -- Password: 1234567890@123 (BCrypt hash)
 INSERT INTO users (full_name, phone, email, password, role)
 VALUES
-('Võ Minh Tuấn',   '0355001001', 'tuan.vo@gmail.com',    '$2a$10$vYbu9cSct3ex2btgmiBOuePlsmop5jYoVFallxJBVyEbCkVgHOQHm', 'CUSTOMER'),
-('Đặng Thị Hồng',  '0355002002', 'hong.dang@gmail.com',  '$2a$10$vYbu9cSct3ex2btgmiBOuePlsmop5jYoVFallxJBVyEbCkVgHOQHm', 'CUSTOMER'),
-('Bùi Quốc Anh',   '0355003003', 'anh.bui@gmail.com',    '$2a$10$vYbu9cSct3ex2btgmiBOuePlsmop5jYoVFallxJBVyEbCkVgHOQHm', 'CUSTOMER'),
-('Hoàng Thị Mai',   '0355004004', 'mai.hoang@gmail.com',  '$2a$10$vYbu9cSct3ex2btgmiBOuePlsmop5jYoVFallxJBVyEbCkVgHOQHm', 'CUSTOMER');
+('Võ Minh Tuấn',   '0355001001', 'tuan.vo@gmail.com',    '$2a$10$2i0i.CnTdqIYw4./vVSkf.qsg5wW8/25dTUN19ymDlJXQ89QBXgOK', 'CUSTOMER'),
+('Đặng Thị Hồng',  '0355002002', 'hong.dang@gmail.com',  '$2a$10$2i0i.CnTdqIYw4./vVSkf.qsg5wW8/25dTUN19ymDlJXQ89QBXgOK', 'CUSTOMER'),
+('Bùi Quốc Anh',   '0355003003', 'anh.bui@gmail.com',    '$2a$10$2i0i.CnTdqIYw4./vVSkf.qsg5wW8/25dTUN19ymDlJXQ89QBXgOK', 'CUSTOMER'),
+('Hoàng Thị Mai',   '0355004004', 'mai.hoang@gmail.com',  '$2a$10$2i0i.CnTdqIYw4./vVSkf.qsg5wW8/25dTUN19ymDlJXQ89QBXgOK', 'CUSTOMER');

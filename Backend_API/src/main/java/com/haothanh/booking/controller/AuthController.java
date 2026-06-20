@@ -12,15 +12,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
 import com.haothanh.booking.dto.ChangePasswordRequestDTO;
+import com.haothanh.booking.dto.UserResponseDTO;
 import com.haothanh.booking.service.UserService;
 import com.haothanh.booking.security.CustomUserDetails;
+import com.haothanh.booking.entity.User;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -67,17 +71,28 @@ public class AuthController {
     }
 
     @PutMapping("/change-password")
-    public ResponseEntity<ApiResponse<Void>> changePassword(@Valid @RequestBody ChangePasswordRequestDTO requestDTO) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+    public ResponseEntity<ApiResponse<Void>> changePassword(
+            @Valid @RequestBody ChangePasswordRequestDTO requestDTO,
+            @AuthenticationPrincipal CustomUserDetails userPrincipal) {
+        
+        if (userPrincipal == null) {
             return ResponseEntity.status(401).body(ApiResponse.error("Người dùng chưa xác thực"));
         }
         
-        CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
         Long userId = userPrincipal.getId();
-        
         userService.changePassword(userId, requestDTO);
         
         return ResponseEntity.ok(ApiResponse.success("Đổi mật khẩu thành công", null));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<UserResponseDTO>> getCurrentUser(@AuthenticationPrincipal CustomUserDetails userPrincipal) {
+        if (userPrincipal == null) {
+            return ResponseEntity.status(401).body(ApiResponse.error("Người dùng chưa xác thực"));
+        }
+
+        Long userId = userPrincipal.getId();
+        User user = userService.getUserById(userId);
+        return ResponseEntity.ok(ApiResponse.success("Lấy thông tin người dùng thành công", UserResponseDTO.fromEntity(user)));
     }
 }

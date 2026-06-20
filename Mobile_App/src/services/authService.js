@@ -38,6 +38,11 @@ const authService = {
     await AsyncStorage.removeItem(TOKEN_KEY);
   },
 
+  async getProfile() {
+    const { data } = await api.get('/auth/me');
+    return data.data;
+  },
+
   /**
    * Returns cached token when available, falls back to AsyncStorage on cold start.
    */
@@ -65,11 +70,11 @@ const authService = {
       return 'Kết nối quá thời gian. Vui lòng thử lại.';
     }
 
-    if (error.message === 'Network Error') {
-      return 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra mạng.';
+    if (error.message === 'Network Error' || error.message.includes('Network request failed')) {
+      return 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại địa chỉ IP backend (BASE_URL) hoặc mạng của bạn.';
     }
 
-    return 'Đã xảy ra lỗi. Vui lòng thử lại sau.';
+    return 'Đã xảy ra lỗi. Vui lòng thử lại sau. (Chi tiết: ' + error.message + ')';
   },
 };
 

@@ -57,4 +57,11 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateResourceException("Số điện thoại đã được đăng ký");
         }
     }
+
+    @Override
+    @SuppressWarnings("null")
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));
+    }
 }

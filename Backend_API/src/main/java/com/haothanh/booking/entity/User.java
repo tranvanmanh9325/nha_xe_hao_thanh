@@ -35,6 +35,14 @@ public class User {
     @Column(nullable = false, length = 50)
     private String role;
 
+    @Builder.Default
+    @Column(length = 50)
+    private String tier = "Thành viên Mới";
+
+    @Builder.Default
+    @Column
+    private Integer points = 0;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;

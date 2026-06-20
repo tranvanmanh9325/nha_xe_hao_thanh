@@ -8,4 +8,6 @@ public interface UserService {
     void changePassword(Long userId, ChangePasswordRequestDTO request);
 
     User register(RegisterRequestDTO request);
+
+    User getUserById(Long userId);
 }
