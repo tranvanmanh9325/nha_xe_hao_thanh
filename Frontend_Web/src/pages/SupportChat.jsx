@@ -32,7 +32,7 @@ const SupportChat = () => {
       stompClient.current.deactivate();
     }
 
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     const wsUrl = `${API_BASE_URL}/ws`;
 
     const client = new Client({
@@ -130,7 +130,7 @@ const SupportChat = () => {
   };
 
   return (
-    <div className="support-chat-container" style={{ display: 'flex', height: 'calc(100vh - 100px)', gap: '20px' }}>
+    <div className="support-chat-container" style={{ display: 'flex', height: 'calc(100vh - 128px)', gap: '20px' }}>
       
       {/* Sidebar: List of Sessions */}
       <div className="chat-sidebar" style={{ width: '300px', backgroundColor: '#fff', borderRadius: '12px', padding: '16px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column' }}>
@@ -255,9 +255,14 @@ const SupportChat = () => {
           </>
         ) : (
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', flexDirection: 'column' }}>
-            <div style={{ fontSize: '48px', color: '#ddd', marginBottom: '16px' }}>💬</div>
-            <h2>Chat Hỗ Trợ</h2>
-            <p>Chọn một khách hàng ở danh sách bên trái để bắt đầu trò chuyện</p>
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginBottom: '20px' }}>
+              <path d="M12 2C6.477 2 2 6.03 2 11C2 13.06 2.766 14.953 4.047 16.5C3.766 18.063 2.5 19.5 2.5 19.5C2.5 19.5 5.25 19.5 7.422 18.234C8.828 18.734 10.375 19 12 19C17.523 19 22 14.97 22 11C22 6.03 17.523 2 12 2Z" fill="#FFF5F2" stroke="#FF7B54" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M8 11H8.01" stroke="#F05123" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M12 11H12.01" stroke="#F05123" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M16 11H16.01" stroke="#F05123" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <h2 style={{ color: '#111827', fontWeight: '600', margin: '0 0 8px 0' }}>Chat Hỗ Trợ</h2>
+            <p style={{ color: '#6B7280', margin: 0 }}>Chọn một khách hàng ở danh sách bên trái để bắt đầu trò chuyện</p>
           </div>
         )}
       </div>

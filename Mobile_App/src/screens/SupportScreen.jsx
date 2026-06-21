@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   View, 
   Text, 
   StyleSheet, 
   TouchableOpacity, 
   ScrollView, 
-  SafeAreaView, 
   TextInput,
   Linking,
   Modal,
-  ActivityIndicator
+  ActivityIndicator,
+  Keyboard
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
 import api from '../services/api';
 import { 
@@ -19,7 +20,8 @@ import {
   PhoneIcon,
   MailIcon,
   MessageIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  XIcon
 } from '../components/icons/CustomIcons';
 import { COLORS, TYPOGRAPHY, RADIUS, SHADOWS } from '../theme';
 
@@ -27,52 +29,97 @@ export default function SupportScreen({ navigation }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedFaq, setExpandedFaq] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalConfig, setModalConfig] = useState({ title: '', message: '', email: '', showCopyBtn: false });
+  const [modalConfig, setModalConfig] = useState({ title: '', message: '', email: '', showCopyBtn: false, isFaq: false, question: '' });
   const [settings, setSettings] = useState({ hotline: '1900 1234', email: 'haothanhhungnguyen@gmail.com' });
   const [isLoading, setIsLoading] = useState(true);
 
+  const [faqs, setFaqs] = useState([]);
+
   React.useEffect(() => {
-    const fetchSettings = async () => {
+    const fetchData = async () => {
       try {
-        const response = await api.get('/settings');
-        if (response.data && response.data.success) {
-          const { hotline, email } = response.data.data;
+        setIsLoading(true);
+        // Fetch Settings
+        const settingsRes = await api.get('/settings');
+        if (settingsRes.data && settingsRes.data.success) {
+          const { hotline, email } = settingsRes.data.data;
           setSettings({ 
             hotline: hotline || '1900 1234', 
             email: email || 'haothanhhungnguyen@gmail.com' 
           });
         }
+        
+        // Fetch FAQs
+        const faqsRes = await api.get('/faqs');
+        if (faqsRes.data && faqsRes.data.success) {
+          setFaqs(faqsRes.data.data || []);
+        }
       } catch (error) {
-        console.error('Failed to fetch settings:', error);
+        console.error('Failed to fetch data:', error);
       } finally {
         setIsLoading(false);
       }
     };
-    fetchSettings();
+    fetchData();
   }, []);
 
-  const faqs = [
-    {
-      id: 1,
-      question: "Làm thế nào để đặt vé xe?",
-      answer: "Bạn có thể đặt vé dễ dàng thông qua ứng dụng bằng cách chọn điểm đi, điểm đến, ngày đi và chọn chuyến xe phù hợp. Sau đó tiến hành thanh toán để hoàn tất."
-    },
-    {
-      id: 2,
-      question: "Chính sách hoàn/hủy vé như thế nào?",
-      answer: "Vé có thể được hủy miễn phí trước 24 giờ so với giờ khởi hành. Hủy vé trong vòng 24 giờ sẽ chịu phí 30% giá vé."
-    },
-    {
-      id: 3,
-      question: "Tôi có thể thanh toán qua các hình thức nào?",
-      answer: "Chúng tôi hỗ trợ nhiều hình thức thanh toán bao gồm: Thẻ tín dụng/ghi nợ, Ví điện tử (Momo, ZaloPay, VNPay) và Chuyển khoản ngân hàng."
-    },
-    {
-      id: 4,
-      question: "Tôi có được mang theo thú cưng không?",
-      answer: "Hiện tại nhà xe chưa hỗ trợ mang theo thú cưng trên khoang hành khách để đảm bảo không gian chung. Rất mong quý khách thông cảm."
+
+  const filteredFaqs = useMemo(() => {
+    if (searchQuery.trim() === '') return [];
+    const query = searchQuery.toLowerCase();
+    return faqs.filter(faq => 
+      faq.question.toLowerCase().includes(query) || 
+      faq.answer.toLowerCase().includes(query)
+    );
+  }, [faqs, searchQuery]);
+
+  const handleSelectSuggestion = (faq) => {
+    Keyboard.dismiss();
+    setSearchQuery('');
+    setExpandedFaq(faq.id);
+    
+    setModalConfig({
+      title: "Chi tiết hỗ trợ",
+      question: faq.question,
+      message: faq.answer,
+      email: '',
+      showCopyBtn: false,
+      isFaq: true
+    });
+    setModalVisible(true);
+  };
+
+  const HighlightText = ({ text, highlight, isSnippet }) => {
+    if (!highlight.trim()) {
+      return <Text style={isSnippet ? styles.snippetText : styles.suggestionText} numberOfLines={1}>{text}</Text>;
     }
-  ];
+    
+    let displayText = text;
+    if (isSnippet) {
+      const matchIndex = text.toLowerCase().indexOf(highlight.toLowerCase());
+      if (matchIndex !== -1) {
+        const start = Math.max(0, matchIndex - 30);
+        const end = Math.min(text.length, matchIndex + highlight.length + 30);
+        displayText = (start > 0 ? "..." : "") + text.substring(start, end).trim() + (end < text.length ? "..." : "");
+      }
+    }
+
+    const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escapeRegExp(highlight)})`, 'gi');
+    const parts = displayText.split(regex);
+    
+    return (
+      <Text style={isSnippet ? styles.snippetText : styles.suggestionText} numberOfLines={1}>
+        {parts.map((part, index) => 
+          regex.test(part) ? (
+            <Text key={index} style={{ color: COLORS.brand[500], fontWeight: 'bold' }}>{part}</Text>
+          ) : (
+            <Text key={index}>{part}</Text>
+          )
+        )}
+      </Text>
+    );
+  };
 
   const handleContact = async (type) => {
     try {
@@ -87,7 +134,8 @@ export default function SupportScreen({ navigation }) {
               title: "Thông báo",
               message: `Không thể thực hiện cuộc gọi trên thiết bị này.\nHotline: ${settings.hotline}`,
               email: "",
-              showCopyBtn: false
+              showCopyBtn: false,
+              isFaq: false
             });
             setModalVisible(true);
           }
@@ -103,7 +151,8 @@ export default function SupportScreen({ navigation }) {
               title: "Lỗi",
               message: `Thiết bị chưa cài đặt ứng dụng Email. Bạn vui lòng gửi email về:\n${emailAddress}`,
               email: emailAddress,
-              showCopyBtn: true
+              showCopyBtn: true,
+              isFaq: false
             });
             setModalVisible(true);
           }
@@ -117,7 +166,8 @@ export default function SupportScreen({ navigation }) {
         title: "Lỗi",
         message: "Không thể thực hiện tác vụ này trên thiết bị của bạn.",
         email: "",
-        showCopyBtn: false
+        showCopyBtn: false,
+        isFaq: false
       });
       setModalVisible(true);
     }
@@ -143,20 +193,66 @@ export default function SupportScreen({ navigation }) {
       <ScrollView 
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
       >
         <View style={styles.searchSection}>
           <Text style={styles.greetingText}>Xin chào,</Text>
           <Text style={styles.askText}>Chúng tôi có thể giúp gì cho bạn?</Text>
           
-          <View style={styles.searchContainer}>
-            <SearchIcon size={20} color={COLORS.neutral[400]} />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Tìm kiếm vấn đề của bạn..."
-              placeholderTextColor={COLORS.neutral[400]}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
+          <View style={styles.searchWrapper}>
+            <View style={styles.searchContainer}>
+              <SearchIcon size={20} color={COLORS.neutral[400]} />
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Tìm kiếm vấn đề của bạn..."
+                placeholderTextColor={COLORS.neutral[400]}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                returnKeyType="search"
+              />
+              {searchQuery.length > 0 && (
+                <TouchableOpacity 
+                  style={styles.clearSearchBtn}
+                  onPress={() => setSearchQuery('')}
+                >
+                  <XIcon size={18} color={COLORS.neutral[400]} />
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {searchQuery.trim().length > 0 && (
+              <View style={styles.suggestionsInlineContainer}>
+                {filteredFaqs.length > 0 ? (
+                  filteredFaqs.map((faq, index) => {
+                    const questionMatches = faq.question.toLowerCase().includes(searchQuery.toLowerCase());
+                    const answerMatches = faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+                    return (
+                      <TouchableOpacity 
+                        key={faq.id} 
+                        style={[
+                          styles.suggestionItem,
+                          index === filteredFaqs.length - 1 && styles.suggestionItemLast
+                        ]}
+                        onPress={() => handleSelectSuggestion(faq)}
+                        activeOpacity={0.7}
+                      >
+                        <SearchIcon size={16} color={COLORS.neutral[400]} />
+                        <View style={styles.suggestionTextContainer}>
+                          <HighlightText text={faq.question} highlight={searchQuery} isSnippet={false} />
+                          {!questionMatches && answerMatches && (
+                            <HighlightText text={faq.answer} highlight={searchQuery} isSnippet={true} />
+                          )}
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  })
+                ) : (
+                  <View style={styles.noResultContainer}>
+                    <Text style={styles.noResultText}>Không tìm thấy kết quả phù hợp</Text>
+                  </View>
+                )}
+              </View>
+            )}
           </View>
         </View>
 
@@ -226,7 +322,10 @@ export default function SupportScreen({ navigation }) {
 
         <View style={styles.footerSection}>
           <Text style={styles.footerText}>Bạn vẫn cần thêm hỗ trợ?</Text>
-          <TouchableOpacity style={styles.ticketButton}>
+          <TouchableOpacity 
+            style={styles.ticketButton}
+            onPress={() => navigation.navigate('CreateSupportRequest')}
+          >
             <Text style={styles.ticketButtonText}>Gửi yêu cầu hỗ trợ mới</Text>
           </TouchableOpacity>
         </View>
@@ -241,7 +340,15 @@ export default function SupportScreen({ navigation }) {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>{modalConfig.title}</Text>
-            <Text style={styles.modalMessage}>{modalConfig.message}</Text>
+            
+            {modalConfig.isFaq ? (
+              <View style={styles.faqModalBody}>
+                <Text style={styles.faqModalQuestion}>{modalConfig.question}</Text>
+                <Text style={styles.faqModalAnswer}>{modalConfig.message}</Text>
+              </View>
+            ) : (
+              <Text style={styles.modalMessage}>{modalConfig.message}</Text>
+            )}
             
             {modalConfig.showCopyBtn && (
               <TouchableOpacity 
@@ -305,6 +412,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: RADIUS['2xl'],
     borderBottomRightRadius: RADIUS['2xl'],
     ...SHADOWS.md,
+    zIndex: 100,
   },
   greetingText: {
     fontSize: TYPOGRAPHY.base,
@@ -317,6 +425,10 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.weight.bold,
     color: COLORS.white,
     marginBottom: 20,
+  },
+  searchWrapper: {
+    position: 'relative',
+    zIndex: 10,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -332,6 +444,48 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     fontSize: TYPOGRAPHY.base,
     color: COLORS.neutral[900],
+  },
+  clearSearchBtn: {
+    padding: 8,
+  },
+  suggestionsInlineContainer: {
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.xl,
+    marginTop: 12,
+    overflow: 'hidden',
+    ...SHADOWS.md,
+  },
+  suggestionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.neutral[100],
+  },
+  suggestionItemLast: {
+    borderBottomWidth: 0,
+  },
+  suggestionTextContainer: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  suggestionText: {
+    fontSize: TYPOGRAPHY.sm,
+    color: COLORS.neutral[800],
+  },
+  snippetText: {
+    fontSize: TYPOGRAPHY.xs,
+    color: COLORS.neutral[500],
+    marginTop: 2,
+  },
+  noResultContainer: {
+    padding: 16,
+    alignItems: 'center',
+  },
+  noResultText: {
+    fontSize: TYPOGRAPHY.sm,
+    color: COLORS.neutral[500],
   },
   contactSection: {
     marginTop: 24,
@@ -463,7 +617,27 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.xl,
     fontWeight: TYPOGRAPHY.weight.bold,
     color: COLORS.neutral[900],
-    marginBottom: 12,
+    marginBottom: 16,
+  },
+  faqModalBody: {
+    width: '100%',
+    backgroundColor: COLORS.neutral[50],
+    padding: 16,
+    borderRadius: RADIUS.xl,
+    marginBottom: 24,
+  },
+  faqModalQuestion: {
+    fontSize: TYPOGRAPHY.base,
+    fontWeight: TYPOGRAPHY.weight.bold,
+    color: COLORS.brand[500],
+    marginBottom: 8,
+    textAlign: 'left',
+  },
+  faqModalAnswer: {
+    fontSize: TYPOGRAPHY.sm,
+    color: COLORS.neutral[700],
+    textAlign: 'left',
+    lineHeight: 22,
   },
   modalMessage: {
     fontSize: TYPOGRAPHY.base,

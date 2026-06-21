@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Platform } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Platform, Image } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { GiftedChat, Bubble, Send, InputToolbar } from 'react-native-gifted-chat';
+import { GiftedChat, Bubble, Send, InputToolbar, Avatar } from 'react-native-gifted-chat';
 import { LinearGradient } from 'expo-linear-gradient';
+import Svg, { Path } from 'react-native-svg';
 import { ArrowLeftIcon } from '../components/icons/CustomIcons';
 import { COLORS, TYPOGRAPHY, SHADOWS } from '../theme';
 import api from '../services/api';
@@ -18,6 +19,9 @@ export default function ChatScreen({ navigation }) {
   const stompClient = useRef(null);
   const insets = useSafeAreaInsets();
 
+  const todayStr = new Date().toDateString();
+  const yesterdayStr = new Date(Date.now() - 86400000).toDateString();
+
   useEffect(() => {
     initChat();
     return () => {
@@ -31,8 +35,10 @@ export default function ChatScreen({ navigation }) {
     try {
       // 1. Get user profile
       const userRes = await api.get('/auth/me');
+      let currentUserId = null;
       if (userRes.data && userRes.data.success) {
         const currentUser = userRes.data.data;
+        currentUserId = currentUser.id;
         setUser({
           _id: currentUser.id,
           name: currentUser.fullName,
@@ -62,33 +68,34 @@ export default function ChatScreen({ navigation }) {
         }
 
         // 4. Connect STOMP WebSocket
-        connectWebSocket(sid);
+        connectWebSocket(sid, currentUserId);
       }
     } catch (error) {
       console.error('Lỗi khởi tạo chat:', error);
     }
   };
 
-  const connectWebSocket = async (sid) => {
-    const token = await AsyncStorage.getItem('token');
+  const connectWebSocket = async (sid, currentUserId) => {
+    const token = await AsyncStorage.getItem('auth_token');
     
-    // In dev, assuming 10.0.2.2 or localhost
-    const wsUrl = api.defaults.baseURL.replace('/api/v1', '') + '/ws';
+    // SockJS must use HTTP/HTTPS URL, NOT WS/WSS
+    const baseUrl = api.defaults.baseURL.replace('/api/v1', '');
+    const sockJsUrl = baseUrl + '/ws';
 
     const client = new Client({
-      webSocketFactory: () => new SockJS(wsUrl),
+      webSocketFactory: () => new SockJS(sockJsUrl),
       connectHeaders: {
         Authorization: `Bearer ${token}`
       },
       reconnectDelay: 5000,
-      debug: function (str) {
-        // console.log(str);
-      },
+      heartbeatIncoming: 10000,
+      heartbeatOutgoing: 10000,
       onConnect: () => {
+        console.log("STOMP CONNECTED VIA SOCKJS!");
         client.subscribe(`/topic/chat/${sid}`, (message) => {
           const body = JSON.parse(message.body);
-          // Only add if it's not sent by me (to avoid duplication since GiftedChat adds optimistically)
-          if (body.senderId !== user?._id) {
+          // Safely compare IDs by converting both to String
+          if (String(body.senderId) !== String(currentUserId)) {
             const incomingMsg = {
               _id: body.id,
               text: body.content,
@@ -106,6 +113,12 @@ export default function ChatScreen({ navigation }) {
         console.error('Broker reported error: ' + frame.headers['message']);
         console.error('Additional details: ' + frame.body);
       },
+      onWebSocketError: (event) => {
+        console.error('WebSocket Error:', event);
+      },
+      onWebSocketClose: (event) => {
+        console.log('WebSocket Closed:', event);
+      }
     });
 
     client.activate();
@@ -165,6 +178,47 @@ export default function ChatScreen({ navigation }) {
     );
   };
 
+  const renderDay = (props) => {
+    if (props.currentMessage && props.currentMessage.createdAt) {
+      const date = new Date(props.currentMessage.createdAt);
+      const dateString = date.toDateString();
+
+      let dateText = '';
+      if (dateString === todayStr) {
+        dateText = 'Hôm nay';
+      } else if (dateString === yesterdayStr) {
+        dateText = 'Hôm qua';
+      } else {
+        const d = date.getDate().toString().padStart(2, '0');
+        const m = (date.getMonth() + 1).toString().padStart(2, '0');
+        const y = date.getFullYear();
+        dateText = `${d}/${m}/${y}`;
+      }
+      
+      return (
+        <View style={{ marginVertical: 10, alignItems: 'center' }}>
+          <Text style={{ color: COLORS.neutral[500], fontSize: 12, fontWeight: '500' }}>
+            {dateText}
+          </Text>
+        </View>
+      );
+    }
+    return null;
+  };
+
+  const renderAvatar = (props) => {
+    return (
+      <Avatar
+        {...props}
+        containerStyle={{
+          left: {
+            transform: [{ translateY: -12 }],
+          }
+        }}
+      />
+    );
+  };
+
   const renderInputToolbar = (props) => {
     return (
       <InputToolbar
@@ -199,9 +253,15 @@ export default function ChatScreen({ navigation }) {
             alignItems: 'center',
             marginRight: 4,
             ...SHADOWS.sm,
+            paddingLeft: 2, // slight padding to visually center the dart
           }}
         >
-          <Text style={{ color: COLORS.white, fontSize: 13, fontWeight: 'bold' }}>Gửi</Text>
+          <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            {/* Lớp nền chính của máy bay giấy */}
+            <Path d="M3 4 L22 12 L3 20 L10 12 Z" fill="white" />
+            {/* Lớp bóng đổ bên dưới để tạo hiệu ứng 3D gấp giấy */}
+            <Path d="M10 12 L22 12 L3 20 Z" fill="black" fillOpacity="0.15" />
+          </Svg>
         </LinearGradient>
       </Send>
     );
@@ -211,17 +271,31 @@ export default function ChatScreen({ navigation }) {
     <LinearGradient colors={['#f8f9fa', '#eef2f3']} style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <ArrowLeftIcon size={24} color={COLORS.neutral[800]} />
-          </TouchableOpacity>
-          <View style={styles.headerTitleContainer}>
-            <Text style={styles.headerTitle}>Hỗ trợ trực tuyến</Text>
-            <Text style={styles.headerSubtitle}>Luôn sẵn sàng hỗ trợ bạn</Text>
+          <View style={styles.headerLeft}>
+            <TouchableOpacity 
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
+              <ArrowLeftIcon size={24} color={COLORS.neutral[800]} />
+            </TouchableOpacity>
+            
+            <View style={styles.avatarContainer}>
+              <Image 
+                source={{ uri: 'https://ui-avatars.com/api/?name=Hào+Thanh&background=0D8ABC&color=fff&rounded=true' }} 
+                style={styles.headerAvatar} 
+              />
+              <View style={styles.activeDot} />
+            </View>
+
+            <View style={styles.headerTitleContainer}>
+              <Text style={styles.headerTitle}>Hỗ trợ trực tuyến</Text>
+              <Text style={styles.headerSubtitle}>Đang hoạt động</Text>
+            </View>
           </View>
-          <View style={{ width: 40 }} />
+          
+          <View style={styles.headerRight}>
+            {/* Space for future icons like Call/Info */}
+          </View>
         </View>
 
         {user ? (
@@ -230,8 +304,11 @@ export default function ChatScreen({ navigation }) {
             onSend={messages => onSend(messages)}
             user={user}
             renderBubble={renderBubble}
+            renderAvatar={renderAvatar}
             renderInputToolbar={renderInputToolbar}
             renderSend={renderSend}
+            renderDay={renderDay}
+            timeFormat="HH:mm"
             placeholder="Nhập tin nhắn..."
             showUserAvatar={false}
             renderAvatarOnTop={true}
@@ -260,29 +337,58 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     backgroundColor: COLORS.white,
     ...SHADOWS.sm,
     zIndex: 10,
   },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-  },
-  headerTitleContainer: {
+  headerLeft: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
+  backButton: {
+    padding: 8,
+    marginRight: 4,
+    marginLeft: -8,
+  },
+  avatarContainer: {
+    position: 'relative',
+    marginRight: 12,
+  },
+  headerAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: COLORS.neutral[200],
+  },
+  activeDot: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: COLORS.semantic.success,
+    borderWidth: 2,
+    borderColor: COLORS.white,
+  },
+  headerTitleContainer: {
+    justifyContent: 'center',
+  },
   headerTitle: {
-    fontSize: TYPOGRAPHY.lg,
+    fontSize: 16,
     fontWeight: TYPOGRAPHY.weight.bold,
     color: COLORS.neutral[900],
   },
   headerSubtitle: {
-    fontSize: TYPOGRAPHY.sm,
-    color: COLORS.semantic.success,
+    fontSize: 12,
+    color: COLORS.neutral[500],
     marginTop: 2,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: 40,
   }
 });

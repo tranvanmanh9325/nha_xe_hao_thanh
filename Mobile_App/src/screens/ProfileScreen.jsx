@@ -1,12 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
   View, 
   Text, 
   StyleSheet, 
   TouchableOpacity, 
   ScrollView, 
-  SafeAreaView, 
   Alert 
 } from 'react-native';
 import { 
@@ -179,7 +179,10 @@ export default function ProfileScreen({ navigation }) {
           <View style={styles.menuCard}>
             {renderMenuItem(
               (color) => <SettingsIcon size={24} color={color} />, 
-              "Cài đặt chung"
+              "Cài đặt chung",
+              null,
+              false,
+              () => navigation.navigate('GeneralSettings')
             )}
             <View style={styles.divider} />
             {renderMenuItem(
