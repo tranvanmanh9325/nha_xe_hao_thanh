@@ -143,7 +143,7 @@ export default function GeneralSettingsScreen({ navigation }) {
             {renderMenuItem({
               icon: (color) => <DocumentIcon size={24} color={color} />, 
               title: "Điều khoản & Chính sách",
-              onPress: () => Alert.alert("Điều khoản", "Hiển thị điều khoản dịch vụ.")
+              onPress: () => navigation.navigate('LegalAndPolicies')
             })}
             <View style={styles.divider} />
             {renderMenuItem({

@@ -48,7 +48,7 @@ export default function LoginScreen({ navigation }) {
     setErrors({});
 
     try {
-      await authService.login(phone.trim(), password);
+      await authService.login(phone.replace(/\s/g, ''), password.trim());
       navigation.replace('Main');
     } catch (error) {
       const message = authService.getErrorMessage(error);

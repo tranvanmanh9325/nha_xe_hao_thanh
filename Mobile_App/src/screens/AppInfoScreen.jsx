@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
@@ -6,7 +6,9 @@ import {
   TouchableOpacity, 
   ScrollView, 
   Image,
-  Alert
+  Alert,
+  Platform,
+  Linking
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
@@ -18,8 +20,62 @@ import {
   ChevronRightIcon
 } from '../components/icons/CustomIcons';
 import { COLORS, TYPOGRAPHY, RADIUS, SHADOWS } from '../theme';
+import api from '../services/api';
 
 export default function AppInfoScreen({ navigation }) {
+  const [companyName, setCompanyName] = useState('Hào Thành Bus');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await api.get('/settings');
+        if (response.data && response.data.data && response.data.data.companyName) {
+          setCompanyName(response.data.data.companyName);
+        }
+      } catch (error) {
+        console.error('Lỗi khi tải thông tin nhà xe:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  const handleRateApp = () => {
+    // TODO: Thay thế bằng Package Name (Android) và App ID (iOS) thật của ứng dụng "Hào Thanh" khi đã publish
+    const androidPackageName = "com.haothanh.app";
+    const iosAppId = "id123456789"; 
+
+    if (Platform.OS === 'android') {
+      // Mở Google Play thẳng tới ứng dụng
+      Linking.openURL(`market://details?id=${androidPackageName}`).catch(() => {
+        // Fallback mở bằng trình duyệt nếu không có app Google Play
+        Linking.openURL(`https://play.google.com/store/apps/details?id=${androidPackageName}`);
+      });
+    } else if (Platform.OS === 'ios') {
+      // Mở App Store thẳng tới ứng dụng
+      Linking.openURL(`itms-apps://itunes.apple.com/app/${iosAppId}?action=write-review`).catch(() => {
+        // Fallback mở bằng trình duyệt
+        Linking.openURL(`https://apps.apple.com/app/${iosAppId}`);
+      });
+    }
+  };
+
+  const handleOpenWebsite = async () => {
+    const url = 'https://haothanhbus.vn';
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        Alert.alert("Lỗi", "Không thể mở trang web này trên thiết bị của bạn.");
+      }
+    } catch (error) {
+      Alert.alert("Lỗi", "Đã xảy ra sự cố khi mở trang web.");
+    }
+  };
+
   const renderMenuItem = ({ icon, title, subtitle, onPress }) => {
     return (
       <TouchableOpacity 
@@ -68,7 +124,7 @@ export default function AppInfoScreen({ navigation }) {
               resizeMode="contain" 
             />
           </View>
-          <Text style={styles.appName}>Hào Thành Bus</Text>
+          <Text style={styles.appName}>{companyName}</Text>
           <Text style={styles.appVersion}>Phiên bản 1.0.0</Text>
         </View>
 
@@ -80,13 +136,13 @@ export default function AppInfoScreen({ navigation }) {
               icon: (color) => <GlobeIcon size={24} color={color} />, 
               title: "Website chính thức", 
               subtitle: "haothanhbus.vn",
-              onPress: () => Alert.alert("Thông báo", "Mở trình duyệt: https://haothanhbus.vn")
+              onPress: handleOpenWebsite
             })}
             <View style={styles.divider} />
             {renderMenuItem({
               icon: (color) => <StarIcon size={24} color={color} />, 
               title: "Đánh giá ứng dụng",
-              onPress: () => Alert.alert("Thông báo", "Chuyển đến App Store / Google Play")
+              onPress: handleRateApp
             })}
           </View>
         </View>
@@ -98,20 +154,20 @@ export default function AppInfoScreen({ navigation }) {
             {renderMenuItem({
               icon: (color) => <DocumentIcon size={24} color={color} />, 
               title: "Điều khoản dịch vụ",
-              onPress: () => Alert.alert("Thông báo", "Tính năng đang được phát triển.")
+              onPress: () => navigation.navigate('TermsOfService')
             })}
             <View style={styles.divider} />
             {renderMenuItem({
               icon: (color) => <ShieldIcon size={24} color={color} />, 
               title: "Chính sách bảo mật",
-              onPress: () => Alert.alert("Thông báo", "Tính năng đang được phát triển.")
+              onPress: () => navigation.navigate('PrivacyPolicy')
             })}
           </View>
         </View>
 
         {/* Footer */}
         <View style={styles.footerContainer}>
-          <Text style={styles.copyrightText}>© 2026 Hao Thanh Bus.</Text>
+          <Text style={styles.copyrightText}>© {new Date().getFullYear()} {companyName}.</Text>
           <Text style={styles.rightsText}>All rights reserved.</Text>
         </View>
       </ScrollView>

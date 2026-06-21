@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.data.domain.Page;
@@ -44,7 +45,8 @@ public class SupportRequestController {
     @GetMapping
     public ResponseEntity<?> getUserSupportRequests(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "ALL") String status) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -57,9 +59,9 @@ public class SupportRequestController {
             Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
             Page<SupportRequestDTO.Response> requests;
             if (isAdmin) {
-                requests = supportRequestService.getAllSupportRequests(pageable);
+                requests = supportRequestService.getAllSupportRequests(status, pageable);
             } else {
-                requests = supportRequestService.getUserSupportRequests(userId, pageable);
+                requests = supportRequestService.getUserSupportRequests(userId, status, pageable);
             }
 
             // Thêm các fields pagination vào response payload wrapper
@@ -73,5 +75,12 @@ public class SupportRequestController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
         }
+    }
+
+    @PutMapping("/{id}/status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateStatus(@PathVariable Long id, @Valid @RequestBody SupportRequestDTO.UpdateStatus request) {
+        SupportRequestDTO.Response response = supportRequestService.updateStatus(id, request);
+        return ResponseEntity.ok(ApiResponse.success("Cập nhật trạng thái thành công", response));
     }
 }

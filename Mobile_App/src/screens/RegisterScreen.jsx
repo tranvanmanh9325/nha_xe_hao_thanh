@@ -71,7 +71,7 @@ export default function RegisterScreen({ navigation }) {
     setErrors({});
 
     try {
-      await authService.register(fullName.trim(), phone.trim(), password);
+      await authService.register(fullName.trim(), phone.replace(/\s/g, ''), password.trim());
       navigation.replace('Main');
     } catch (error) {
       const message = authService.getErrorMessage(error);

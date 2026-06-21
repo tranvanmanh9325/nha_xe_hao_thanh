@@ -331,3 +331,51 @@ INSERT INTO faqs (question, answer, order_index) VALUES
 ('Tôi có thể thay đổi thông tin chuyến đi không?', 'Bạn có thể thay đổi thông tin chuyến đi (giờ đi, chỗ ngồi) trước 24 giờ khởi hành bằng cách liên hệ tổng đài hoặc thao tác trực tiếp trên ứng dụng.', 6),
 ('Quy định về hành lý xách tay và ký gửi?', 'Mỗi hành khách được mang theo 1 kiện hành lý xách tay (không quá 5kg) và 1 kiện hành lý ký gửi (không quá 20kg). Hành lý quá cước sẽ bị tính thêm phí.', 7),
 ('Trẻ em có được miễn phí vé không?', 'Trẻ em dưới 3 tuổi hoặc cao dưới 100cm được miễn phí vé nếu ngồi chung ghế với người lớn. Trẻ từ 3 tuổi trở lên tính giá vé như người lớn.', 8);
+
+-- ==========================================
+-- BỔ SUNG BẢNG PRIVACY_POLICIES
+-- ==========================================
+
+-- Create privacy_policies table
+CREATE TABLE IF NOT EXISTS privacy_policies (
+    id BIGSERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    order_index INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert mock Privacy Policies (Chính sách bảo mật)
+INSERT INTO privacy_policies (title, content, order_index) VALUES
+('1. Mục đích và phạm vi thu thập', 'Hào Thành Bus thu thập thông tin cá nhân (Họ tên, Số điện thoại, Email) nhằm mục đích xử lý đặt vé, cung cấp dịch vụ vận tải, thông báo lịch trình, và hỗ trợ khách hàng. Dữ liệu này giúp chúng tôi nâng cao chất lượng dịch vụ và cá nhân hóa trải nghiệm cho từng hành khách.', 1),
+('2. Bảo mật thông tin thanh toán', 'Chúng tôi tuân thủ các tiêu chuẩn bảo mật dữ liệu an toàn trên internet (SSL) và tiêu chuẩn bảo mật dữ liệu thẻ thanh toán (PCI DSS). Các thông tin thanh toán và thẻ tín dụng/ghi nợ được xử lý qua các cổng thanh toán uy tín và hoàn toàn không được lưu trữ trực tiếp trên hệ thống của Hào Thành Bus.', 2),
+('3. Cam kết chia sẻ thông tin', 'Chúng tôi cam kết tuyệt đối không bán, trao đổi hay chia sẻ thông tin cá nhân của hành khách cho bất kỳ bên thứ ba nào vì mục đích thương mại. Thông tin chỉ được cung cấp cho cơ quan chức năng khi có yêu cầu hợp pháp theo quy định của pháp luật Việt Nam.', 3),
+('4. Quản lý vé điện tử', 'Dữ liệu vé điện tử bao gồm mã QR code được bảo mật nghiêm ngặt. Khách hàng vui lòng không chia sẻ mã QR vé của mình cho người lạ để tránh rủi ro về quyền lợi lên xe. Việc để lộ thông tin mã vé có thể dẫn đến việc mất quyền lợi chuyến đi.', 4),
+('5. Quyền lợi của khách hàng', 'Khách hàng có quyền yêu cầu truy cập, chỉnh sửa hoặc vô hiệu hóa thông tin tài khoản cá nhân của mình trên hệ thống. Khách hàng cũng có thể từ chối nhận các email/tin nhắn khuyến mãi bất kỳ lúc nào bằng cách sử dụng tính năng hỗ trợ trong ứng dụng.', 5),
+('6. Thay đổi chính sách', 'Hào Thành Bus có quyền cập nhật, sửa đổi chính sách bảo mật này để phù hợp với quy định pháp luật và hoạt động dịch vụ. Mọi thay đổi lớn sẽ được thông báo trực tiếp qua thông báo ứng dụng (Push Notifications) và cập nhật công khai tại đây.', 6);
+
+-- ==========================================
+-- BỔ SUNG BẢNG TERMS_OF_SERVICE
+-- ==========================================
+
+-- Create terms_of_service table
+CREATE TABLE IF NOT EXISTS terms_of_service (
+    id BIGSERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    order_index INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert mock Terms of Service (Điều khoản dịch vụ)
+INSERT INTO terms_of_service (title, content, order_index) VALUES
+('1. Trách nhiệm của hành khách', 'Hành khách có trách nhiệm cung cấp thông tin cá nhân (họ tên, số điện thoại) chính xác khi đặt vé để đảm bảo quyền lợi khởi hành. Hành khách phải tự bảo mật thông tin tài khoản và mã vé điện tử của mình.', 1),
+('2. Quy định khởi hành và lên xe', 'Hành khách cần có mặt tại điểm đón trước giờ khởi hành ít nhất 30 phút đối với ngày thường và 60 phút đối với dịp Lễ/Tết. Xuất trình mã vé điện tử hoặc vé giấy hợp lệ cho nhân viên nhà xe trước khi lên xe.', 2),
+('3. Hành lý và tư trang', 'Mỗi hành khách được mang tối đa 1 kiện hành lý xách tay (dưới 5kg) và 1 kiện hành lý ký gửi (không quá 20kg). Không mang theo hàng quốc cấm, vũ khí, chất cháy nổ, chất có mùi hôi tanh hoặc động vật/thú cưng lên khoang hành khách. Hành khách tự bảo quản tư trang có giá trị cao.', 3),
+('4. Chính sách Đổi / Hủy vé', 'Khách hàng được miễn phí hủy vé trước 24 giờ so với giờ khởi hành. Hủy vé từ 12 - 24 giờ trước khởi hành chịu phí 20%. Không hỗ trợ hoàn/hủy vé nếu yêu cầu trong vòng 12 giờ trước giờ xe chạy hoặc sau khi xe đã xuất bến.', 4),
+('5. Thay đổi lịch trình từ nhà xe', 'Trong các trường hợp bất khả kháng (thiên tai, dịch bệnh, kẹt xe, sự cố kỹ thuật đột xuất), Hào Thành Bus có quyền thay đổi giờ chạy hoặc loại xe. Chúng tôi sẽ thông báo trước cho hành khách và hỗ trợ đổi vé hoặc hoàn tiền 100% nếu lịch trình mới không phù hợp.', 5),
+('6. Xuất hóa đơn (VAT)', 'Hành khách có nhu cầu xuất hóa đơn giá trị gia tăng (VAT) vui lòng cung cấp thông tin xuất hóa đơn trong quá trình đặt vé hoặc liên hệ với bộ phận CSKH chậm nhất 7 ngày sau khi chuyến đi kết thúc.', 6);

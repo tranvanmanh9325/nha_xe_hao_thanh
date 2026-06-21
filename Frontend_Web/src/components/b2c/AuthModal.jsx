@@ -43,7 +43,7 @@ const AuthModal = ({ isOpen, onClose }) => {
     setError('');
 
     try {
-      await login(phone, password);
+      await login(phone.replace(/\s/g, ''), password.trim());
       resetForm();
       onClose();
       navigate('/admin');
@@ -201,7 +201,10 @@ const AuthModal = ({ isOpen, onClose }) => {
                 <input 
                   type={showPassword ? "text" : "password"} 
                   value={password}
-                  onChange={(e) => { setPassword(e.target.value); setError(''); }}
+                  onChange={(e) => { 
+                    setPassword(e.target.value); 
+                    setError(''); 
+                  }}
                   placeholder="Nhập mật khẩu"
                   className="w-full pl-11 pr-12 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
                 />

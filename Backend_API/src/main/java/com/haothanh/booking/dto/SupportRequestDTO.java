@@ -1,6 +1,7 @@
 package com.haothanh.booking.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,5 +43,15 @@ public class SupportRequestDTO {
         private String status;
         private OffsetDateTime createdAt;
         private OffsetDateTime updatedAt;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateStatus {
+        @NotBlank(message = "Trạng thái không được để trống")
+        @Pattern(regexp = "^(PENDING|RESOLVED)$", message = "Trạng thái không hợp lệ")
+        private String status;
     }
 }
