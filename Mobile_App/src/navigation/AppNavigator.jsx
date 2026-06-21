@@ -10,6 +10,9 @@ import ChatScreen from '../screens/ChatScreen';
 import CreateSupportRequestScreen from '../screens/CreateSupportRequestScreen';
 import GeneralSettingsScreen from '../screens/GeneralSettingsScreen';
 import AppInfoScreen from '../screens/AppInfoScreen';
+import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
+import TermsOfServiceScreen from '../screens/TermsOfServiceScreen';
+import LegalAndPoliciesScreen from '../screens/LegalAndPoliciesScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -60,6 +63,21 @@ export default function AppNavigator() {
         <Stack.Screen 
           name="AppInfo" 
           component={AppInfoScreen} 
+          options={{ headerShown: false, animation: 'slide_from_right' }}
+        />
+        <Stack.Screen 
+          name="PrivacyPolicy" 
+          component={PrivacyPolicyScreen} 
+          options={{ headerShown: false, animation: 'slide_from_right' }}
+        />
+        <Stack.Screen 
+          name="TermsOfService" 
+          component={TermsOfServiceScreen} 
+          options={{ headerShown: false, animation: 'slide_from_right' }}
+        />
+        <Stack.Screen 
+          name="LegalAndPolicies" 
+          component={LegalAndPoliciesScreen} 
           options={{ headerShown: false, animation: 'slide_from_right' }}
         />
       </Stack.Navigator>

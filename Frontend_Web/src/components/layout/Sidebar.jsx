@@ -22,6 +22,7 @@ const navItems = [
   { to: '/admin/tickets', icon: TicketIcon, label: 'Quản lý vé' },
   { to: '/admin/revenue', icon: ChartIcon, label: 'Thống kê doanh thu' },
   { to: '/admin/chat', icon: MessageIcon, label: 'Chat Hỗ trợ' },
+  { to: '/admin/support-requests', icon: MessageIcon, label: 'Yêu cầu hỗ trợ' },
   { to: '/admin/settings', icon: SettingsIcon, label: 'Cài đặt' },
 ];
 

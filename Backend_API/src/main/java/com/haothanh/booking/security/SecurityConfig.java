@@ -57,6 +57,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/health").permitAll() // Health check
                 .requestMatchers(HttpMethod.GET, "/api/v1/settings").permitAll() // Public settings
                 .requestMatchers(HttpMethod.GET, "/api/v1/faqs", "/api/v1/faqs/**").permitAll() // Public FAQs
+                .requestMatchers(HttpMethod.GET, "/api/v1/privacy-policies").permitAll() // Public Privacy Policies
+                .requestMatchers(HttpMethod.GET, "/api/v1/terms-of-service").permitAll() // Public Terms of Service
                 .requestMatchers("/ws/**", "/ws-native", "/ws-native/**").permitAll() // WebSocket endpoint (auth via STOMP)
                 .anyRequest().authenticated()
             );

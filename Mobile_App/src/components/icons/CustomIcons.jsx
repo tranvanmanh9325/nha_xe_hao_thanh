@@ -268,3 +268,10 @@ export const DocumentIcon = ({ size = 24, color = "currentColor", style }) => (
     <Polyline points="10 9 9 9 8 9" />
   </Svg>
 );
+
+export const CheckCircleIcon = ({ size = 24, color = "currentColor", style }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={style}>
+    <Path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+    <Polyline points="22 4 12 14.01 9 11.01" />
+  </Svg>
+);

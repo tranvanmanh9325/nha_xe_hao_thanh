@@ -16,20 +16,24 @@ export default function AnimatedInput({
   icon: Icon,
   style,
   error,
+  onFocus,
+  onBlur,
   ...props 
 }) {
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const focusAnim = useSharedValue(0);
 
-  const handleFocus = () => {
+  const handleFocus = (e) => {
     setIsFocused(true);
     focusAnim.value = withSpring(1, { damping: 15, stiffness: 300 });
+    if (onFocus) onFocus(e);
   };
 
-  const handleBlur = () => {
+  const handleBlur = (e) => {
     setIsFocused(false);
     focusAnim.value = withTiming(0, { duration: 200 });
+    if (onBlur) onBlur(e);
   };
 
   const hasError = !!error;
