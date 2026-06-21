@@ -263,3 +263,71 @@ VALUES
 ('Đặng Thị Hồng',  '0355002002', 'hong.dang@gmail.com',  '$2a$10$2i0i.CnTdqIYw4./vVSkf.qsg5wW8/25dTUN19ymDlJXQ89QBXgOK', 'CUSTOMER'),
 ('Bùi Quốc Anh',   '0355003003', 'anh.bui@gmail.com',    '$2a$10$2i0i.CnTdqIYw4./vVSkf.qsg5wW8/25dTUN19ymDlJXQ89QBXgOK', 'CUSTOMER'),
 ('Hoàng Thị Mai',   '0355004004', 'mai.hoang@gmail.com',  '$2a$10$2i0i.CnTdqIYw4./vVSkf.qsg5wW8/25dTUN19ymDlJXQ89QBXgOK', 'CUSTOMER');
+
+-- ==========================================
+-- BỔ SUNG BẢNG CHAT (Từ V2)
+-- ==========================================
+
+-- Create chat_sessions table
+CREATE TABLE chat_sessions (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_chat_sessions_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX idx_unique_active_session ON chat_sessions (user_id) WHERE status = 'ACTIVE';
+
+-- Create chat_messages table
+CREATE TABLE chat_messages (
+    id BIGSERIAL PRIMARY KEY,
+    session_id BIGINT NOT NULL,
+    sender_id BIGINT,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_chat_messages_session FOREIGN KEY (session_id) REFERENCES chat_sessions(id) ON DELETE CASCADE,
+    CONSTRAINT fk_chat_messages_sender FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- ==========================================
+-- BỔ SUNG BẢNG SUPPORT & FAQ (Từ V3)
+-- ==========================================
+
+-- Create support_requests table
+CREATE TABLE IF NOT EXISTS support_requests (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    topic VARCHAR(100) NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    description TEXT NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_support_requests_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_support_requests_user_id ON support_requests(user_id);
+
+-- Create faqs table
+CREATE TABLE IF NOT EXISTS faqs (
+    id BIGSERIAL PRIMARY KEY,
+    question VARCHAR(255) NOT NULL,
+    answer TEXT NOT NULL,
+    order_index INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert mock FAQs (Câu hỏi thường gặp)
+INSERT INTO faqs (question, answer, order_index) VALUES
+('Làm thế nào để đặt vé xe?', 'Bạn có thể đặt vé dễ dàng thông qua ứng dụng bằng cách chọn điểm đi, điểm đến, ngày đi và chọn chuyến xe phù hợp. Sau đó tiến hành thanh toán để hoàn tất.', 1),
+('Chính sách hoàn/hủy vé như thế nào?', 'Bạn có thể hủy vé miễn phí trước 24 giờ so với giờ khởi hành. Hủy trước 12-24 giờ sẽ chịu phí 20%. Không hỗ trợ hủy vé trong vòng 12 giờ trước khi xe chạy.', 2),
+('Tôi có thể thanh toán qua các hình thức nào?', 'Hệ thống hỗ trợ thanh toán qua thẻ tín dụng/ghi nợ (Visa, Mastercard), ví điện tử (MoMo, ZaloPay, VNPay) và chuyển khoản ngân hàng trực tiếp.', 3),
+('Tôi có được mang theo thú cưng không?', 'Để đảm bảo vệ sinh và không gian chung, nhà xe quy định hành khách không được mang theo vật nuôi, thú cưng lên khoang hành khách. Bạn có thể gửi thú cưng dưới dạng hành lý ký gửi nếu đáp ứng đủ điều kiện về lồng vận chuyển.', 4),
+('Làm sao để lấy hóa đơn điện tử?', 'Bạn có thể yêu cầu xuất hóa đơn điện tử trong quá trình đặt vé hoặc liên hệ với bộ phận CSKH trong vòng 7 ngày sau khi chuyến đi kết thúc.', 5),
+('Tôi có thể thay đổi thông tin chuyến đi không?', 'Bạn có thể thay đổi thông tin chuyến đi (giờ đi, chỗ ngồi) trước 24 giờ khởi hành bằng cách liên hệ tổng đài hoặc thao tác trực tiếp trên ứng dụng.', 6),
+('Quy định về hành lý xách tay và ký gửi?', 'Mỗi hành khách được mang theo 1 kiện hành lý xách tay (không quá 5kg) và 1 kiện hành lý ký gửi (không quá 20kg). Hành lý quá cước sẽ bị tính thêm phí.', 7),
+('Trẻ em có được miễn phí vé không?', 'Trẻ em dưới 3 tuổi hoặc cao dưới 100cm được miễn phí vé nếu ngồi chung ghế với người lớn. Trẻ từ 3 tuổi trở lên tính giá vé như người lớn.', 8);

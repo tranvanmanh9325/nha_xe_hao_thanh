@@ -49,6 +49,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ChatSessionDTO> getAllActiveSessions() {
         return chatSessionRepository.findByStatus("ACTIVE").stream()
                 .map(this::mapToSessionDTO)
@@ -56,6 +57,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ChatMessageDTO> getChatHistory(Long sessionId) {
         return chatMessageRepository.findBySessionIdOrderByCreatedAtAsc(sessionId).stream()
                 .map(this::mapToMessageDTO)
@@ -93,6 +95,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void validateSessionAccess(Long sessionId, Long userId, java.util.Collection<? extends org.springframework.security.core.GrantedAuthority> authorities) {
         boolean isAdmin = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         if (isAdmin) return;

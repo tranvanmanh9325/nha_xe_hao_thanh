@@ -7,6 +7,9 @@ import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import SupportScreen from '../screens/SupportScreen';
 import ChatScreen from '../screens/ChatScreen';
+import CreateSupportRequestScreen from '../screens/CreateSupportRequestScreen';
+import GeneralSettingsScreen from '../screens/GeneralSettingsScreen';
+import AppInfoScreen from '../screens/AppInfoScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +45,21 @@ export default function AppNavigator() {
         <Stack.Screen 
           name="Chat" 
           component={ChatScreen} 
+          options={{ headerShown: false, animation: 'slide_from_right' }}
+        />
+        <Stack.Screen 
+          name="CreateSupportRequest" 
+          component={CreateSupportRequestScreen} 
+          options={{ headerShown: false, animation: 'slide_from_bottom' }}
+        />
+        <Stack.Screen 
+          name="GeneralSettings" 
+          component={GeneralSettingsScreen} 
+          options={{ headerShown: false, animation: 'slide_from_right' }}
+        />
+        <Stack.Screen 
+          name="AppInfo" 
+          component={AppInfoScreen} 
           options={{ headerShown: false, animation: 'slide_from_right' }}
         />
       </Stack.Navigator>

@@ -43,7 +43,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .cors(org.springframework.security.config.Customizer.withDefaults()) // Uses WebMvcConfigurer from WebConfig
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**")) // Disable CSRF only for API endpoints to satisfy CodeQL
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/ws/**", "/ws-native", "/ws-native/**")) // Disable CSRF for API and WebSocket endpoints
             .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
@@ -56,7 +56,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/v1/tickets/offline").permitAll() // Book offline tickets
                 .requestMatchers("/api/v1/health").permitAll() // Health check
                 .requestMatchers(HttpMethod.GET, "/api/v1/settings").permitAll() // Public settings
-                .requestMatchers("/ws/**").permitAll() // WebSocket endpoint (auth via STOMP)
+                .requestMatchers(HttpMethod.GET, "/api/v1/faqs", "/api/v1/faqs/**").permitAll() // Public FAQs
+                .requestMatchers("/ws/**", "/ws-native", "/ws-native/**").permitAll() // WebSocket endpoint (auth via STOMP)
                 .anyRequest().authenticated()
             );
 
@@ -77,7 +78,18 @@ public class SecurityConfig {
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/api/**", configuration);
+        
+        CorsConfiguration wsConfiguration = new CorsConfiguration();
+        wsConfiguration.setAllowedOriginPatterns(List.of("*"));
+        wsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        wsConfiguration.setAllowedHeaders(List.of("*"));
+        wsConfiguration.setAllowCredentials(true);
+        
+        source.registerCorsConfiguration("/ws/**", wsConfiguration);
+        source.registerCorsConfiguration("/ws-native", wsConfiguration);
+        source.registerCorsConfiguration("/ws-native/**", wsConfiguration);
+        
         return source;
     }
 }
