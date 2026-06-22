@@ -1,4 +1,4 @@
-export const COLORS = {
+export const lightColors = {
   brand: {
     50: '#FFF5F2',
     100: '#FFE6DF',
@@ -34,6 +34,46 @@ export const COLORS = {
     info: '#2563EB',
   }
 };
+
+export const darkColors = {
+  brand: {
+    50: '#3A150A',
+    100: '#541D0D',
+    400: '#E06540',
+    500: '#F05123',
+    600: '#FF7B54',
+    700: '#FF9E80',
+  },
+  neutral: {
+    50: '#111827', // App background
+    100: '#1F2937', // Card background
+    200: '#374151', // Borders, inactive toggles
+    300: '#4B5563',
+    400: '#6B7280',
+    500: '#9CA3AF', // Subtitles
+    600: '#D1D5DB',
+    700: '#E5E7EB',
+    800: '#F3F4F6',
+    900: '#F9FAFB', // Primary text
+  },
+  white: '#1F2937', // Dark card replacement
+  transparent: 'transparent',
+  glass: {
+    light: 'rgba(17, 24, 39, 0.7)',
+    medium: 'rgba(17, 24, 39, 0.5)',
+    heavy: 'rgba(17, 24, 39, 0.2)',
+    dark: 'rgba(255, 255, 255, 0.1)',
+  },
+  semantic: {
+    success: '#10B981',
+    warning: '#F59E0B',
+    danger: '#EF4444',
+    info: '#3B82F6',
+  }
+};
+
+// Backward compatibility for existing screens that import COLORS statically
+export const COLORS = lightColors;
 
 export const TYPOGRAPHY = {
   xs: 12,

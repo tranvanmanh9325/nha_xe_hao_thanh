@@ -21,7 +21,9 @@ import Animated, {
   withTiming
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { COLORS, TYPOGRAPHY, RADIUS, SHADOWS } from '../theme';
+import { TYPOGRAPHY, RADIUS, SHADOWS } from '../theme';
+import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import { 
   BusIcon, 
   LocationIcon, 
@@ -43,6 +45,10 @@ const POPULAR_ROUTES = [
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const RouteCard = ({ route, index, scrollX }) => {
+  const { colors, isDarkMode } = useTheme();
+  const { t } = useTranslation();
+  const styles = createStyles(colors, isDarkMode);
+  
   const animatedStyle = useAnimatedStyle(() => {
     const inputRange = [
       (index - 1) * (CARD_WIDTH + SPACING),
@@ -91,16 +97,16 @@ const RouteCard = ({ route, index, scrollX }) => {
       <View style={styles.routeInfo}>
         <View style={styles.routeHeader}>
           <Text style={styles.routeTitle}>{route.from}</Text>
-          <BusIcon size={18} color={COLORS.brand[500]} style={{ marginHorizontal: 8 }} />
+          <BusIcon size={18} color={colors.brand[500]} style={{ marginHorizontal: 8 }} />
           <Text style={styles.routeTitle}>{route.to}</Text>
         </View>
         <View style={styles.routeFooter}>
           <View style={styles.routeTime}>
-            <DateIcon size={14} color={COLORS.neutral[400]} style={{ marginRight: 6 }} />
+            <DateIcon size={14} color={colors.neutral[400]} style={{ marginRight: 6 }} />
             <Text style={styles.routeTimeText}>{route.time}</Text>
           </View>
           <View style={styles.actionBtn}>
-            <Text style={styles.actionBtnText}>CHỌN</Text>
+            <Text style={styles.actionBtnText}>{t('home.select')}</Text>
           </View>
         </View>
       </View>
@@ -109,6 +115,10 @@ const RouteCard = ({ route, index, scrollX }) => {
 };
 
 export default function HomeScreen({ navigation }) {
+  const { colors, isDarkMode } = useTheme();
+  const { t } = useTranslation();
+  const styles = createStyles(colors, isDarkMode);
+
   const [departure, setDeparture] = useState('');
   const [destination, setDestination] = useState('');
   const [date, setDate] = useState('');
@@ -129,7 +139,7 @@ export default function HomeScreen({ navigation }) {
   });
 
   const handleSearchPress = () => {
-    Alert.alert('Khởi động quét', 'Hệ thống đang tìm kiếm chuyến đi không gian...');
+    Alert.alert(t('home.scanAlertTitle'), t('home.scanAlertMessage'));
   };
 
   return (
@@ -142,12 +152,12 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.header}>
           <View style={styles.logoContainer}>
             <View style={styles.logoIconGlow}>
-              <BusIcon size={24} color={COLORS.brand[500]} />
+              <BusIcon size={24} color={colors.brand[500]} />
             </View>
             <Text style={styles.brandName}>HAO THANH<Text style={styles.brandAccent}>_NX</Text></Text>
           </View>
           <View style={styles.avatarGlass}>
-            <UserIcon size={20} color={COLORS.brand[500]} />
+            <UserIcon size={20} color={colors.brand[500]} />
           </View>
         </View>
 
@@ -159,8 +169,8 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.searchContainer}>
             <View style={styles.searchGlassPanel}>
               <View style={styles.searchHeader}>
-                <SearchIcon size={20} color={COLORS.neutral[800]} />
-                <Text style={styles.searchTitle}>ĐỊNH VỊ CHUYẾN ĐI</Text>
+                <SearchIcon size={20} color={colors.neutral[800]} />
+                <Text style={styles.searchTitle}>{t('home.searchTitle')}</Text>
               </View>
               
               <View style={styles.inputWrapper}>
@@ -168,12 +178,12 @@ export default function HomeScreen({ navigation }) {
                 
                 <View style={styles.inputGroup}>
                   <View style={styles.inputIconContainer}>
-                    <LocationIcon size={18} color={COLORS.brand[500]} />
+                    <LocationIcon size={18} color={colors.brand[500]} />
                   </View>
                   <TextInput
                     style={styles.input}
-                    placeholder="Tọa độ xuất phát"
-                    placeholderTextColor={COLORS.neutral[400]}
+                    placeholder={t('home.departure')}
+                    placeholderTextColor={colors.neutral[400]}
                     value={departure}
                     onChangeText={setDeparture}
                   />
@@ -181,12 +191,12 @@ export default function HomeScreen({ navigation }) {
 
                 <View style={styles.inputGroup}>
                   <View style={[styles.inputIconContainer, { marginTop: 4 }]}>
-                    <LocationIcon size={18} color={COLORS.neutral[800]} />
+                    <LocationIcon size={18} color={colors.neutral[800]} />
                   </View>
                   <TextInput
                     style={styles.input}
-                    placeholder="Điểm đến (Dest.)"
-                    placeholderTextColor={COLORS.neutral[400]}
+                    placeholder={t('home.destination')}
+                    placeholderTextColor={colors.neutral[400]}
                     value={destination}
                     onChangeText={setDestination}
                   />
@@ -195,12 +205,12 @@ export default function HomeScreen({ navigation }) {
 
               <View style={[styles.inputGroup, { marginTop: 16 }]}>
                 <View style={styles.inputIconContainer}>
-                  <DateIcon size={18} color={COLORS.neutral[800]} />
+                  <DateIcon size={18} color={colors.neutral[800]} />
                 </View>
                 <TextInput
                   style={styles.input}
-                  placeholder="Thời gian khởi hành (DD/MM/YY)"
-                  placeholderTextColor={COLORS.neutral[400]}
+                  placeholder={t('home.date')}
+                  placeholderTextColor={colors.neutral[400]}
                   value={date}
                   onChangeText={setDate}
                 />
@@ -212,14 +222,14 @@ export default function HomeScreen({ navigation }) {
                 onPressOut={() => buttonScale.value = withTiming(1)}
                 onPress={handleSearchPress}
               >
-                <Text style={styles.searchButtonText}>QUÉT CHUYẾN ĐI</Text>
+                <Text style={styles.searchButtonText}>{t('home.scanButton')}</Text>
               </AnimatedPressable>
             </View>
           </View>
 
           {/* 3D Carousel Section */}
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>TUYẾN HOT</Text>
+            <Text style={styles.sectionTitle}>{t('home.hotRoutes')}</Text>
             <View style={styles.sectionLine} />
           </View>
 
@@ -244,10 +254,10 @@ export default function HomeScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors, isDarkMode) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: isDarkMode ? colors.neutral[50] : '#F8FAFC',
   },
   bgCircleTop: {
     position: 'absolute',
@@ -256,7 +266,7 @@ const styles = StyleSheet.create({
     width: 300,
     height: 300,
     borderRadius: 150,
-    backgroundColor: 'rgba(240, 81, 35, 0.05)',
+    backgroundColor: isDarkMode ? 'rgba(240, 81, 35, 0.1)' : 'rgba(240, 81, 35, 0.05)',
   },
   bgCircleBottom: {
     position: 'absolute',
@@ -265,7 +275,7 @@ const styles = StyleSheet.create({
     width: 250,
     height: 250,
     borderRadius: 125,
-    backgroundColor: 'rgba(37, 99, 235, 0.03)',
+    backgroundColor: isDarkMode ? 'rgba(37, 99, 235, 0.05)' : 'rgba(37, 99, 235, 0.03)',
   },
   safeArea: {
     flex: 1,
@@ -284,7 +294,7 @@ const styles = StyleSheet.create({
   logoIconGlow: {
     width: 44,
     height: 44,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: RADIUS.lg,
     alignItems: 'center',
     justifyContent: 'center',
@@ -294,22 +304,22 @@ const styles = StyleSheet.create({
   brandName: {
     fontSize: 22,
     fontWeight: '900',
-    color: COLORS.neutral[900],
+    color: colors.neutral[900],
     letterSpacing: 1,
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
   brandAccent: {
-    color: COLORS.brand[500],
+    color: colors.brand[500],
   },
   avatarGlass: {
     width: 44,
     height: 44,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : 'rgba(255, 255, 255, 0.8)',
     borderRadius: RADIUS.lg,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 1)',
+    borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 1)',
     ...SHADOWS.sm,
   },
   scrollContent: {
@@ -321,11 +331,11 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   searchGlassPanel: {
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.85)' : 'rgba(255, 255, 255, 0.85)',
     borderRadius: RADIUS['2xl'],
     padding: 24,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.5)',
+    borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.5)',
     ...SHADOWS.futuristic,
   },
   searchHeader: {
@@ -336,7 +346,7 @@ const styles = StyleSheet.create({
   searchTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: COLORS.neutral[800],
+    color: colors.neutral[800],
     letterSpacing: 2,
     marginLeft: 10,
   },
@@ -349,17 +359,17 @@ const styles = StyleSheet.create({
     top: 24,
     bottom: 24,
     width: 2,
-    backgroundColor: COLORS.neutral[200],
+    backgroundColor: colors.neutral[200],
     borderStyle: 'dashed',
   },
   inputGroup: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.neutral[50],
+    backgroundColor: colors.neutral[50],
     borderRadius: RADIUS.lg,
     height: 56,
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.03)',
+    borderColor: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
   },
   inputIconContainer: {
     width: 50,
@@ -371,11 +381,11 @@ const styles = StyleSheet.create({
     height: '100%',
     fontSize: 16,
     fontWeight: '500',
-    color: COLORS.neutral[900],
+    color: colors.neutral[900],
     paddingRight: 16,
   },
   searchButton: {
-    backgroundColor: COLORS.neutral[900],
+    backgroundColor: colors.neutral[900],
     borderRadius: RADIUS.lg,
     height: 56,
     alignItems: 'center',
@@ -384,7 +394,7 @@ const styles = StyleSheet.create({
     ...SHADOWS.futuristic,
   },
   searchButtonText: {
-    color: COLORS.white,
+    color: colors.neutral[50],
     fontSize: 16,
     fontWeight: '800',
     letterSpacing: 1.5,
@@ -399,14 +409,14 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '900',
-    color: COLORS.neutral[900],
+    color: colors.neutral[900],
     letterSpacing: 2,
     marginRight: 16,
   },
   sectionLine: {
     flex: 1,
     height: 1,
-    backgroundColor: COLORS.neutral[200],
+    backgroundColor: colors.neutral[200],
   },
   horizontalScrollList: {
     paddingHorizontal: 24,
@@ -414,7 +424,7 @@ const styles = StyleSheet.create({
   },
   routeCard: {
     width: CARD_WIDTH,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: RADIUS['2xl'],
     marginRight: SPACING,
     overflow: 'hidden',
@@ -439,22 +449,22 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 16,
     right: 16,
-    backgroundColor: 'rgba(255,255,255,0.9)',
+    backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.9)' : 'rgba(255,255,255,0.9)',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: RADIUS.md,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.4)',
+    borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255,255,255,0.4)',
   },
   priceText: {
-    color: COLORS.neutral[900],
+    color: colors.neutral[900],
     fontWeight: '800',
     fontSize: 14,
     letterSpacing: 0.5,
   },
   routeInfo: {
     padding: 20,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
   },
   routeHeader: {
     flexDirection: 'row',
@@ -464,7 +474,7 @@ const styles = StyleSheet.create({
   routeTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: COLORS.neutral[900],
+    color: colors.neutral[900],
     letterSpacing: 1,
   },
   routeFooter: {
@@ -479,16 +489,16 @@ const styles = StyleSheet.create({
   routeTimeText: {
     fontSize: 14,
     fontWeight: '600',
-    color: COLORS.neutral[500],
+    color: colors.neutral[500],
   },
   actionBtn: {
-    backgroundColor: COLORS.brand[50],
+    backgroundColor: colors.brand[50],
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: RADIUS.md,
   },
   actionBtnText: {
-    color: COLORS.brand[600],
+    color: colors.brand[600],
     fontWeight: '800',
     fontSize: 12,
     letterSpacing: 1,

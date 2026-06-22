@@ -24,8 +24,10 @@ import {
   XIcon
 } from '../components/icons/CustomIcons';
 import { COLORS, TYPOGRAPHY, RADIUS, SHADOWS } from '../theme';
+import { useTranslation } from 'react-i18next';
 
 export default function SupportScreen({ navigation }) {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedFaq, setExpandedFaq] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -186,7 +188,7 @@ export default function SupportScreen({ navigation }) {
         >
           <ArrowLeftIcon size={24} color={COLORS.neutral[800]} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Trợ giúp & Hỗ trợ</Text>
+        <Text style={styles.headerTitle}>{t('support.title')}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -204,7 +206,7 @@ export default function SupportScreen({ navigation }) {
               <SearchIcon size={20} color={COLORS.neutral[400]} />
               <TextInput
                 style={styles.searchInput}
-                placeholder="Tìm kiếm vấn đề của bạn..."
+                placeholder={t('support.searchPlaceholder')}
                 placeholderTextColor={COLORS.neutral[400]}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
@@ -257,13 +259,13 @@ export default function SupportScreen({ navigation }) {
         </View>
 
         <View style={styles.contactSection}>
-          <Text style={styles.sectionTitle}>Liên hệ nhanh</Text>
+          <Text style={styles.sectionTitle}>{t('support.categories', 'Liên hệ nhanh')}</Text>
           <View style={styles.contactGrid}>
             <TouchableOpacity style={styles.contactCard} onPress={() => handleContact('call')}>
               <View style={[styles.iconContainer, { backgroundColor: COLORS.semantic.info + '20' }]}>
                 <PhoneIcon size={24} color={COLORS.semantic.info} />
               </View>
-              <Text style={styles.contactTitle}>Gọi Hotline</Text>
+              <Text style={styles.contactTitle}>{t('support.contactCall', 'Gọi Hotline')}</Text>
               {isLoading ? (
                 <ActivityIndicator size="small" color={COLORS.semantic.info} style={{ marginTop: 2 }} />
               ) : (
@@ -275,22 +277,22 @@ export default function SupportScreen({ navigation }) {
               <View style={[styles.iconContainer, { backgroundColor: COLORS.semantic.success + '20' }]}>
                 <MailIcon size={24} color={COLORS.semantic.success} />
               </View>
-              <Text style={styles.contactTitle}>Gửi Email</Text>
-              <Text style={styles.contactSubtitle}>Phản hồi 24h</Text>
+              <Text style={styles.contactTitle}>{t('support.contactRequest', 'Gửi Email')}</Text>
+              <Text style={styles.contactSubtitle}>{t('support.contactRequestDesc', 'Phản hồi 24h')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.contactCard} onPress={() => handleContact('chat')}>
               <View style={[styles.iconContainer, { backgroundColor: COLORS.brand[50] }]}>
                 <MessageIcon size={24} color={COLORS.brand[500]} />
               </View>
-              <Text style={styles.contactTitle}>Chat Online</Text>
-              <Text style={styles.contactSubtitle}>Trực tiếp</Text>
+              <Text style={styles.contactTitle}>{t('support.contactChat', 'Chat Online')}</Text>
+              <Text style={styles.contactSubtitle}>{t('support.contactChatDesc', 'Trực tiếp')}</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         <View style={styles.faqSection}>
-          <Text style={styles.sectionTitle}>Câu hỏi thường gặp</Text>
+          <Text style={styles.sectionTitle}>{t('support.recentArticles', 'Câu hỏi thường gặp')}</Text>
           <View style={styles.faqList}>
             {faqs.map((faq) => (
               <TouchableOpacity 
@@ -321,12 +323,12 @@ export default function SupportScreen({ navigation }) {
         </View>
 
         <View style={styles.footerSection}>
-          <Text style={styles.footerText}>Bạn vẫn cần thêm hỗ trợ?</Text>
+          <Text style={styles.footerText}>{t('support.stillNeedHelp')}</Text>
           <TouchableOpacity 
             style={styles.ticketButton}
             onPress={() => navigation.navigate('CreateSupportRequest')}
           >
-            <Text style={styles.ticketButtonText}>Gửi yêu cầu hỗ trợ mới</Text>
+            <Text style={styles.ticketButtonText}>{t('support.contactRequest')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

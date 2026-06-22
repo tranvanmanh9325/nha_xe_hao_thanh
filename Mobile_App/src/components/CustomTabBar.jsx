@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import AnimatedTabIcon from './AnimatedTabIcon';
 import { SHADOWS } from '../theme';
+import { useTheme } from '../context/ThemeContext';
 
 export default function CustomTabBar({ state, descriptors, navigation }) {
+  const { colors, isDarkMode } = useTheme();
+  const styles = useMemo(() => createStyles(colors, isDarkMode), [colors, isDarkMode]);
   return (
     <View style={styles.tabBarContainer}>
       {state.routes.map((route, index) => {
@@ -52,7 +55,7 @@ export default function CustomTabBar({ state, descriptors, navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors, isDarkMode) => StyleSheet.create({
   tabBarContainer: {
     position: 'absolute',
     bottom: Platform.OS === 'ios' ? 30 : 20,
@@ -61,12 +64,12 @@ const styles = StyleSheet.create({
     height: 64,
     flexDirection: 'row',
     // Glassmorphism translucent background
-    backgroundColor: 'rgba(255, 255, 255, 0.88)', 
+    backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.88)' : 'rgba(255, 255, 255, 0.88)', 
     borderRadius: 32, // Perfect pill shape
     ...SHADOWS.futuristic, // Add deep 3D shadow from theme
     paddingHorizontal: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.6)', // Shiny glass rim
+    borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.6)', // Shiny glass rim
   },
   tabButton: {
     flex: 1,

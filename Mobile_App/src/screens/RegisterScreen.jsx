@@ -16,11 +16,13 @@ import AnimatedButton from '../components/AnimatedButton';
 import { COLORS, TYPOGRAPHY, RADIUS } from '../theme';
 import { PhoneIcon, LockIcon, UserIcon } from '../components/icons/CustomIcons';
 import authService from '../services/authService';
+import { useTranslation } from 'react-i18next';
 
 const PHONE_REGEX = /^0\d{9,10}$/;
 const MIN_PASSWORD_LENGTH = 6;
 
 export default function RegisterScreen({ navigation }) {
+  const { t } = useTranslation();
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -32,25 +34,25 @@ export default function RegisterScreen({ navigation }) {
     const newErrors = {};
 
     if (!fullName.trim()) {
-      newErrors.fullName = 'Vui lòng nhập họ và tên';
+      newErrors.fullName = t('auth.nameError', 'Vui lòng nhập họ và tên');
     }
 
     if (!phone.trim()) {
-      newErrors.phone = 'Vui lòng nhập số điện thoại';
+      newErrors.phone = t('auth.loginError', 'Vui lòng nhập số điện thoại');
     } else if (!PHONE_REGEX.test(phone.trim())) {
-      newErrors.phone = 'Số điện thoại không hợp lệ';
+      newErrors.phone = t('auth.loginError', 'Số điện thoại không hợp lệ');
     }
 
     if (!password) {
-      newErrors.password = 'Vui lòng nhập mật khẩu';
+      newErrors.password = t('auth.loginError', 'Vui lòng nhập mật khẩu');
     } else if (password.length < MIN_PASSWORD_LENGTH) {
-      newErrors.password = `Mật khẩu phải có ít nhất ${MIN_PASSWORD_LENGTH} ký tự`;
+      newErrors.password = t('auth.passwordLengthError', `Mật khẩu phải có ít nhất ${MIN_PASSWORD_LENGTH} ký tự`, { length: MIN_PASSWORD_LENGTH });
     }
 
     if (!confirmPassword) {
-      newErrors.confirmPassword = 'Vui lòng xác nhận mật khẩu';
+      newErrors.confirmPassword = t('auth.loginError', 'Vui lòng xác nhận mật khẩu');
     } else if (password && confirmPassword !== password) {
-      newErrors.confirmPassword = 'Mật khẩu xác nhận không khớp';
+      newErrors.confirmPassword = t('auth.passwordMismatch', 'Mật khẩu xác nhận không khớp');
     }
 
     setErrors(newErrors);
@@ -78,9 +80,9 @@ export default function RegisterScreen({ navigation }) {
       if (message) {
         // 409 Conflict = duplicate phone number
         if (error.response?.status === 409) {
-          setErrors({ phone: 'Số điện thoại này đã được đăng ký' });
+          setErrors({ phone: t('auth.phoneExists', 'Số điện thoại này đã được đăng ký') });
         } else {
-          Alert.alert('Lỗi', message);
+          Alert.alert(t('createRequest.submitError', 'Lỗi'), message);
         }
       }
     } finally {
@@ -112,8 +114,8 @@ export default function RegisterScreen({ navigation }) {
               style={styles.card}
             >
               <Animated.View entering={FadeIn.delay(200).duration(800)} style={styles.header}>
-                <Text style={styles.title}>Tạo tài khoản mới</Text>
-                <Text style={styles.subtitle}>Điền thông tin bên dưới để bắt đầu đặt vé ngay hôm nay.</Text>
+                <Text style={styles.title}>{t('auth.registerTitle')}</Text>
+                <Text style={styles.subtitle}>{t('auth.registerIntro', 'Điền thông tin bên dưới để bắt đầu đặt vé ngay hôm nay.')}</Text>
               </Animated.View>
 
               <Animated.View entering={FadeInDown.delay(300).duration(600).springify()} style={styles.formContainer}>
@@ -124,8 +126,8 @@ export default function RegisterScreen({ navigation }) {
                 )}
 
                 <AnimatedInput
-                  label="Họ và tên"
-                  placeholder="Nhập họ và tên đầy đủ"
+                  label={t('auth.fullNamePlaceholder')}
+                  placeholder={t('auth.fullNamePlaceholder')}
                   autoCapitalize="words"
                   icon={UserIcon}
                   value={fullName}
@@ -137,7 +139,7 @@ export default function RegisterScreen({ navigation }) {
                 />
 
                 <AnimatedInput
-                  label="Số điện thoại"
+                  label={t('auth.phonePlaceholder')}
                   placeholder="09xx xxx xxx"
                   keyboardType="phone-pad"
                   icon={PhoneIcon}
@@ -150,8 +152,8 @@ export default function RegisterScreen({ navigation }) {
                 />
                 
                 <AnimatedInput
-                  label="Mật khẩu"
-                  placeholder="Nhập mật khẩu"
+                  label={t('auth.passwordPlaceholder')}
+                  placeholder={t('auth.passwordPlaceholder')}
                   secureTextEntry
                   icon={LockIcon}
                   value={password}
@@ -163,8 +165,8 @@ export default function RegisterScreen({ navigation }) {
                 />
 
                 <AnimatedInput
-                  label="Xác nhận mật khẩu"
-                  placeholder="Nhập lại mật khẩu"
+                  label={t('auth.confirmPasswordPlaceholder', 'Xác nhận mật khẩu')}
+                  placeholder={t('auth.confirmPasswordPlaceholder', 'Nhập lại mật khẩu')}
                   secureTextEntry
                   icon={LockIcon}
                   value={confirmPassword}
@@ -176,16 +178,16 @@ export default function RegisterScreen({ navigation }) {
                 />
 
                 <AnimatedButton
-                  title="Đăng Ký"
+                  title={t('auth.registerNow')}
                   onPress={handleRegister}
                   loading={loading}
                   style={styles.registerButton}
                 />
 
                 <View style={styles.loginContainer}>
-                  <Text style={styles.loginText}>Đã có tài khoản? </Text>
+                  <Text style={styles.loginText}>{t('auth.haveAccount')} </Text>
                   <Pressable onPress={() => navigation.goBack()} style={styles.loginLinkContainer}>
-                    <Text style={styles.loginLink}>Đăng nhập</Text>
+                    <Text style={styles.loginLink}>{t('auth.loginButton')}</Text>
                   </Pressable>
                 </View>
               </Animated.View>

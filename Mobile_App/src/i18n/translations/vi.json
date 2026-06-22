@@ -1,0 +1,219 @@
+{
+  "common": {
+    "loading": "Đang tải...",
+    "success": "Thành công",
+    "error": "Lỗi",
+    "cancel": "Hủy",
+    "ok": "OK",
+    "delete": "Xóa",
+    "version": "Phiên bản",
+    "inDevelopment": "Tính năng đang được phát triển"
+  },
+  "home": {
+    "searchTitle": "ĐỊNH VỊ CHUYẾN ĐI",
+    "departure": "Tọa độ xuất phát",
+    "destination": "Điểm đến (Dest.)",
+    "date": "Thời gian khởi hành (DD/MM/YY)",
+    "scanButton": "QUÉT CHUYẾN ĐI",
+    "hotRoutes": "TUYẾN HOT",
+    "select": "CHỌN",
+    "scanAlertTitle": "Khởi động quét",
+    "scanAlertMessage": "Hệ thống đang tìm kiếm chuyến đi không gian..."
+  },
+  "profile": {
+    "defaultName": "Người dùng",
+    "defaultTier": "Thành viên Bạc",
+    "membershipTier": "Hạng thành viên",
+    "pointsLabel": "Điểm tích lũy",
+    "pointsProgress": "Cần thêm 750 H-Coin để lên hạng Vàng",
+    "myAccount": "Tài khoản của tôi",
+    "personalProfile": "Hồ sơ cá nhân",
+    "personalProfileDesc": "Cập nhật thông tin của bạn",
+    "security": "Bảo mật & Mật khẩu",
+    "securityDesc": "Bảo vệ tài khoản của bạn",
+    "activities": "Hoạt động",
+    "bookingHistory": "Lịch sử đặt vé",
+    "notificationSettings": "Cài đặt thông báo",
+    "others": "Khác",
+    "generalSettings": "Cài đặt chung",
+    "support": "Trợ giúp & Hỗ trợ",
+    "logout": "Đăng xuất",
+    "logoutConfirmTitle": "Đăng xuất",
+    "logoutConfirmMessage": "Bạn có chắc chắn muốn đăng xuất khỏi tài khoản?"
+  },
+  "settings": {
+    "title": "Cài đặt chung",
+    "displayAndLanguage": "Hiển thị & Ngôn ngữ",
+    "language": "Ngôn ngữ",
+    "vietnamese": "Tiếng Việt",
+    "english": "English",
+    "darkMode": "Giao diện tối",
+    "system": "Hệ thống",
+    "sound": "Âm thanh thông báo",
+    "clearCache": "Xóa bộ nhớ đệm",
+    "currentSize": "Dung lượng hiện tại",
+    "calculating": "Đang tính...",
+    "unknown": "Không xác định",
+    "information": "Thông tin",
+    "termsAndPolicies": "Điều khoản & Chính sách",
+    "appInfo": "Thông tin ứng dụng",
+    "clearCacheTitle": "Xóa bộ nhớ đệm",
+    "clearCacheMessage": "Bạn có chắc chắn muốn xóa bộ nhớ đệm của ứng dụng? Quá trình này sẽ không xóa tài khoản hay dữ liệu cá nhân của bạn.",
+    "clearCacheSuccess": "Đã dọn dẹp bộ nhớ đệm.",
+    "clearCacheError": "Không thể xóa bộ nhớ đệm. Vui lòng thử lại."
+  },
+  "ticket": {
+    "title": "Vé của tôi"
+  },
+  "notification": {
+    "title": "Thông báo",
+    "empty": "Bạn chưa có thông báo nào"
+  },
+  "languages": {
+    "vi": "Tiếng Việt",
+    "en": "Tiếng Anh",
+    "ja": "Tiếng Nhật",
+    "ko": "Tiếng Hàn",
+    "zh": "Tiếng Trung"
+  },
+  "legal": {
+    "title": "Điều khoản & Chính sách",
+    "intro": "Vui lòng đọc kỹ các điều khoản và chính sách dưới đây để hiểu rõ quyền lợi và trách nhiệm của bạn khi sử dụng dịch vụ của Hào Thành Bus.",
+    "termsTitle": "Điều khoản dịch vụ",
+    "termsDesc": "Quy định về hành lý, đặt vé, và trách nhiệm.",
+    "privacyTitle": "Chính sách bảo mật",
+    "privacyDesc": "Cách chúng tôi bảo vệ dữ liệu cá nhân của bạn.",
+    "lastUpdate": "Cập nhật lần cuối: 21/06/2026",
+    "termsIntro": "Chào mừng bạn đến với Ứng dụng đặt vé Hào Thành Bus. Khi sử dụng ứng dụng để đặt vé và trải nghiệm dịch vụ, bạn đồng ý với các Điều khoản dịch vụ dưới đây. Vui lòng đọc kỹ để đảm bảo quyền lợi của mình trong suốt hành trình.",
+    "emptyTerms": "Chưa có thông tin điều khoản dịch vụ.",
+    "termsFooter": "Mọi thắc mắc hoặc yêu cầu bồi thường liên quan đến dịch vụ, vui lòng liên hệ Tổng đài CSKH của Hào Thành Bus để được giải quyết nhanh nhất.",
+    "privacyIntro": "Bảo vệ thông tin cá nhân của bạn là ưu tiên hàng đầu của chúng tôi. Chính sách bảo mật này mô tả cách Hào Thành Bus thu thập, sử dụng và bảo vệ dữ liệu của bạn.",
+    "emptyPrivacy": "Chưa có thông tin chính sách bảo mật.",
+    "privacyFooter": "Nếu bạn có bất kỳ câu hỏi nào về việc xử lý dữ liệu cá nhân, vui lòng liên hệ với Bộ phận Hỗ trợ.",
+    "termsSections": [
+      {
+        "title": "1. Trách nhiệm của hành khách",
+        "content": "Hành khách có trách nhiệm cung cấp thông tin cá nhân (họ tên, số điện thoại) chính xác khi đặt vé để đảm bảo quyền lợi khởi hành. Hành khách phải tự bảo mật thông tin tài khoản và mã vé điện tử của mình."
+      },
+      {
+        "title": "2. Quy định khởi hành và lên xe",
+        "content": "Hành khách cần có mặt tại điểm đón trước giờ khởi hành ít nhất 30 phút đối với ngày thường và 60 phút đối với dịp Lễ/Tết. Xuất trình mã vé điện tử hoặc vé giấy hợp lệ cho nhân viên nhà xe trước khi lên xe."
+      },
+      {
+        "title": "3. Hành lý và tư trang",
+        "content": "Mỗi hành khách được mang tối đa 1 kiện hành lý xách tay (dưới 5kg) và 1 kiện hành lý ký gửi (không quá 20kg). Không mang theo hàng quốc cấm, vũ khí, chất cháy nổ, chất có mùi hôi tanh hoặc động vật/thú cưng lên khoang hành khách. Hành khách tự bảo quản tư trang có giá trị cao."
+      },
+      {
+        "title": "4. Chính sách Đổi / Hủy vé",
+        "content": "Khách hàng được miễn phí hủy vé trước 24 giờ so với giờ khởi hành. Hủy vé từ 12 - 24 giờ trước khởi hành chịu phí 20%. Không hỗ trợ hoàn/hủy vé nếu yêu cầu trong vòng 12 giờ trước giờ xe chạy hoặc sau khi xe đã xuất bến."
+      },
+      {
+        "title": "5. Thay đổi lịch trình từ nhà xe",
+        "content": "Trong các trường hợp bất khả kháng (thiên tai, dịch bệnh, kẹt xe, sự cố kỹ thuật đột xuất), Hào Thành Bus có quyền thay đổi giờ chạy hoặc loại xe. Chúng tôi sẽ thông báo trước cho hành khách và hỗ trợ đổi vé hoặc hoàn tiền 100% nếu lịch trình mới không phù hợp."
+      },
+      {
+        "title": "6. Xuất hóa đơn (VAT)",
+        "content": "Hành khách có nhu cầu xuất hóa đơn giá trị gia tăng (VAT) vui lòng cung cấp thông tin xuất hóa đơn trong quá trình đặt vé hoặc liên hệ với bộ phận CSKH chậm nhất 7 ngày sau khi chuyến đi kết thúc."
+      }
+    ],
+    "privacySections": [
+      {
+        "title": "1. Mục đích và phạm vi thu thập",
+        "content": "Hào Thành Bus thu thập thông tin cá nhân (Họ tên, Số điện thoại, Email) nhằm mục đích xử lý đặt vé, cung cấp dịch vụ vận tải, thông báo lịch trình, và hỗ trợ khách hàng. Dữ liệu này giúp chúng tôi nâng cao chất lượng dịch vụ và cá nhân hóa trải nghiệm cho từng hành khách."
+      },
+      {
+        "title": "2. Bảo mật thông tin thanh toán",
+        "content": "Chúng tôi tuân thủ các tiêu chuẩn bảo mật dữ liệu an toàn trên internet (SSL) và tiêu chuẩn bảo mật dữ liệu thẻ thanh toán (PCI DSS). Các thông tin thanh toán và thẻ tín dụng/ghi nợ được xử lý qua các cổng thanh toán uy tín và hoàn toàn không được lưu trữ trực tiếp trên hệ thống của Hào Thành Bus."
+      },
+      {
+        "title": "3. Cam kết chia sẻ thông tin",
+        "content": "Chúng tôi cam kết tuyệt đối không bán, trao đổi hay chia sẻ thông tin cá nhân của hành khách cho bất kỳ bên thứ ba nào vì mục đích thương mại. Thông tin chỉ được cung cấp cho cơ quan chức năng khi có yêu cầu hợp pháp theo quy định của pháp luật Việt Nam."
+      },
+      {
+        "title": "4. Quản lý vé điện tử",
+        "content": "Dữ liệu vé điện tử bao gồm mã QR code được bảo mật nghiêm ngặt. Khách hàng vui lòng không chia sẻ mã QR vé của mình cho người lạ để tránh rủi ro về quyền lợi lên xe. Việc để lộ thông tin mã vé có thể dẫn đến việc mất quyền lợi chuyến đi."
+      },
+      {
+        "title": "5. Quyền lợi của khách hàng",
+        "content": "Khách hàng có quyền yêu cầu truy cập, chỉnh sửa hoặc vô hiệu hóa thông tin tài khoản cá nhân của mình trên hệ thống. Khách hàng cũng có thể từ chối nhận các email/tin nhắn khuyến mãi bất kỳ lúc nào bằng cách sử dụng tính năng hỗ trợ trong ứng dụng."
+      },
+      {
+        "title": "6. Thay đổi chính sách",
+        "content": "Hào Thành Bus có quyền cập nhật, sửa đổi chính sách bảo mật này để phù hợp với quy định pháp luật và hoạt động dịch vụ. Mọi thay đổi lớn sẽ được thông báo trực tiếp qua thông báo ứng dụng (Push Notifications) và cập nhật công khai tại đây."
+      }
+    ]
+  },
+  "appInfo": {
+    "title": "Thông tin ứng dụng",
+    "appName": "Hào Thành Bus",
+    "version": "Phiên bản",
+    "developer": "Phát triển bởi",
+    "devName": "Đội ngũ Hào Thành Bus",
+    "checkUpdate": "Kiểm tra cập nhật",
+    "upToDate": "Ứng dụng của bạn đang ở phiên bản mới nhất",
+    "rateApp": "Đánh giá ứng dụng",
+    "rateDesc": "Giúp chúng tôi cải thiện dịch vụ",
+    "website": "Trang web chính thức",
+    "copyright": "© 2026 Hào Thành Bus. Bảo lưu mọi quyền."
+  },
+  "support": {
+    "title": "Trợ giúp & Hỗ trợ",
+    "searchPlaceholder": "Tìm kiếm vấn đề...",
+    "categories": "Danh mục hỗ trợ",
+    "catTicket": "Vấn đề về vé",
+    "catPayment": "Thanh toán",
+    "catAccount": "Tài khoản",
+    "catPolicy": "Chính sách",
+    "recentArticles": "Bài viết gần đây",
+    "article1": "Hướng dẫn đổi trả vé",
+    "article2": "Cách sử dụng điểm H-Coin",
+    "article3": "Quy định về hành lý",
+    "article4": "Xử lý khi quên đồ trên xe",
+    "stillNeedHelp": "Vẫn cần hỗ trợ?",
+    "contactChat": "Chat với nhân viên hỗ trợ",
+    "contactChatDesc": "Thời gian phản hồi ~5 phút",
+    "contactCall": "Gọi tổng đài (1900 xxxx)",
+    "contactCallDesc": "Phục vụ 24/7",
+    "contactRequest": "Gửi yêu cầu hỗ trợ",
+    "contactRequestDesc": "Theo dõi tiến độ xử lý"
+  },
+  "createRequest": {
+    "title": "Gửi yêu cầu hỗ trợ",
+    "selectTopic": "Chọn chủ đề",
+    "requestContent": "Nội dung yêu cầu",
+    "requestContentPlaceholder": "Vui lòng mô tả chi tiết vấn đề của bạn...",
+    "selectImages": "Thêm hình ảnh (Tùy chọn)",
+    "submitButton": "Gửi yêu cầu",
+    "topicBooking": "Vấn đề đặt vé",
+    "topicPayment": "Lỗi thanh toán",
+    "topicAccount": "Tài khoản & Bảo mật",
+    "topicService": "Chất lượng dịch vụ",
+    "topicOther": "Khác",
+    "submitSuccess": "Gửi thành công",
+    "submitSuccessMessage": "Yêu cầu của bạn đã được gửi. Chúng tôi sẽ phản hồi sớm nhất.",
+    "submitError": "Lỗi",
+    "submitErrorMessage": "Vui lòng nhập nội dung yêu cầu."
+  },
+  "chat": {
+    "title": "Hỗ trợ trực tuyến",
+    "inputPlaceholder": "Nhập tin nhắn...",
+    "sending": "Đang gửi..."
+  },
+  "auth": {
+    "loginTitle": "Đăng nhập",
+    "phonePlaceholder": "Số điện thoại",
+    "passwordPlaceholder": "Mật khẩu",
+    "forgotPassword": "Quên mật khẩu?",
+    "loginButton": "Đăng nhập",
+    "loginError": "Vui lòng nhập đầy đủ số điện thoại và mật khẩu",
+    "orLoginWith": "Hoặc đăng nhập bằng",
+    "noAccount": "Chưa có tài khoản?",
+    "registerNow": "Đăng ký ngay",
+    "registerTitle": "Đăng ký",
+    "namePlaceholder": "Họ và tên",
+    "confirmPasswordPlaceholder": "Xác nhận mật khẩu",
+    "registerButton": "Đăng ký",
+    "haveAccount": "Đã có tài khoản?",
+    "loginNow": "Đăng nhập ngay"
+  }
+}

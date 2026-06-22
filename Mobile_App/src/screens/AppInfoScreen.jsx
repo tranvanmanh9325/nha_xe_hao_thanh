@@ -21,10 +21,13 @@ import {
 } from '../components/icons/CustomIcons';
 import { COLORS, TYPOGRAPHY, RADIUS, SHADOWS } from '../theme';
 import api from '../services/api';
+import { useTranslation } from 'react-i18next';
 
 export default function AppInfoScreen({ navigation }) {
+  const { t } = useTranslation();
   const [companyName, setCompanyName] = useState('Hào Thành Bus');
   const [loading, setLoading] = useState(true);
+  const appVersion = '1.0.0';
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -43,20 +46,15 @@ export default function AppInfoScreen({ navigation }) {
   }, []);
 
   const handleRateApp = () => {
-    // TODO: Thay thế bằng Package Name (Android) và App ID (iOS) thật của ứng dụng "Hào Thanh" khi đã publish
     const androidPackageName = "com.haothanh.app";
     const iosAppId = "id123456789"; 
 
     if (Platform.OS === 'android') {
-      // Mở Google Play thẳng tới ứng dụng
       Linking.openURL(`market://details?id=${androidPackageName}`).catch(() => {
-        // Fallback mở bằng trình duyệt nếu không có app Google Play
         Linking.openURL(`https://play.google.com/store/apps/details?id=${androidPackageName}`);
       });
     } else if (Platform.OS === 'ios') {
-      // Mở App Store thẳng tới ứng dụng
       Linking.openURL(`itms-apps://itunes.apple.com/app/${iosAppId}?action=write-review`).catch(() => {
-        // Fallback mở bằng trình duyệt
         Linking.openURL(`https://apps.apple.com/app/${iosAppId}`);
       });
     }
@@ -107,7 +105,7 @@ export default function AppInfoScreen({ navigation }) {
         >
           <ArrowLeftIcon size={24} color={COLORS.neutral[800]} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Thông tin ứng dụng</Text>
+        <Text style={styles.headerTitle}>{t('appInfo.title')}</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -115,33 +113,29 @@ export default function AppInfoScreen({ navigation }) {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Logo and App Details */}
         <View style={styles.appInfoContainer}>
           <View style={styles.logoContainer}>
-            <Image 
-              source={require('../../assets/icon.png')} 
-              style={styles.logo} 
-              resizeMode="contain" 
-            />
+            <View style={styles.logoPlaceholder}>
+              <Text style={styles.logoText}>HTB</Text>
+            </View>
           </View>
-          <Text style={styles.appName}>{companyName}</Text>
-          <Text style={styles.appVersion}>Phiên bản 1.0.0</Text>
+          <Text style={styles.appName}>{t('appInfo.appName')}</Text>
+          <Text style={styles.appVersion}>{t('appInfo.version')} {appVersion}</Text>
         </View>
 
-        {/* Links Section */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Liên kết</Text>
+          <Text style={styles.sectionTitle}>{t('appInfo.links', 'Liên kết')}</Text>
           <View style={styles.menuCard}>
             {renderMenuItem({
               icon: (color) => <GlobeIcon size={24} color={color} />, 
-              title: "Website chính thức", 
+              title: t('appInfo.website'), 
               subtitle: "haothanhbus.vn",
               onPress: handleOpenWebsite
             })}
             <View style={styles.divider} />
             {renderMenuItem({
               icon: (color) => <StarIcon size={24} color={color} />, 
-              title: "Đánh giá ứng dụng",
+              title: t('appInfo.rateApp'),
               onPress: handleRateApp
             })}
           </View>
@@ -149,17 +143,17 @@ export default function AppInfoScreen({ navigation }) {
 
         {/* Legal Section */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Pháp lý</Text>
+          <Text style={styles.sectionTitle}>{t('appInfo.legal', 'Pháp lý')}</Text>
           <View style={styles.menuCard}>
             {renderMenuItem({
               icon: (color) => <DocumentIcon size={24} color={color} />, 
-              title: "Điều khoản dịch vụ",
+              title: t('legal.termsTitle'),
               onPress: () => navigation.navigate('TermsOfService')
             })}
             <View style={styles.divider} />
             {renderMenuItem({
               icon: (color) => <ShieldIcon size={24} color={color} />, 
-              title: "Chính sách bảo mật",
+              title: t('legal.privacyTitle'),
               onPress: () => navigation.navigate('PrivacyPolicy')
             })}
           </View>

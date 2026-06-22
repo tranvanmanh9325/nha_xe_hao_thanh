@@ -1,0 +1,219 @@
+{
+  "common": {
+    "loading": "加载中...",
+    "success": "成功",
+    "error": "错误",
+    "cancel": "取消",
+    "ok": "确定",
+    "delete": "删除",
+    "version": "版本",
+    "inDevelopment": "功能开发中"
+  },
+  "home": {
+    "searchTitle": "查找行程",
+    "departure": "出发地坐标",
+    "destination": "目的地",
+    "date": "出发日期 (DD/MM/YY)",
+    "scanButton": "开始扫描",
+    "hotRoutes": "热门路线",
+    "select": "选择",
+    "scanAlertTitle": "开始扫描",
+    "scanAlertMessage": "正在搜索太空旅行..."
+  },
+  "profile": {
+    "defaultName": "用户",
+    "defaultTier": "白银会员",
+    "membershipTier": "会员等级",
+    "pointsLabel": "累计积分",
+    "pointsProgress": "距离黄金会员还差750 H-Coin",
+    "myAccount": "我的账户",
+    "personalProfile": "个人资料",
+    "personalProfileDesc": "更新您的信息",
+    "security": "安全与密码",
+    "securityDesc": "保护您的账户",
+    "activities": "活动",
+    "bookingHistory": "预订历史",
+    "notificationSettings": "通知设置",
+    "others": "其他",
+    "generalSettings": "通用设置",
+    "support": "帮助与支持",
+    "logout": "退出登录",
+    "logoutConfirmTitle": "退出登录",
+    "logoutConfirmMessage": "确定要退出您的账户吗？"
+  },
+  "settings": {
+    "title": "通用设置",
+    "displayAndLanguage": "显示与语言",
+    "language": "语言",
+    "vietnamese": "Tiếng Việt",
+    "english": "English",
+    "darkMode": "深色模式",
+    "system": "系统",
+    "sound": "通知音",
+    "clearCache": "清除缓存",
+    "currentSize": "当前大小",
+    "calculating": "计算中...",
+    "unknown": "未知",
+    "information": "信息",
+    "termsAndPolicies": "条款与政策",
+    "appInfo": "应用信息",
+    "clearCacheTitle": "清除缓存",
+    "clearCacheMessage": "确定要清除应用缓存吗？此过程不会删除您的账户或个人数据。",
+    "clearCacheSuccess": "缓存清除成功。",
+    "clearCacheError": "缓存清除失败。请重试。"
+  },
+  "ticket": {
+    "title": "我的门票"
+  },
+  "notification": {
+    "title": "通知",
+    "empty": "您没有通知"
+  },
+  "languages": {
+    "vi": "越南语",
+    "en": "英语",
+    "ja": "日语",
+    "ko": "韩语",
+    "zh": "中文"
+  },
+  "legal": {
+    "title": "条款与政策",
+    "intro": "请仔细阅读以下条款和政策，以了解您在使用Hao Thanh Bus服务时的权利和责任。",
+    "termsTitle": "服务条款",
+    "termsDesc": "关于行李、预订和责任的规定。",
+    "privacyTitle": "隐私政策",
+    "privacyDesc": "我们如何保护您的个人数据。",
+    "lastUpdate": "最后更新：2026/06/21",
+    "termsIntro": "欢迎使用Hao Thanh Bus预订应用。使用该应用预订机票和体验服务，即表示您同意以下服务条款。",
+    "emptyTerms": "没有服务条款信息。",
+    "termsFooter": "有关我们服务的任何疑问或索赔，请联系客户支持以快速解决。",
+    "privacyIntro": "保护您的个人信息是我们的首要任务。本政策描述了数据的收集、使用和保护。",
+    "emptyPrivacy": "没有隐私政策信息。",
+    "privacyFooter": "如果您对个人数据的处理有任何疑问，请联系支持。",
+    "termsSections": [
+      {
+        "title": "1. 乘客责任",
+        "content": "乘客在订票时有责任提供准确的个人信息（姓名、电话号码）。乘客必须妥善保管其帐户信息和电子客票。"
+      },
+      {
+        "title": "2. 出发和登车",
+        "content": "乘客必须在平时出发前至少30分钟、节假日出发前60分钟到达乘车点。登车前请出示有效的电子客票或纸质客票。"
+      },
+      {
+        "title": "3. 行李和物品",
+        "content": "每位乘客允许携带1件手提行李（5公斤以下）和1件托运行李（20公斤以下）。严禁携带违禁品、武器、爆炸物、有恶臭的物品或宠物。贵重物品请自行保管。"
+      },
+      {
+        "title": "4. 取消/更改政策",
+        "content": "出发前24小时免费取消。出发前12-24小时收取20%的手续费。出发前12小时内或发车后不支持退票/取消。"
+      },
+      {
+        "title": "5. 我们的日程更改",
+        "content": "如遇不可抗力（自然灾害、流行病、交通拥堵、突发技术事故等），我们保留更改出发时间或巴士类型的权利。我们将通知乘客，如果新的时间表不合适，我们将提供100%全额退款。"
+      },
+      {
+        "title": "6. 增值税发票",
+        "content": "需要增值税发票的乘客必须在预订期间提供发票信息或在行程结束后7天内联系客户服务。"
+      }
+    ],
+    "privacySections": [
+      {
+        "title": "1. 收集的目的和范围",
+        "content": "我们收集个人信息（姓名、电话、电子邮件）以处理预订、提供运输服务、通知时间表并支持客户。这有助于我们提高服务质量。"
+      },
+      {
+        "title": "2. 支付安全",
+        "content": "我们遵守互联网安全标准（SSL）和支付卡数据安全标准（PCI DSS）。付款信息通过信誉良好的网关处理，不存储在我们的系统中。"
+      },
+      {
+        "title": "3. 不共享信息的承诺",
+        "content": "我们绝不为商业目的将乘客信息出售或共享给任何第三方。仅在合法要求下向当局提供信息。"
+      },
+      {
+        "title": "4. 电子客票管理",
+        "content": "包括二维码在内的电子客票数据严格保密。请勿与陌生人分享您的客票二维码，以免失去乘车权。"
+      },
+      {
+        "title": "5. 客户权利",
+        "content": "客户有权要求访问、更正或停用其个人帐户信息。客户可以随时选择拒收促销信息。"
+      },
+      {
+        "title": "6. 政策变更",
+        "content": "我们保留更新此隐私政策的权利。重大更改将通过推送通知直接通知并在此处公开发布。"
+      }
+    ]
+  },
+  "appInfo": {
+    "title": "应用信息",
+    "appName": "Hao Thanh Bus",
+    "version": "版本",
+    "developer": "开发者",
+    "devName": "Hao Thanh Bus 团队",
+    "checkUpdate": "检查更新",
+    "upToDate": "您的应用已是最新版本",
+    "rateApp": "评价应用",
+    "rateDesc": "帮助我们改善服务",
+    "website": "官方网站",
+    "copyright": "© 2026 Hao Thanh Bus. All rights reserved."
+  },
+  "support": {
+    "title": "帮助与支持",
+    "searchPlaceholder": "搜索问题...",
+    "categories": "支持分类",
+    "catTicket": "票务问题",
+    "catPayment": "支付",
+    "catAccount": "账户",
+    "catPolicy": "政策",
+    "recentArticles": "最新文章",
+    "article1": "如何改签或退票",
+    "article2": "如何使用H-Coin积分",
+    "article3": "行李规定",
+    "article4": "把物品忘在车上怎么办",
+    "stillNeedHelp": "还需要帮助吗？",
+    "contactChat": "与客服聊天",
+    "contactChatDesc": "回复时间 约5分钟",
+    "contactCall": "拨打热线 (1900 xxxx)",
+    "contactCallDesc": "全天候服务",
+    "contactRequest": "发送支持请求",
+    "contactRequestDesc": "跟踪解决进度"
+  },
+  "createRequest": {
+    "title": "提交请求",
+    "selectTopic": "选择主题",
+    "requestContent": "请求内容",
+    "requestContentPlaceholder": "请详细描述您的问题...",
+    "selectImages": "添加图片 (可选)",
+    "submitButton": "提交",
+    "topicBooking": "预订问题",
+    "topicPayment": "支付错误",
+    "topicAccount": "账户与安全",
+    "topicService": "服务质量",
+    "topicOther": "其他",
+    "submitSuccess": "成功",
+    "submitSuccessMessage": "您的请求已提交。我们将很快回复。",
+    "submitError": "错误",
+    "submitErrorMessage": "请输入请求内容。"
+  },
+  "chat": {
+    "title": "在线支持",
+    "inputPlaceholder": "输入消息...",
+    "sending": "发送中..."
+  },
+  "auth": {
+    "loginTitle": "登录",
+    "phonePlaceholder": "电话号码",
+    "passwordPlaceholder": "密码",
+    "forgotPassword": "忘记密码？",
+    "loginButton": "登录",
+    "loginError": "请输入电话号码和密码",
+    "orLoginWith": "或使用以下方式登录",
+    "noAccount": "还没有账户？",
+    "registerNow": "立即注册",
+    "registerTitle": "注册",
+    "namePlaceholder": "姓名",
+    "confirmPasswordPlaceholder": "确认密码",
+    "registerButton": "注册",
+    "haveAccount": "已有账户？",
+    "loginNow": "立即登录"
+  }
+}

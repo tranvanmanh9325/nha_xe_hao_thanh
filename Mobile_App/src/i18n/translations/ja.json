@@ -1,0 +1,219 @@
+{
+  "common": {
+    "loading": "読み込み中...",
+    "success": "成功",
+    "error": "エラー",
+    "cancel": "キャンセル",
+    "ok": "OK",
+    "delete": "削除",
+    "version": "バージョン",
+    "inDevelopment": "開発中の機能です"
+  },
+  "home": {
+    "searchTitle": "トリップを検索",
+    "departure": "出発地の座標",
+    "destination": "目的地",
+    "date": "出発日 (DD/MM/YY)",
+    "scanButton": "スキャン開始",
+    "hotRoutes": "人気のルート",
+    "select": "選択",
+    "scanAlertTitle": "スキャン開始",
+    "scanAlertMessage": "スペーストラベルを検索中..."
+  },
+  "profile": {
+    "defaultName": "ユーザー",
+    "defaultTier": "シルバーメンバー",
+    "membershipTier": "メンバーシップランク",
+    "pointsLabel": "累積ポイント",
+    "pointsProgress": "ゴールドになるにはあと750 H-Coinが必要です",
+    "myAccount": "マイアカウント",
+    "personalProfile": "プロフィール",
+    "personalProfileDesc": "情報を更新する",
+    "security": "セキュリティとパスワード",
+    "securityDesc": "アカウントを保護する",
+    "activities": "アクティビティ",
+    "bookingHistory": "予約履歴",
+    "notificationSettings": "通知設定",
+    "others": "その他",
+    "generalSettings": "一般設定",
+    "support": "ヘルプとサポート",
+    "logout": "ログアウト",
+    "logoutConfirmTitle": "ログアウト",
+    "logoutConfirmMessage": "アカウントからログアウトしてもよろしいですか？"
+  },
+  "settings": {
+    "title": "一般設定",
+    "displayAndLanguage": "表示と設定",
+    "language": "言語",
+    "vietnamese": "Tiếng Việt",
+    "english": "English",
+    "darkMode": "ダークモード",
+    "system": "システム",
+    "sound": "通知音",
+    "clearCache": "キャッシュを消去",
+    "currentSize": "現在のサイズ",
+    "calculating": "計算中...",
+    "unknown": "不明",
+    "information": "情報",
+    "termsAndPolicies": "利用規約とポリシー",
+    "appInfo": "アプリ情報",
+    "clearCacheTitle": "キャッシュを消去",
+    "clearCacheMessage": "アプリのキャッシュを消去してもよろしいですか？この操作によりアカウントや個人データが削除されることはありません。",
+    "clearCacheSuccess": "キャッシュを正常に消去しました。",
+    "clearCacheError": "キャッシュの消去に失敗しました。再試行してください。"
+  },
+  "ticket": {
+    "title": "マイチケット"
+  },
+  "notification": {
+    "title": "通知",
+    "empty": "通知はありません"
+  },
+  "languages": {
+    "vi": "ベトナム語",
+    "en": "英語",
+    "ja": "日本語",
+    "ko": "韓国語",
+    "zh": "中国語"
+  },
+  "legal": {
+    "title": "規約とポリシー",
+    "intro": "ハオタインバスのサービスを利用する際の権利と責任を理解するために、以下の利用規約とポリシーをお読みください。",
+    "termsTitle": "利用規約",
+    "termsDesc": "荷物、予約、責任に関する規則。",
+    "privacyTitle": "プライバシーポリシー",
+    "privacyDesc": "個人データの保護方法。",
+    "lastUpdate": "最終更新: 2026年6月21日",
+    "termsIntro": "ハオタインバス予約アプリへようこそ。本アプリを利用してチケットを予約しサービスを体験することにより、以下の利用規約に同意したことになります。",
+    "emptyTerms": "利用規約の情報がありません。",
+    "termsFooter": "サービスに関するご質問やクレームは、迅速な対応のためにカスタマーサポートまでご連絡ください。",
+    "privacyIntro": "個人情報の保護は私たちの最優先事項です。このプライバシーポリシーでは、データの収集、使用、保護について説明します。",
+    "emptyPrivacy": "プライバシーポリシーの情報がありません。",
+    "privacyFooter": "個人データの取り扱いについてご質問がある場合は、サポートにお問い合わせください。",
+    "termsSections": [
+      {
+        "title": "1. 乗客の責任",
+        "content": "乗客はチケット予約時に正確な個人情報（氏名、電話番号）を提供する責任があります。乗客はアカウント情報と電子チケットを安全に保管する必要があります。"
+      },
+      {
+        "title": "2. 出発と乗車",
+        "content": "乗客は通常日であれば出発の30分前、祝日であれば60分前に乗車場所に到着している必要があります。乗車前に有効な電子チケットまたは紙のチケットを提示してください。"
+      },
+      {
+        "title": "3. 手荷物と所持品",
+        "content": "乗客1人につき機内持ち込み1個（5kg未満）および預け荷物1個（20kg未満）が許可されます。禁制品、武器、爆発物、悪臭のする物、ペットの持ち込みは禁止です。高価な品物はご自身で管理してください。"
+      },
+      {
+        "title": "4. キャンセル・変更ポリシー",
+        "content": "出発の24時間前まではキャンセル無料。12〜24時間前の場合は20%の違約金がかかります。出発前12時間以内または出発後のキャンセル・返金はできません。"
+      },
+      {
+        "title": "5. 弊社によるスケジュール変更",
+        "content": "不可抗力（自然災害、パンデミック、交通渋滞、突然の技術的事故など）の場合、弊社は出発時間やバスの種類を変更する権利を留保します。乗客に通知し、新しいスケジュールが合わない場合は全額返金します。"
+      },
+      {
+        "title": "6. VAT請求書",
+        "content": "VAT請求書が必要な乗客は、予約時に請求書情報を提供するか、旅行終了後7日以内にカスタマーサービスにご連絡ください。"
+      }
+    ],
+    "privacySections": [
+      {
+        "title": "1. 収集の目的と範囲",
+        "content": "当社は、予約の処理、輸送サービスの提供、スケジュールの通知、顧客サポートのために個人情報（氏名、電話番号、メールアドレス）を収集します。これによりサービス品質が向上します。"
+      },
+      {
+        "title": "2. 支払いのセキュリティ",
+        "content": "インターネットセキュリティ基準（SSL）およびペイメントカードデータセキュリティ基準（PCI DSS）に準拠しています。支払い情報は信頼できるゲートウェイを通じて処理され、当社のシステムには保存されません。"
+      },
+      {
+        "title": "3. 情報共有の禁止へのコミットメント",
+        "content": "商業目的で乗客情報を第三者に販売または共有することは絶対にありません。情報は、法的な要求がある場合にのみ当局に提供されます。"
+      },
+      {
+        "title": "4. 電子チケットの管理",
+        "content": "QRコードを含む電子チケットのデータは厳重に機密保持されます。乗車権を失うことを防ぐため、チケットのQRコードを見知らぬ人と共有しないでください。"
+      },
+      {
+        "title": "5. お客様の権利",
+        "content": "お客様は、個人のアカウント情報へのアクセス、修正、または無効化を要求する権利があります。いつでもプロモーションメッセージの受信を拒否できます。"
+      },
+      {
+        "title": "6. ポリシーの変更",
+        "content": "当社は、このプライバシーポリシーを更新する権利を留保します。大きな変更がある場合は、プッシュ通知で直接お知らせし、ここで公開します。"
+      }
+    ]
+  },
+  "appInfo": {
+    "title": "アプリ情報",
+    "appName": "ハオタインバス",
+    "version": "バージョン",
+    "developer": "開発者",
+    "devName": "ハオタインバスチーム",
+    "checkUpdate": "更新を確認",
+    "upToDate": "最新バージョンです",
+    "rateApp": "アプリを評価",
+    "rateDesc": "サービスの改善にご協力ください",
+    "website": "公式サイト",
+    "copyright": "© 2026 Hao Thanh Bus. All rights reserved."
+  },
+  "support": {
+    "title": "ヘルプとサポート",
+    "searchPlaceholder": "問題を検索...",
+    "categories": "サポートカテゴリ",
+    "catTicket": "チケットの問題",
+    "catPayment": "支払い",
+    "catAccount": "アカウント",
+    "catPolicy": "ポリシー",
+    "recentArticles": "最近の記事",
+    "article1": "チケットの変更・払い戻し方法",
+    "article2": "H-Coinポイントの使い方",
+    "article3": "手荷物の規定",
+    "article4": "車内に忘れ物をした場合の対処法",
+    "stillNeedHelp": "まだ助けが必要ですか？",
+    "contactChat": "サポートとチャット",
+    "contactChatDesc": "応答時間 約5分",
+    "contactCall": "ホットラインに電話 (1900 xxxx)",
+    "contactCallDesc": "24時間年中無休",
+    "contactRequest": "サポートリクエストを送信",
+    "contactRequestDesc": "解決の進捗を追跡"
+  },
+  "createRequest": {
+    "title": "リクエストを送信",
+    "selectTopic": "トピックを選択",
+    "requestContent": "リクエスト内容",
+    "requestContentPlaceholder": "問題の詳細を説明してください...",
+    "selectImages": "画像を追加 (オプション)",
+    "submitButton": "送信",
+    "topicBooking": "予約の問題",
+    "topicPayment": "支払いエラー",
+    "topicAccount": "アカウントとセキュリティ",
+    "topicService": "サービス品質",
+    "topicOther": "その他",
+    "submitSuccess": "成功",
+    "submitSuccessMessage": "リクエストが送信されました。まもなく返信いたします。",
+    "submitError": "エラー",
+    "submitErrorMessage": "リクエスト内容を入力してください。"
+  },
+  "chat": {
+    "title": "ライブサポート",
+    "inputPlaceholder": "メッセージを入力...",
+    "sending": "送信中..."
+  },
+  "auth": {
+    "loginTitle": "ログイン",
+    "phonePlaceholder": "電話番号",
+    "passwordPlaceholder": "パスワード",
+    "forgotPassword": "パスワードをお忘れですか？",
+    "loginButton": "ログイン",
+    "loginError": "電話番号とパスワードを入力してください",
+    "orLoginWith": "または次でログイン",
+    "noAccount": "アカウントを持っていませんか？",
+    "registerNow": "今すぐ登録",
+    "registerTitle": "登録",
+    "namePlaceholder": "氏名",
+    "confirmPasswordPlaceholder": "パスワードの確認",
+    "registerButton": "登録",
+    "haveAccount": "すでにアカウントを持っていますか？",
+    "loginNow": "今すぐログイン"
+  }
+}

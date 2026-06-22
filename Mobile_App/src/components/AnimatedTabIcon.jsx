@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -6,9 +6,11 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '../theme';
+import { useTheme } from '../context/ThemeContext';
 
 export default function AnimatedTabIcon({ name, focused }) {
+  const { colors, isDarkMode } = useTheme();
+  const styles = useMemo(() => createStyles(colors, isDarkMode), [colors, isDarkMode]);
   const progress = useSharedValue(focused ? 1 : 0);
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export default function AnimatedTabIcon({ name, focused }) {
         <Ionicons 
           name={name} 
           size={24} 
-          color={focused ? COLORS.brand[500] : COLORS.neutral[400]} 
+          color={focused ? colors.brand[500] : colors.neutral[400]} 
         />
       </Animated.View>
       {/* 3D Glowing Dot Indicator */}
@@ -57,7 +59,7 @@ export default function AnimatedTabIcon({ name, focused }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors, isDarkMode) => StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -70,8 +72,8 @@ const styles = StyleSheet.create({
     width: 5,
     height: 5,
     borderRadius: 2.5,
-    backgroundColor: COLORS.brand[500],
-    shadowColor: COLORS.brand[500],
+    backgroundColor: colors.brand[500],
+    shadowColor: colors.brand[500],
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
     shadowRadius: 5,

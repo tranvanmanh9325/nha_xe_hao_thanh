@@ -15,17 +15,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeftIcon, ChevronDownIcon, CheckCircleIcon } from '../components/icons/CustomIcons';
 import { COLORS, TYPOGRAPHY, RADIUS, SHADOWS } from '../theme';
 import api from '../services/api';
-
-const TOPICS = [
-  'Vấn đề đặt vé',
-  'Thanh toán & Hoàn tiền',
-  'Dịch vụ chuyến đi',
-  'Lỗi ứng dụng',
-  'Đóng góp ý kiến',
-  'Khác'
-];
+import { useTranslation } from 'react-i18next';
 
 export default function CreateSupportRequestScreen({ navigation }) {
+  const { t } = useTranslation();
+  
+  const TOPICS = [
+    t('createRequest.topicBooking', 'Vấn đề đặt vé'),
+    t('createRequest.topicPayment', 'Thanh toán & Hoàn tiền'),
+    t('createRequest.topicService', 'Dịch vụ chuyến đi'),
+    t('createRequest.topicOther', 'Khác')
+  ];
+
   const [topic, setTopic] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -36,10 +37,10 @@ export default function CreateSupportRequestScreen({ navigation }) {
   const [errorMsg, setErrorMsg] = useState('');
 
   const validateForm = () => {
-    if (!topic) return 'Vui lòng chọn chủ đề hỗ trợ';
-    if (!title.trim()) return 'Vui lòng nhập tiêu đề';
-    if (!description.trim()) return 'Vui lòng nhập nội dung chi tiết';
-    if (description.trim().length < 10) return 'Nội dung chi tiết phải có ít nhất 10 ký tự';
+    if (!topic) return t('createRequest.submitErrorMessage', 'Vui lòng chọn chủ đề');
+    if (!title.trim()) return t('createRequest.submitErrorMessage', 'Vui lòng nhập tiêu đề');
+    if (!description.trim()) return t('createRequest.submitErrorMessage', 'Vui lòng nhập nội dung chi tiết');
+    if (description.trim().length < 10) return t('createRequest.submitErrorMessage', 'Nội dung chi tiết phải có ít nhất 10 ký tự');
     return null;
   };
 
@@ -89,7 +90,7 @@ export default function CreateSupportRequestScreen({ navigation }) {
           >
             <ArrowLeftIcon size={24} color={COLORS.neutral[800]} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Gửi yêu cầu hỗ trợ</Text>
+          <Text style={styles.headerTitle}>{t('createRequest.title')}</Text>
           <View style={{ width: 40 }} />
         </View>
 
@@ -99,30 +100,30 @@ export default function CreateSupportRequestScreen({ navigation }) {
         >
           <View style={styles.infoSection}>
             <Text style={styles.infoText}>
-              Vui lòng cung cấp chi tiết vấn đề bạn đang gặp phải. Chúng tôi sẽ phản hồi trong thời gian sớm nhất qua Email hoặc Số điện thoại.
+              {t('createRequest.requestContentPlaceholder', 'Vui lòng cung cấp chi tiết...')}
             </Text>
           </View>
 
           <View style={styles.formContainer}>
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Chủ đề <Text style={styles.required}>*</Text></Text>
+              <Text style={styles.label}>{t('createRequest.selectTopic')} <Text style={styles.required}>*</Text></Text>
               <TouchableOpacity 
                 style={styles.dropdownButton}
                 onPress={() => setShowTopicModal(true)}
                 activeOpacity={0.7}
               >
                 <Text style={[styles.dropdownText, !topic && styles.placeholderText]}>
-                  {topic || 'Chọn chủ đề'}
+                  {topic || t('createRequest.selectTopic')}
                 </Text>
                 <ChevronDownIcon size={20} color={COLORS.neutral[500]} />
               </TouchableOpacity>
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Tiêu đề <Text style={styles.required}>*</Text></Text>
+              <Text style={styles.label}>{t('createRequest.requestContent')} <Text style={styles.required}>*</Text></Text>
               <TextInput
                 style={styles.input}
-                placeholder="Tóm tắt vấn đề (ví dụ: Không thể thanh toán)"
+                placeholder={t('createRequest.requestContentPlaceholder')}
                 placeholderTextColor={COLORS.neutral[400]}
                 maxLength={200}
                 value={title}
@@ -134,10 +135,10 @@ export default function CreateSupportRequestScreen({ navigation }) {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Nội dung chi tiết <Text style={styles.required}>*</Text></Text>
+              <Text style={styles.label}>{t('createRequest.requestContent')} <Text style={styles.required}>*</Text></Text>
               <TextInput
                 style={[styles.input, styles.textArea]}
-                placeholder="Mô tả chi tiết vấn đề bạn gặp phải, cung cấp thêm mã vé nếu có..."
+                placeholder={t('createRequest.requestContentPlaceholder')}
                 placeholderTextColor={COLORS.neutral[400]}
                 multiline
                 numberOfLines={6}
@@ -166,7 +167,7 @@ export default function CreateSupportRequestScreen({ navigation }) {
             {isLoading ? (
               <ActivityIndicator color={COLORS.white} />
             ) : (
-              <Text style={styles.submitButtonText}>Gửi yêu cầu</Text>
+              <Text style={styles.submitButtonText}>{t('createRequest.submitButton')}</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -223,15 +224,15 @@ export default function CreateSupportRequestScreen({ navigation }) {
             <View style={styles.successIconContainer}>
               <CheckCircleIcon size={48} color={COLORS.semantic.success} />
             </View>
-            <Text style={styles.successTitle}>Gửi thành công!</Text>
+            <Text style={styles.successTitle}>{t('createRequest.submitSuccess')}</Text>
             <Text style={styles.successMessage}>
-              Yêu cầu của bạn đã được tiếp nhận. Đội ngũ hỗ trợ sẽ liên hệ với bạn trong thời gian sớm nhất.
+              {t('createRequest.submitSuccessMessage')}
             </Text>
             <TouchableOpacity 
               style={styles.doneButton}
               onPress={handleSuccessClose}
             >
-              <Text style={styles.doneButtonText}>Đồng ý</Text>
+              <Text style={styles.doneButtonText}>{t('support.contactCall', 'Đồng ý')}</Text>
             </TouchableOpacity>
           </View>
         </View>
