@@ -11,8 +11,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import 'text-encoding/lib/encoding'; // polyfill for React Native
+import { useTranslation } from 'react-i18next';
 
 export default function ChatScreen({ navigation }) {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState([]);
   const [sessionId, setSessionId] = useState(null);
   const [user, setUser] = useState(null);
@@ -288,7 +290,7 @@ export default function ChatScreen({ navigation }) {
             </View>
 
             <View style={styles.headerTitleContainer}>
-              <Text style={styles.headerTitle}>Hỗ trợ trực tuyến</Text>
+              <Text style={styles.headerTitle}>{t('chat.title')}</Text>
               <Text style={styles.headerSubtitle}>Đang hoạt động</Text>
             </View>
           </View>
@@ -309,7 +311,7 @@ export default function ChatScreen({ navigation }) {
             renderSend={renderSend}
             renderDay={renderDay}
             timeFormat="HH:mm"
-            placeholder="Nhập tin nhắn..."
+            placeholder={t('chat.inputPlaceholder')}
             showUserAvatar={false}
             renderAvatarOnTop={true}
             alwaysShowSend={true}

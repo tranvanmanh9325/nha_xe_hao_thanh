@@ -1,0 +1,219 @@
+{
+  "common": {
+    "loading": "로딩 중...",
+    "success": "성공",
+    "error": "오류",
+    "cancel": "취소",
+    "ok": "확인",
+    "delete": "삭제",
+    "version": "버전",
+    "inDevelopment": "개발 중인 기능입니다"
+  },
+  "home": {
+    "searchTitle": "목적지 검색",
+    "departure": "출발지 좌표",
+    "destination": "목적지",
+    "date": "출발일 (DD/MM/YY)",
+    "scanButton": "스캔 시작",
+    "hotRoutes": "인기 노선",
+    "select": "선택",
+    "scanAlertTitle": "스캔 시작",
+    "scanAlertMessage": "우주 여행을 검색하는 중..."
+  },
+  "profile": {
+    "defaultName": "사용자",
+    "defaultTier": "실버 멤버",
+    "membershipTier": "멤버십 등급",
+    "pointsLabel": "누적 포인트",
+    "pointsProgress": "골드 등급까지 750 H-Coin 남았습니다",
+    "myAccount": "내 계정",
+    "personalProfile": "개인 프로필",
+    "personalProfileDesc": "정보 업데이트",
+    "security": "보안 및 비밀번호",
+    "securityDesc": "계정 보호",
+    "activities": "활동",
+    "bookingHistory": "예약 내역",
+    "notificationSettings": "알림 설정",
+    "others": "기타",
+    "generalSettings": "일반 설정",
+    "support": "도움말 및 지원",
+    "logout": "로그아웃",
+    "logoutConfirmTitle": "로그아웃",
+    "logoutConfirmMessage": "계정에서 로그아웃하시겠습니까?"
+  },
+  "settings": {
+    "title": "일반 설정",
+    "displayAndLanguage": "디스플레이 및 언어",
+    "language": "언어",
+    "vietnamese": "Tiếng Việt",
+    "english": "English",
+    "darkMode": "다크 모드",
+    "system": "시스템",
+    "sound": "알림음",
+    "clearCache": "캐시 지우기",
+    "currentSize": "현재 크기",
+    "calculating": "계산 중...",
+    "unknown": "알 수 없음",
+    "information": "정보",
+    "termsAndPolicies": "약관 및 정책",
+    "appInfo": "앱 정보",
+    "clearCacheTitle": "캐시 지우기",
+    "clearCacheMessage": "앱 캐시를 지우시겠습니까? 이 과정은 계정이나 개인 데이터를 삭제하지 않습니다.",
+    "clearCacheSuccess": "캐시가 성공적으로 지워졌습니다.",
+    "clearCacheError": "캐시 지우기에 실패했습니다. 다시 시도해 주세요."
+  },
+  "ticket": {
+    "title": "내 티켓"
+  },
+  "notification": {
+    "title": "알림",
+    "empty": "알림이 없습니다"
+  },
+  "languages": {
+    "vi": "베트남어",
+    "en": "영어",
+    "ja": "일본어",
+    "ko": "한국어",
+    "zh": "중국어"
+  },
+  "legal": {
+    "title": "약관 및 정책",
+    "intro": "Hao Thanh Bus 서비스를 이용할 때의 권리와 책임을 이해하려면 아래 약관 및 정책을 주의 깊게 읽어보시기 바랍니다.",
+    "termsTitle": "서비스 약관",
+    "termsDesc": "수하물, 예약 및 책임에 관한 규정.",
+    "privacyTitle": "개인정보 처리방침",
+    "privacyDesc": "개인 데이터를 보호하는 방법.",
+    "lastUpdate": "최근 업데이트: 2026/06/21",
+    "termsIntro": "Hao Thanh Bus 예약 앱에 오신 것을 환영합니다. 앱을 사용하여 티켓을 예약하고 서비스를 이용함으로써 아래의 서비스 약관에 동의하게 됩니다.",
+    "emptyTerms": "서비스 약관 정보가 없습니다.",
+    "termsFooter": "서비스와 관련된 문의나 클레임은 신속한 해결을 위해 고객 지원팀에 문의하시기 바랍니다.",
+    "privacyIntro": "귀하의 개인정보 보호는 당사의 최우선 과제입니다. 이 정책은 데이터 수집, 사용 및 보호 방법을 설명합니다.",
+    "emptyPrivacy": "개인정보 처리방침 정보가 없습니다.",
+    "privacyFooter": "개인 데이터 처리에 관한 질문이 있으시면 지원팀에 문의하십시오.",
+    "termsSections": [
+      {
+        "title": "1. 승객의 책임",
+        "content": "승객은 티켓 예약 시 정확한 개인 정보(이름, 전화번호)를 제공할 책임이 있습니다. 승객은 계정 정보와 전자 티켓을 안전하게 보관해야 합니다."
+      },
+      {
+        "title": "2. 출발 및 탑승",
+        "content": "승객은 평일에는 출발 30분 전, 휴일에는 60분 전까지 탑승 장소에 도착해야 합니다. 탑승 전 유효한 전자 티켓 또는 종이 티켓을 제시해 주십시오."
+      },
+      {
+        "title": "3. 수하물 및 소지품",
+        "content": "승객 1인당 기내 수하물 1개(5kg 미만) 및 위탁 수하물 1개(20kg 미만)가 허용됩니다. 금지품, 무기, 폭발물, 악취가 나는 물건, 반려동물은 반입할 수 없습니다. 고가의 물품은 직접 관리해야 합니다."
+      },
+      {
+        "title": "4. 취소/변경 정책",
+        "content": "출발 24시간 전까지는 무료 취소가 가능합니다. 12~24시간 전에는 20%의 수수료가 부과됩니다. 출발 12시간 이내 또는 버스 출발 후에는 환불/취소가 불가능합니다."
+      },
+      {
+        "title": "5. 당사에 의한 일정 변경",
+        "content": "불가항력(자연재해, 전염병, 교통체증, 돌발적인 기술적 사고 등)의 경우 당사는 출발 시간이나 버스 종류를 변경할 권리가 있습니다. 승객에게 통지하며 새로운 일정이 맞지 않을 경우 100% 환불해 드립니다."
+      },
+      {
+        "title": "6. VAT 세금 계산서",
+        "content": "VAT 세금 계산서가 필요한 승객은 예약 시 청구서 정보를 제공하거나 여행 종료 후 7일 이내에 고객 서비스 센터에 연락해야 합니다."
+      }
+    ],
+    "privacySections": [
+      {
+        "title": "1. 수집 목적 및 범위",
+        "content": "당사는 예약 처리, 운송 서비스 제공, 일정 알림, 고객 지원을 위해 개인 정보(이름, 전화번호, 이메일)를 수집합니다. 이는 서비스 품질 향상에 도움이 됩니다."
+      },
+      {
+        "title": "2. 결제 보안",
+        "content": "인터넷 보안 표준(SSL) 및 결제 카드 데이터 보안 표준(PCI DSS)을 준수합니다. 결제 정보는 신뢰할 수 있는 게이트웨이를 통해 처리되며 당사 시스템에 저장되지 않습니다."
+      },
+      {
+        "title": "3. 정보 공유 금지 약속",
+        "content": "상업적 목적으로 승객 정보를 제3자에게 판매하거나 공유하지 않습니다. 정보는 법적 요구가 있는 경우에만 당국에 제공됩니다."
+      },
+      {
+        "title": "4. 전자 티켓 관리",
+        "content": "QR 코드를 포함한 전자 티켓 데이터는 엄격하게 기밀로 유지됩니다. 탑승 권리를 잃지 않도록 티켓 QR 코드를 낯선 사람과 공유하지 마십시오."
+      },
+      {
+        "title": "5. 고객의 권리",
+        "content": "고객은 개인 계정 정보에 대한 접근, 수정 또는 비활성화를 요청할 권리가 있습니다. 언제든지 프로모션 메시지 수신을 거부할 수 있습니다."
+      },
+      {
+        "title": "6. 정책 변경",
+        "content": "당사는 이 개인 정보 보호 정책을 업데이트할 권리가 있습니다. 중요한 변경 사항은 푸시 알림을 통해 직접 알려드리고 여기에 공개적으로 업데이트합니다."
+      }
+    ]
+  },
+  "appInfo": {
+    "title": "앱 정보",
+    "appName": "Hao Thanh Bus",
+    "version": "버전",
+    "developer": "개발자",
+    "devName": "Hao Thanh Bus 팀",
+    "checkUpdate": "업데이트 확인",
+    "upToDate": "앱이 최신 버전입니다",
+    "rateApp": "앱 평가",
+    "rateDesc": "서비스 개선에 도움을 주세요",
+    "website": "공식 웹사이트",
+    "copyright": "© 2026 Hao Thanh Bus. All rights reserved."
+  },
+  "support": {
+    "title": "도움말 및 지원",
+    "searchPlaceholder": "문제 검색...",
+    "categories": "지원 카테고리",
+    "catTicket": "티켓 문제",
+    "catPayment": "결제",
+    "catAccount": "계정",
+    "catPolicy": "정책",
+    "recentArticles": "최근 게시물",
+    "article1": "티켓 교환 및 환불 방법",
+    "article2": "H-Coin 포인트 사용 방법",
+    "article3": "수하물 규정",
+    "article4": "버스에 물건을 두고 내렸을 때",
+    "stillNeedHelp": "도움이 더 필요하신가요?",
+    "contactChat": "상담원과 채팅",
+    "contactChatDesc": "응답 시간 약 5분",
+    "contactCall": "콜센터 전화 (1900 xxxx)",
+    "contactCallDesc": "24/7 연중무휴",
+    "contactRequest": "지원 요청 보내기",
+    "contactRequestDesc": "해결 진행 상황 추적"
+  },
+  "createRequest": {
+    "title": "요청 제출",
+    "selectTopic": "주제 선택",
+    "requestContent": "요청 내용",
+    "requestContentPlaceholder": "문제를 자세히 설명해 주세요...",
+    "selectImages": "이미지 추가 (선택 사항)",
+    "submitButton": "제출",
+    "topicBooking": "예약 문제",
+    "topicPayment": "결제 오류",
+    "topicAccount": "계정 및 보안",
+    "topicService": "서비스 품질",
+    "topicOther": "기타",
+    "submitSuccess": "성공",
+    "submitSuccessMessage": "요청이 제출되었습니다. 곧 답변해 드리겠습니다.",
+    "submitError": "오류",
+    "submitErrorMessage": "요청 내용을 입력해 주세요."
+  },
+  "chat": {
+    "title": "실시간 지원",
+    "inputPlaceholder": "메시지를 입력하세요...",
+    "sending": "전송 중..."
+  },
+  "auth": {
+    "loginTitle": "로그인",
+    "phonePlaceholder": "전화번호",
+    "passwordPlaceholder": "비밀번호",
+    "forgotPassword": "비밀번호를 잊으셨나요?",
+    "loginButton": "로그인",
+    "loginError": "전화번호와 비밀번호를 입력해 주세요",
+    "orLoginWith": "또는 다음으로 로그인",
+    "noAccount": "계정이 없으신가요?",
+    "registerNow": "지금 가입하세요",
+    "registerTitle": "가입하기",
+    "namePlaceholder": "성명",
+    "confirmPasswordPlaceholder": "비밀번호 확인",
+    "registerButton": "가입하기",
+    "haveAccount": "이미 계정이 있으신가요?",
+    "loginNow": "지금 로그인하세요"
+  }
+}

@@ -15,10 +15,12 @@ import AnimatedButton from '../components/AnimatedButton';
 import { COLORS, TYPOGRAPHY, RADIUS } from '../theme';
 import { BusIcon, PhoneIcon, LockIcon } from '../components/icons/CustomIcons';
 import authService from '../services/authService';
+import { useTranslation } from 'react-i18next';
 
 const PHONE_REGEX = /^0\d{9,10}$/;
 
 export default function LoginScreen({ navigation }) {
+  const { t } = useTranslation();
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -28,13 +30,13 @@ export default function LoginScreen({ navigation }) {
     const newErrors = {};
 
     if (!phone.trim()) {
-      newErrors.phone = 'Vui lòng nhập số điện thoại';
+      newErrors.phone = t('auth.loginError', 'Vui lòng nhập số điện thoại');
     } else if (!PHONE_REGEX.test(phone.trim())) {
-      newErrors.phone = 'Số điện thoại không hợp lệ';
+      newErrors.phone = t('auth.loginError', 'Số điện thoại không hợp lệ');
     }
 
     if (!password) {
-      newErrors.password = 'Vui lòng nhập mật khẩu';
+      newErrors.password = t('auth.loginError', 'Vui lòng nhập mật khẩu');
     }
 
     setErrors(newErrors);
@@ -55,9 +57,9 @@ export default function LoginScreen({ navigation }) {
       if (message) {
         // 401 from Spring Security means bad credentials
         if (error.response?.status === 401) {
-          setErrors({ general: 'Số điện thoại hoặc mật khẩu không đúng' });
+          setErrors({ general: t('auth.loginError', 'Số điện thoại hoặc mật khẩu không đúng') });
         } else {
-          Alert.alert('Lỗi', message);
+          Alert.alert(t('createRequest.submitError', 'Lỗi'), message);
         }
       }
     } finally {
@@ -80,8 +82,8 @@ export default function LoginScreen({ navigation }) {
               <View style={styles.logoWrapper}>
                 <BusIcon size={36} color={COLORS.brand[500]} />
               </View>
-              <Text style={styles.title}>Chào mừng trở lại!</Text>
-              <Text style={styles.subtitle}>Đăng nhập để đặt vé xe nhanh chóng và nhận nhiều ưu đãi.</Text>
+              <Text style={styles.title}>{t('auth.loginTitle')}</Text>
+              <Text style={styles.subtitle}>{t('auth.loginIntro', 'Đăng nhập để đặt vé xe nhanh chóng và nhận nhiều ưu đãi.')}</Text>
             </Animated.View>
 
             <Animated.View entering={FadeInDown.delay(300).duration(600).springify()} style={styles.formContainer}>
@@ -92,7 +94,7 @@ export default function LoginScreen({ navigation }) {
               )}
 
               <AnimatedInput
-                label="Số điện thoại"
+                label={t('auth.phonePlaceholder')}
                 placeholder="09xx xxx xxx"
                 keyboardType="phone-pad"
                 icon={PhoneIcon}
@@ -105,8 +107,8 @@ export default function LoginScreen({ navigation }) {
               />
               
               <AnimatedInput
-                label="Mật khẩu"
-                placeholder="Nhập mật khẩu"
+                label={t('auth.passwordPlaceholder')}
+                placeholder={t('auth.passwordPlaceholder')}
                 secureTextEntry
                 icon={LockIcon}
                 value={password}
@@ -119,21 +121,21 @@ export default function LoginScreen({ navigation }) {
 
               <View style={styles.forgotPasswordContainer}>
                 <Pressable>
-                  <Text style={styles.forgotPasswordText}>Quên mật khẩu?</Text>
+                  <Text style={styles.forgotPasswordText}>{t('auth.forgotPassword')}</Text>
                 </Pressable>
               </View>
 
               <AnimatedButton
-                title="Đăng Nhập"
+                title={t('auth.loginButton')}
                 onPress={handleLogin}
                 loading={loading}
                 style={styles.loginButton}
               />
 
               <View style={styles.registerContainer}>
-                <Text style={styles.registerText}>Chưa có tài khoản? </Text>
+                <Text style={styles.registerText}>{t('auth.noAccount')} </Text>
                 <Pressable onPress={() => navigation.navigate('Register')} style={styles.registerLinkContainer}>
-                  <Text style={styles.registerLink}>Đăng ký ngay</Text>
+                  <Text style={styles.registerLink}>{t('auth.registerNow')}</Text>
                 </Pressable>
               </View>
             </Animated.View>

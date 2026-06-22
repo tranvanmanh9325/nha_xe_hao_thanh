@@ -11,8 +11,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeftIcon } from '../components/icons/CustomIcons';
 import { COLORS, TYPOGRAPHY, SHADOWS, RADIUS } from '../theme';
 import api from '../services/api';
+import { useTranslation } from 'react-i18next';
 
 export default function PrivacyPolicyScreen({ navigation }) {
+  const { t, i18n } = useTranslation();
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -20,7 +22,7 @@ export default function PrivacyPolicyScreen({ navigation }) {
     const fetchPolicies = async () => {
       try {
         const response = await api.get('/privacy-policies');
-        if (response.data && response.data.status === 'success') {
+        if (response.data && (response.data.success === true || response.data.status === 'success')) {
           setSections(response.data.data);
         }
       } catch (error) {
@@ -42,7 +44,7 @@ export default function PrivacyPolicyScreen({ navigation }) {
         >
           <ArrowLeftIcon size={24} color={COLORS.neutral[800]} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Chính sách bảo mật</Text>
+        <Text style={styles.headerTitle}>{t('legal.privacyTitle')}</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -51,9 +53,9 @@ export default function PrivacyPolicyScreen({ navigation }) {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.introContainer}>
-          <Text style={styles.lastUpdate}>Cập nhật lần cuối: 21/06/2026</Text>
+          <Text style={styles.lastUpdate}>{t('legal.lastUpdate')}</Text>
           <Text style={styles.introText}>
-            Chào mừng bạn đến với Ứng dụng đặt vé Hào Thành Bus. Bảo vệ dữ liệu cá nhân và sự riêng tư của khách hàng là ưu tiên hàng đầu của chúng tôi. Vui lòng đọc kỹ các điều khoản dưới đây để hiểu rõ cách chúng tôi thu thập, sử dụng và bảo vệ thông tin của bạn.
+            {t('legal.privacyIntro')}
           </Text>
         </View>
 
@@ -61,19 +63,35 @@ export default function PrivacyPolicyScreen({ navigation }) {
           {loading ? (
             <ActivityIndicator size="large" color={COLORS.brand[500]} style={{ marginVertical: 40 }} />
           ) : (!sections || sections.length === 0) ? (
-            <Text style={styles.emptyText}>Chưa có thông tin chính sách bảo mật.</Text>
+            <Text style={styles.emptyText}>{t('legal.emptyPrivacy')}</Text>
           ) : (
-            sections.map((section, index) => (
-              <View key={section.id || index} style={[styles.section, index === sections.length - 1 && styles.lastSection]}>
-                <Text style={styles.sectionTitle}>{section.title}</Text>
-                <Text style={styles.sectionContent}>{section.content}</Text>
-              </View>
-            ))
+            sections.map((section, index) => {
+              const lang = i18n.language || 'vi';
+              
+              // Helper function to get localized content from the API object
+              const getLocalizedProp = (propName) => {
+                if (lang === 'vi') return section[propName];
+                const translation = section.translations?.find(t => t.languageCode === lang);
+                const localizedValue = translation ? translation[propName] : undefined;
+                // Fallback to Vietnamese if localized string is missing
+                return localizedValue || section[propName];
+              };
+
+              const localizedTitle = getLocalizedProp('title');
+              const localizedContent = getLocalizedProp('content');
+
+              return (
+                <View key={section.id || index} style={[styles.section, index === sections.length - 1 && styles.lastSection]}>
+                  <Text style={styles.sectionTitle}>{localizedTitle}</Text>
+                  <Text style={styles.sectionContent}>{localizedContent}</Text>
+                </View>
+              );
+            })
           )}
         </View>
         
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Nếu bạn có bất kỳ câu hỏi nào về Chính sách bảo mật này, vui lòng liên hệ Bộ phận Chăm sóc Khách hàng qua số Hotline để được hỗ trợ kịp thời.</Text>
+          <Text style={styles.footerText}>{t('legal.privacyFooter')}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -14,8 +14,10 @@ import {
   ChevronRightIcon
 } from '../components/icons/CustomIcons';
 import { COLORS, TYPOGRAPHY, RADIUS, SHADOWS } from '../theme';
+import { useTranslation } from 'react-i18next';
 
 export default function LegalAndPoliciesScreen({ navigation }) {
+  const { t } = useTranslation();
 
   const renderMenuItem = ({ icon, title, description, onPress }) => {
     return (
@@ -46,7 +48,7 @@ export default function LegalAndPoliciesScreen({ navigation }) {
         >
           <ArrowLeftIcon size={24} color={COLORS.neutral[800]} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Điều khoản & Chính sách</Text>
+        <Text style={styles.headerTitle}>{t('legal.title')}</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -56,22 +58,22 @@ export default function LegalAndPoliciesScreen({ navigation }) {
       >
         <View style={styles.introContainer}>
           <Text style={styles.introText}>
-            Vui lòng đọc kỹ các điều khoản và chính sách dưới đây để hiểu rõ quyền lợi và trách nhiệm của bạn khi sử dụng dịch vụ của Hào Thành Bus.
+            {t('legal.intro')}
           </Text>
         </View>
 
         <View style={styles.menuCard}>
           {renderMenuItem({
             icon: (color) => <DocumentIcon size={24} color={color} />, 
-            title: "Điều khoản dịch vụ",
-            description: "Quy định về hành lý, đặt vé, và trách nhiệm.",
+            title: t('legal.termsTitle'),
+            description: t('legal.termsDesc'),
             onPress: () => navigation.navigate('TermsOfService')
           })}
           <View style={styles.divider} />
           {renderMenuItem({
             icon: (color) => <ShieldIcon size={24} color={color} />, 
-            title: "Chính sách bảo mật",
-            description: "Cách chúng tôi bảo vệ dữ liệu cá nhân của bạn.",
+            title: t('legal.privacyTitle'),
+            description: t('legal.privacyDesc'),
             onPress: () => navigation.navigate('PrivacyPolicy')
           })}
         </View>

@@ -11,8 +11,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeftIcon } from '../components/icons/CustomIcons';
 import { COLORS, TYPOGRAPHY, SHADOWS, RADIUS } from '../theme';
 import api from '../services/api';
+import { useTranslation } from 'react-i18next';
 
 export default function TermsOfServiceScreen({ navigation }) {
+  const { t, i18n } = useTranslation();
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -20,7 +22,7 @@ export default function TermsOfServiceScreen({ navigation }) {
     const fetchTerms = async () => {
       try {
         const response = await api.get('/terms-of-service');
-        if (response.data && response.data.status === 'success') {
+        if (response.data && (response.data.success === true || response.data.status === 'success')) {
           setSections(response.data.data);
         }
       } catch (error) {
@@ -42,7 +44,7 @@ export default function TermsOfServiceScreen({ navigation }) {
         >
           <ArrowLeftIcon size={24} color={COLORS.neutral[800]} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Điều khoản dịch vụ</Text>
+        <Text style={styles.headerTitle}>{t('legal.termsTitle')}</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -51,9 +53,9 @@ export default function TermsOfServiceScreen({ navigation }) {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.introContainer}>
-          <Text style={styles.lastUpdate}>Cập nhật lần cuối: 21/06/2026</Text>
+          <Text style={styles.lastUpdate}>{t('legal.lastUpdate')}</Text>
           <Text style={styles.introText}>
-            Chào mừng bạn đến với Ứng dụng đặt vé Hào Thành Bus. Khi sử dụng ứng dụng để đặt vé và trải nghiệm dịch vụ, bạn đồng ý với các Điều khoản dịch vụ dưới đây. Vui lòng đọc kỹ để đảm bảo quyền lợi của mình trong suốt hành trình.
+            {t('legal.termsIntro')}
           </Text>
         </View>
 
@@ -61,19 +63,35 @@ export default function TermsOfServiceScreen({ navigation }) {
           {loading ? (
             <ActivityIndicator size="large" color={COLORS.brand[500]} style={{ marginVertical: 40 }} />
           ) : (!sections || sections.length === 0) ? (
-            <Text style={styles.emptyText}>Chưa có thông tin điều khoản dịch vụ.</Text>
+            <Text style={styles.emptyText}>{t('legal.emptyTerms')}</Text>
           ) : (
-            sections.map((section, index) => (
-              <View key={section.id || index} style={[styles.section, index === sections.length - 1 && styles.lastSection]}>
-                <Text style={styles.sectionTitle}>{section.title}</Text>
-                <Text style={styles.sectionContent}>{section.content}</Text>
-              </View>
-            ))
+            sections.map((section, index) => {
+              const lang = i18n.language || 'vi';
+              
+              // Helper function to get localized content from the API object
+              const getLocalizedProp = (propName) => {
+                if (lang === 'vi') return section[propName];
+                const translation = section.translations?.find(t => t.languageCode === lang);
+                const localizedValue = translation ? translation[propName] : undefined;
+                // Fallback to Vietnamese if localized string is missing
+                return localizedValue || section[propName];
+              };
+
+              const localizedTitle = getLocalizedProp('title');
+              const localizedContent = getLocalizedProp('content');
+
+              return (
+                <View key={section.id || index} style={[styles.section, index === sections.length - 1 && styles.lastSection]}>
+                  <Text style={styles.sectionTitle}>{localizedTitle}</Text>
+                  <Text style={styles.sectionContent}>{localizedContent}</Text>
+                </View>
+              );
+            })
           )}
         </View>
         
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Mọi thắc mắc hoặc yêu cầu bồi thường liên quan đến dịch vụ, vui lòng liên hệ Tổng đài CSKH của Hào Thành Bus để được giải quyết nhanh nhất.</Text>
+          <Text style={styles.footerText}>{t('legal.termsFooter')}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

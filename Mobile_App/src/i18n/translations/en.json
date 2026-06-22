@@ -1,0 +1,219 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Error",
+    "cancel": "Cancel",
+    "ok": "OK",
+    "delete": "Delete",
+    "version": "Version",
+    "inDevelopment": "Feature is under development"
+  },
+  "home": {
+    "searchTitle": "LOCATE TRIP",
+    "departure": "Departure coordinate",
+    "destination": "Destination",
+    "date": "Departure date (DD/MM/YY)",
+    "scanButton": "SCAN TRIP",
+    "hotRoutes": "HOT ROUTES",
+    "select": "SELECT",
+    "scanAlertTitle": "Initiating scan",
+    "scanAlertMessage": "System is searching for a space trip..."
+  },
+  "profile": {
+    "defaultName": "User",
+    "defaultTier": "Silver Member",
+    "membershipTier": "Membership tier",
+    "pointsLabel": "Accumulated points",
+    "pointsProgress": "Need 750 H-Coin more to reach Gold",
+    "myAccount": "My Account",
+    "personalProfile": "Personal Profile",
+    "personalProfileDesc": "Update your information",
+    "security": "Security & Password",
+    "securityDesc": "Protect your account",
+    "activities": "Activities",
+    "bookingHistory": "Booking history",
+    "notificationSettings": "Notification settings",
+    "others": "Others",
+    "generalSettings": "General Settings",
+    "support": "Help & Support",
+    "logout": "Log Out",
+    "logoutConfirmTitle": "Log Out",
+    "logoutConfirmMessage": "Are you sure you want to log out of your account?"
+  },
+  "settings": {
+    "title": "General Settings",
+    "displayAndLanguage": "Display & Language",
+    "language": "Language",
+    "vietnamese": "Tiếng Việt",
+    "english": "English",
+    "darkMode": "Dark Mode",
+    "system": "System",
+    "sound": "Notification Sound",
+    "clearCache": "Clear Cache",
+    "currentSize": "Current size",
+    "calculating": "Calculating...",
+    "unknown": "Unknown",
+    "information": "Information",
+    "termsAndPolicies": "Terms & Policies",
+    "appInfo": "App Information",
+    "clearCacheTitle": "Clear Cache",
+    "clearCacheMessage": "Are you sure you want to clear the app cache? This process will not delete your account or personal data.",
+    "clearCacheSuccess": "Cache cleared successfully.",
+    "clearCacheError": "Failed to clear cache. Please try again."
+  },
+  "ticket": {
+    "title": "My Tickets"
+  },
+  "notification": {
+    "title": "Notifications",
+    "empty": "You have no notifications"
+  },
+  "languages": {
+    "vi": "Vietnamese",
+    "en": "English",
+    "ja": "Japanese",
+    "ko": "Korean",
+    "zh": "Chinese"
+  },
+  "legal": {
+    "title": "Terms & Policies",
+    "intro": "Please carefully read the terms and policies below to understand your rights and responsibilities when using Hao Thanh Bus services.",
+    "termsTitle": "Terms of Service",
+    "termsDesc": "Rules regarding luggage, booking, and liabilities.",
+    "privacyTitle": "Privacy Policy",
+    "privacyDesc": "How we protect your personal data.",
+    "lastUpdate": "Last updated: 21/06/2026",
+    "termsIntro": "Welcome to the Hao Thanh Bus app. By using the app to book tickets and experience our services, you agree to the following Terms of Service. Please read carefully.",
+    "emptyTerms": "No terms of service information available.",
+    "termsFooter": "For any inquiries or claims related to our services, please contact Hao Thanh Bus Customer Support for prompt resolution.",
+    "privacyIntro": "Protecting your personal information is our top priority. This Privacy Policy describes how Hao Thanh Bus collects, uses, and protects your data.",
+    "emptyPrivacy": "No privacy policy information available.",
+    "privacyFooter": "If you have any questions regarding the handling of your personal data, please contact Support.",
+    "termsSections": [
+      {
+        "title": "1. Passenger Responsibilities",
+        "content": "Passengers are responsible for providing accurate personal information (full name, phone number) when booking tickets. Passengers must secure their account information and e-tickets."
+      },
+      {
+        "title": "2. Departure and Boarding",
+        "content": "Passengers must be at the pickup point at least 30 minutes before departure on normal days and 60 minutes on holidays. Present valid e-ticket or paper ticket before boarding."
+      },
+      {
+        "title": "3. Luggage and Belongings",
+        "content": "Each passenger is allowed 1 carry-on (under 5kg) and 1 checked luggage (under 20kg). No prohibited goods, weapons, explosives, foul-smelling items, or pets. Passengers are responsible for high-value items."
+      },
+      {
+        "title": "4. Cancellation/Change Policy",
+        "content": "Free cancellation 24 hours before departure. 20% fee for 12-24 hours before. No refund/cancellation within 12 hours of departure or after the bus has departed."
+      },
+      {
+        "title": "5. Schedule Changes by Us",
+        "content": "In case of force majeure (natural disasters, pandemics, traffic jams, sudden technical incidents), we reserve the right to change departure times or bus types. We will notify passengers and offer 100% refund if the new schedule is unsuitable."
+      },
+      {
+        "title": "6. VAT Invoicing",
+        "content": "Passengers requiring VAT invoices must provide invoice information during booking or contact customer service within 7 days after the trip ends."
+      }
+    ],
+    "privacySections": [
+      {
+        "title": "1. Purpose and Scope of Collection",
+        "content": "We collect personal information (Name, Phone, Email) to process bookings, provide transport services, notify schedules, and support customers. This helps us improve service quality."
+      },
+      {
+        "title": "2. Payment Security",
+        "content": "We comply with internet security standards (SSL) and payment card data security standards (PCI DSS). Payment info is processed via reputable gateways and not stored on our systems."
+      },
+      {
+        "title": "3. Commitment to Not Share Info",
+        "content": "We absolutely do not sell or share passenger info with any third party for commercial purposes. Info is only provided to authorities upon legal request."
+      },
+      {
+        "title": "4. E-Ticket Management",
+        "content": "E-ticket data including QR codes is strictly confidential. Please do not share your ticket QR code with strangers to avoid losing boarding rights."
+      },
+      {
+        "title": "5. Customer Rights",
+        "content": "Customers have the right to request access to, correction, or deactivation of their personal account info. Customers can opt out of promotional messages anytime."
+      },
+      {
+        "title": "6. Policy Changes",
+        "content": "We reserve the right to update this privacy policy. Major changes will be notified directly via Push Notifications and updated publicly here."
+      }
+    ]
+  },
+  "appInfo": {
+    "title": "App Information",
+    "appName": "Hao Thanh Bus",
+    "version": "Version",
+    "developer": "Developed by",
+    "devName": "Hao Thanh Bus Team",
+    "checkUpdate": "Check for updates",
+    "upToDate": "Your app is up to date",
+    "rateApp": "Rate the app",
+    "rateDesc": "Help us improve our service",
+    "website": "Official Website",
+    "copyright": "© 2026 Hao Thanh Bus. All rights reserved."
+  },
+  "support": {
+    "title": "Help & Support",
+    "searchPlaceholder": "Search for issues...",
+    "categories": "Support Categories",
+    "catTicket": "Ticket Issues",
+    "catPayment": "Payment",
+    "catAccount": "Account",
+    "catPolicy": "Policies",
+    "recentArticles": "Recent Articles",
+    "article1": "How to exchange or refund tickets",
+    "article2": "How to use H-Coin points",
+    "article3": "Luggage regulations",
+    "article4": "What to do if you left belongings on the bus",
+    "stillNeedHelp": "Still need help?",
+    "contactChat": "Chat with an agent",
+    "contactChatDesc": "Response time ~5 mins",
+    "contactCall": "Call hotline (1900 xxxx)",
+    "contactCallDesc": "Available 24/7",
+    "contactRequest": "Send a support request",
+    "contactRequestDesc": "Track resolution progress"
+  },
+  "createRequest": {
+    "title": "Submit Request",
+    "selectTopic": "Select Topic",
+    "requestContent": "Request Content",
+    "requestContentPlaceholder": "Please describe your issue in detail...",
+    "selectImages": "Add Images (Optional)",
+    "submitButton": "Submit",
+    "topicBooking": "Booking Issue",
+    "topicPayment": "Payment Error",
+    "topicAccount": "Account & Security",
+    "topicService": "Service Quality",
+    "topicOther": "Other",
+    "submitSuccess": "Success",
+    "submitSuccessMessage": "Your request has been submitted. We will respond shortly.",
+    "submitError": "Error",
+    "submitErrorMessage": "Please enter your request content."
+  },
+  "chat": {
+    "title": "Live Support",
+    "inputPlaceholder": "Type a message...",
+    "sending": "Sending..."
+  },
+  "auth": {
+    "loginTitle": "Login",
+    "phonePlaceholder": "Phone Number",
+    "passwordPlaceholder": "Password",
+    "forgotPassword": "Forgot password?",
+    "loginButton": "Login",
+    "loginError": "Please enter your phone number and password",
+    "orLoginWith": "Or login with",
+    "noAccount": "Don't have an account?",
+    "registerNow": "Register now",
+    "registerTitle": "Register",
+    "namePlaceholder": "Full Name",
+    "confirmPasswordPlaceholder": "Confirm Password",
+    "registerButton": "Register",
+    "haveAccount": "Already have an account?",
+    "loginNow": "Login now"
+  }
+}

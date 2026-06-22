@@ -19,14 +19,19 @@ import {
   ChevronRightIcon, 
   TicketOutlineIcon 
 } from '../components/icons/CustomIcons';
-import { COLORS, TYPOGRAPHY, RADIUS, SHADOWS } from '../theme';
+import { TYPOGRAPHY, RADIUS, SHADOWS } from '../theme';
 import authService from '../services/authService';
+import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 export default function ProfileScreen({ navigation }) {
+  const { colors, isDarkMode } = useTheme();
+  const { t } = useTranslation();
+  const styles = createStyles(colors, isDarkMode);
   const [userProfile, setUserProfile] = useState({
-    fullName: "Đang tải...",
+    fullName: t('common.loading'),
     phone: "---",
-    tier: "Thành viên Bạc",
+    tier: t('profile.defaultTier'),
     points: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -38,9 +43,9 @@ export default function ProfileScreen({ navigation }) {
           const response = await authService.getProfile();
           if (response) {
             setUserProfile({
-              fullName: response.fullName || "Người dùng",
+              fullName: response.fullName || t('profile.defaultName'),
               phone: response.phone || "---",
-              tier: response.tier || "Thành viên Bạc",
+              tier: response.tier || t('profile.defaultTier'),
               points: response.points || 0,
             });
           }
@@ -57,15 +62,15 @@ export default function ProfileScreen({ navigation }) {
 
   const handleLogout = () => {
     Alert.alert(
-      "Đăng xuất",
-      "Bạn có chắc chắn muốn đăng xuất khỏi tài khoản?",
+      t('profile.logoutConfirmTitle'),
+      t('profile.logoutConfirmMessage'),
       [
         {
-          text: "Hủy",
+          text: t('common.cancel'),
           style: "cancel"
         },
         { 
-          text: "Đăng xuất", 
+          text: t('profile.logout'), 
           style: "destructive",
           onPress: async () => {
             try {
@@ -92,7 +97,7 @@ export default function ProfileScreen({ navigation }) {
         onPress={onPress}
       >
         <View style={[styles.iconContainer, isDestructive && styles.iconDestructive]}>
-          {icon(isDestructive ? COLORS.semantic.danger : COLORS.brand[500])}
+          {icon(isDestructive ? colors.semantic.danger : colors.brand[500])}
         </View>
         <View style={styles.menuTextContainer}>
           <Text style={[styles.menuTitle, isDestructive && styles.textDestructive]}>
@@ -101,7 +106,7 @@ export default function ProfileScreen({ navigation }) {
           {subtitle && <Text style={styles.menuSubtitle}>{subtitle}</Text>}
         </View>
         {!isDestructive && (
-          <ChevronRightIcon size={20} color={COLORS.neutral[400]} />
+          <ChevronRightIcon size={20} color={colors.neutral[400]} />
         )}
       </TouchableOpacity>
     );
@@ -117,7 +122,7 @@ export default function ProfileScreen({ navigation }) {
         <View style={styles.headerContainer}>
           <View style={styles.avatarContainer}>
             <View style={styles.avatarGlow} />
-            <UserIcon size={40} color={COLORS.white} />
+            <UserIcon size={40} color={colors.white} />
           </View>
           <Text style={styles.userName}>{userProfile.fullName}</Text>
           <Text style={styles.userPhone}>{userProfile.phone}</Text>
@@ -126,11 +131,11 @@ export default function ProfileScreen({ navigation }) {
         {/* Membership Card */}
         <View style={styles.membershipCard}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Hạng thành viên</Text>
+            <Text style={styles.cardTitle}>{t('profile.membershipTier')}</Text>
             <Text style={styles.cardTier}>{userProfile.tier}</Text>
           </View>
           <View style={styles.cardBody}>
-            <Text style={styles.pointsLabel}>Điểm tích lũy</Text>
+            <Text style={styles.pointsLabel}>{t('profile.pointsLabel')}</Text>
             <Text style={styles.pointsValue}>
               {userProfile.points.toLocaleString('vi-VN')} <Text style={styles.pointsUnit}>H-Coin</Text>
             </Text>
@@ -138,48 +143,48 @@ export default function ProfileScreen({ navigation }) {
           <View style={styles.progressBarBg}>
             <View style={[styles.progressBarFill, { width: '40%' }]} />
           </View>
-          <Text style={styles.progressText}>Cần thêm 750 H-Coin để lên hạng Vàng</Text>
+          <Text style={styles.progressText}>{t('profile.pointsProgress')}</Text>
         </View>
 
         {/* Menu Sections */}
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Tài khoản của tôi</Text>
+          <Text style={styles.sectionTitle}>{t('profile.myAccount')}</Text>
           <View style={styles.menuCard}>
             {renderMenuItem(
               (color) => <UserIcon size={24} color={color} />, 
-              "Hồ sơ cá nhân", 
-              "Cập nhật thông tin của bạn"
+              t('profile.personalProfile'), 
+              t('profile.personalProfileDesc')
             )}
             <View style={styles.divider} />
             {renderMenuItem(
               (color) => <ShieldIcon size={24} color={color} />, 
-              "Bảo mật & Mật khẩu",
-              "Bảo vệ tài khoản của bạn"
+              t('profile.security'),
+              t('profile.securityDesc')
             )}
           </View>
         </View>
 
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Hoạt động</Text>
+          <Text style={styles.sectionTitle}>{t('profile.activities')}</Text>
           <View style={styles.menuCard}>
             {renderMenuItem(
               (color) => <TicketOutlineIcon size={24} color={color} />, 
-              "Lịch sử đặt vé"
+              t('profile.bookingHistory')
             )}
             <View style={styles.divider} />
             {renderMenuItem(
               (color) => <BellIcon size={24} color={color} />, 
-              "Cài đặt thông báo"
+              t('profile.notificationSettings')
             )}
           </View>
         </View>
 
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Khác</Text>
+          <Text style={styles.sectionTitle}>{t('profile.others')}</Text>
           <View style={styles.menuCard}>
             {renderMenuItem(
               (color) => <SettingsIcon size={24} color={color} />, 
-              "Cài đặt chung",
+              t('profile.generalSettings'),
               null,
               false,
               () => navigation.navigate('GeneralSettings')
@@ -187,7 +192,7 @@ export default function ProfileScreen({ navigation }) {
             <View style={styles.divider} />
             {renderMenuItem(
               (color) => <HelpIcon size={24} color={color} />, 
-              "Trợ giúp & Hỗ trợ",
+              t('profile.support'),
               null,
               false,
               () => navigation.navigate('Support')
@@ -202,21 +207,21 @@ export default function ProfileScreen({ navigation }) {
             activeOpacity={0.8}
             onPress={handleLogout}
           >
-            <LogoutIcon size={20} color={COLORS.semantic.danger} />
-            <Text style={styles.logoutText}>Đăng xuất</Text>
+            <LogoutIcon size={20} color={colors.semantic.danger} />
+            <Text style={styles.logoutText}>{t('profile.logout')}</Text>
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.versionText}>Phiên bản 1.0.0</Text>
+        <Text style={styles.versionText}>{t('common.version')} 1.0.0</Text>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors, isDarkMode) => StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.neutral[50],
+    backgroundColor: colors.neutral[50],
   },
   scrollContent: {
     paddingBottom: 40,
@@ -230,7 +235,7 @@ const styles = StyleSheet.create({
     width: 88,
     height: 88,
     borderRadius: 44,
-    backgroundColor: COLORS.brand[500],
+    backgroundColor: colors.brand[500],
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
@@ -243,23 +248,23 @@ const styles = StyleSheet.create({
     height: 88,
     borderRadius: 44,
     borderWidth: 2,
-    borderColor: COLORS.brand[400],
+    borderColor: colors.brand[400],
     opacity: 0.5,
     transform: [{ scale: 1.15 }],
   },
   userName: {
     fontSize: TYPOGRAPHY['2xl'],
     fontWeight: TYPOGRAPHY.weight.bold,
-    color: COLORS.neutral[900],
+    color: colors.neutral[900],
     marginBottom: 4,
   },
   userPhone: {
     fontSize: TYPOGRAPHY.base,
-    color: COLORS.neutral[500],
+    color: colors.neutral[500],
   },
   membershipCard: {
     marginHorizontal: 20,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: RADIUS['2xl'],
     padding: 20,
     marginBottom: 32,
@@ -272,11 +277,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   cardTitle: {
-    color: COLORS.neutral[500],
+    color: colors.neutral[500],
     fontSize: TYPOGRAPHY.sm,
   },
   cardTier: {
-    color: COLORS.brand[500],
+    color: colors.brand[500],
     fontSize: TYPOGRAPHY.base,
     fontWeight: TYPOGRAPHY.weight.bold,
   },
@@ -284,34 +289,34 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   pointsLabel: {
-    color: COLORS.neutral[500],
+    color: colors.neutral[500],
     fontSize: TYPOGRAPHY.xs,
     marginBottom: 4,
   },
   pointsValue: {
-    color: COLORS.neutral[900],
+    color: colors.neutral[900],
     fontSize: TYPOGRAPHY['3xl'],
     fontWeight: TYPOGRAPHY.weight.bold,
   },
   pointsUnit: {
     fontSize: TYPOGRAPHY.base,
     fontWeight: TYPOGRAPHY.weight.semibold,
-    color: COLORS.brand[500],
+    color: colors.brand[500],
   },
   progressBarBg: {
     height: 6,
-    backgroundColor: COLORS.neutral[100],
+    backgroundColor: colors.neutral[100],
     borderRadius: 3,
     marginBottom: 8,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: COLORS.brand[500],
+    backgroundColor: colors.brand[500],
     borderRadius: 3,
   },
   progressText: {
-    color: COLORS.neutral[500],
+    color: colors.neutral[500],
     fontSize: TYPOGRAPHY.xs,
   },
   sectionContainer: {
@@ -321,14 +326,14 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: TYPOGRAPHY.sm,
     fontWeight: TYPOGRAPHY.weight.semibold,
-    color: COLORS.neutral[500],
+    color: colors.neutral[500],
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 12,
     paddingLeft: 4,
   },
   menuCard: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: RADIUS.xl,
     paddingHorizontal: 16,
     ...SHADOWS.sm,
@@ -342,13 +347,13 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: RADIUS.md,
-    backgroundColor: COLORS.brand[50],
+    backgroundColor: colors.brand[50],
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
   },
   iconDestructive: {
-    backgroundColor: '#FEF2F2', // Light red bg
+    backgroundColor: isDarkMode ? '#7F1D1D' : '#FEF2F2',
   },
   menuTextContainer: {
     flex: 1,
@@ -356,19 +361,19 @@ const styles = StyleSheet.create({
   menuTitle: {
     fontSize: TYPOGRAPHY.base,
     fontWeight: TYPOGRAPHY.weight.medium,
-    color: COLORS.neutral[800],
+    color: colors.neutral[800],
   },
   menuSubtitle: {
     fontSize: TYPOGRAPHY.xs,
-    color: COLORS.neutral[400],
+    color: colors.neutral[400],
     marginTop: 2,
   },
   textDestructive: {
-    color: COLORS.semantic.danger,
+    color: colors.semantic.danger,
   },
   divider: {
     height: 1,
-    backgroundColor: COLORS.neutral[100],
+    backgroundColor: colors.neutral[100],
     marginLeft: 56, // Align with text
   },
   logoutContainer: {
@@ -380,21 +385,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FEF2F2',
+    backgroundColor: isDarkMode ? '#7F1D1D' : '#FEF2F2',
     paddingVertical: 16,
     borderRadius: RADIUS.xl,
     borderWidth: 1,
-    borderColor: '#FECACA',
+    borderColor: isDarkMode ? '#991B1B' : '#FECACA',
   },
   logoutText: {
     marginLeft: 8,
     fontSize: TYPOGRAPHY.base,
     fontWeight: TYPOGRAPHY.weight.bold,
-    color: COLORS.semantic.danger,
+    color: colors.semantic.danger,
   },
   versionText: {
     textAlign: 'center',
-    color: COLORS.neutral[400],
+    color: colors.neutral[400],
     fontSize: TYPOGRAPHY.sm,
   }
 });
