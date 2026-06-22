@@ -67,10 +67,10 @@ export default function AppInfoScreen({ navigation }) {
       if (supported) {
         await Linking.openURL(url);
       } else {
-        Alert.alert("Lỗi", "Không thể mở trang web này trên thiết bị của bạn.");
+        Alert.alert(t('common.error', 'Lỗi'), t('appInfo.websiteErrorMessage', "Không thể mở trang web này trên thiết bị của bạn."));
       }
     } catch (error) {
-      Alert.alert("Lỗi", "Đã xảy ra sự cố khi mở trang web.");
+      Alert.alert(t('common.error', 'Lỗi'), t('appInfo.websiteErrorGeneric', "Đã xảy ra sự cố khi mở trang web."));
     }
   };
 
@@ -162,7 +162,7 @@ export default function AppInfoScreen({ navigation }) {
         {/* Footer */}
         <View style={styles.footerContainer}>
           <Text style={styles.copyrightText}>© {new Date().getFullYear()} {companyName}.</Text>
-          <Text style={styles.rightsText}>All rights reserved.</Text>
+          <Text style={styles.rightsText}>{t('appInfo.rightsText', 'All rights reserved.')}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

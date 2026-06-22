@@ -92,18 +92,29 @@ public class DashboardService {
                 .build());
 
         // Upcoming trips
-        List<Trip> trips = tripRepository.findTop8ByDepartureTimeGreaterThanEqualOrderByDepartureTimeAsc(now);
-        List<String> paidStatuses = Arrays.asList("paid", "unpaid"); // Assuming unpaid also means booked seat, adjust as needed
+        List<Trip> trips = tripRepository.findWithBusByDepartureTimeGreaterThanEqualOrderByDepartureTimeAsc(now, org.springframework.data.domain.PageRequest.of(0, 8));
+        List<String> paidStatuses = Arrays.asList("PAID", "PENDING", "paid", "unpaid");
+
+        List<Long> tripIds = trips.stream().map(Trip::getId).collect(Collectors.toList());
+        java.util.Map<Long, Long> bookedSeatsMap = new java.util.HashMap<>();
+        if (!tripIds.isEmpty()) {
+            List<Object[]> seatCounts = ticketRepository.countBookedSeatsByTripIds(tripIds, paidStatuses);
+            for (Object[] row : seatCounts) {
+                Long tripId = (Long) row[0];
+                Long count = (Long) row[1];
+                bookedSeatsMap.put(tripId, count);
+            }
+        }
 
         List<DashboardTripDTO> upcomingTrips = trips.stream().map(trip -> {
-            long bookedSeats = ticketRepository.countByTripIdAndPaymentStatusIn(trip.getId(), paidStatuses);
+            long bookedSeats = bookedSeatsMap.getOrDefault(trip.getId(), 0L);
             String code = "HT-" + trip.getId(); // Example formatted code
             return DashboardTripDTO.builder()
                     .code(code)
                     .route(trip.getRoute())
                     .departureTime(trip.getDepartureTime())
                     .bookedSeats((int) bookedSeats)
-                    .totalSeats(trip.getBus().getTotalSeats())
+                    .totalSeats(trip.getBus() != null ? trip.getBus().getTotalSeats() : 0)
                     .status(trip.getStatus())
                     .driver(trip.getDriver() != null ? trip.getDriver() : "Chưa xếp tài xế")
                     .build();
@@ -206,6 +217,4 @@ public class DashboardService {
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
-
-
 }

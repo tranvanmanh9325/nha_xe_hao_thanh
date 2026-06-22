@@ -457,3 +457,18 @@ INSERT INTO terms_of_service_translations (terms_id, language_code, title, conte
 (6, 'ja', '6. VAT請求書', 'VAT請求書が必要な乗客は、予約時に請求書情報を提供するか、旅行終了後7日以内にカスタマーサービスにご連絡ください。'),
 (6, 'ko', '6. VAT 세금 계산서', 'VAT 세금 계산서가 필요한 승객은 예약 시 청구서 정보를 제공하거나 여행 종료 후 7일 이내에 고객 서비스 센터에 연락해야 합니다.'),
 (6, 'zh', '6. 增值税发票', '需要增值税发票的乘客必须在预订期间提供发票信息或在行程结束后7天内联系客户服务。');
+-- Migration: Notification Settings
+
+CREATE TABLE notification_settings (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL UNIQUE,
+    push_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    email_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    sms_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+    booking_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    promotions_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+    dnd_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_notification_settings_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

@@ -174,7 +174,10 @@ export default function ProfileScreen({ navigation }) {
             <View style={styles.divider} />
             {renderMenuItem(
               (color) => <BellIcon size={24} color={color} />, 
-              t('profile.notificationSettings')
+              t('profile.notificationSettings'),
+              null,
+              false,
+              () => navigation.navigate('NotificationSettings')
             )}
           </View>
         </View>

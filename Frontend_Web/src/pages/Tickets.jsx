@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import TicketsToolbar from '../components/tickets/TicketsToolbar';
 import TicketsFilter from '../components/tickets/TicketsFilter';
 import TicketsTable from '../components/tickets/TicketsTable';
@@ -21,19 +21,57 @@ const Tickets = () => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [ticketToCancel, setTicketToCancel] = useState(null);
   
+  const [totalPages, setTotalPages] = useState(1);
+  const [uniqueTrips, setUniqueTrips] = useState([]);
+  
   const itemsPerPage = 5;
+
+  // Fetch trips for filter dropdown
+  useEffect(() => {
+    const fetchTrips = async () => {
+      try {
+        const response = await authFetch(`${API_BASE_URL}/api/v1/trips?size=1000`);
+        if (response.ok) {
+          const data = await response.json();
+          const trips = data.content || data;
+          setUniqueTrips(trips.map(t => ({ value: t.id.toString(), label: `${t.id} (${t.route})` })));
+        }
+      } catch (err) {
+        console.error('Error fetching trips:', err);
+      }
+    };
+    fetchTrips();
+  }, []);
 
   // Fetch data from API
   const fetchTickets = async () => {
     try {
-        const response = await authFetch(`${API_BASE_URL}/api/v1/tickets`);
+        setIsLoading(true);
+        const params = new URLSearchParams({
+          page: currentPage - 1,
+          size: itemsPerPage
+        });
+        if (searchTerm) params.append('search', searchTerm);
+        if (tripFilter !== 'all') params.append('tripId', tripFilter);
+        if (statusFilter !== 'all') {
+            // map frontend status to backend expected
+            const statusToMatch = statusFilter === 'unpaid' ? 'pending' : statusFilter;
+            params.append('status', statusToMatch);
+        }
+        if (dateFilter !== 'all') params.append('dateFilter', dateFilter);
+
+        const response = await authFetch(`${API_BASE_URL}/api/v1/tickets?${params.toString()}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
         
-        // Map backend DTO to frontend format
-        const formattedData = data.map(t => {
+        // Map backend DTO to frontend format. Handle Spring Data Page structure (data.content)
+        const ticketList = data.content ? data.content : data;
+        if (data.totalPages !== undefined) {
+            setTotalPages(data.totalPages === 0 ? 1 : data.totalPages);
+        }
+        const formattedData = ticketList.map(t => {
           const dateObj = new Date(t.departureTime);
           const formattedDate = dateObj.toLocaleString('vi-VN', {
             day: '2-digit', month: '2-digit', year: 'numeric',
@@ -76,82 +114,19 @@ const Tickets = () => {
     };
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchTickets();
+    }, 0);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line
-    fetchTickets();
-  }, []);
+  }, [currentPage, searchTerm, tripFilter, statusFilter, dateFilter]);
 
   const handleUpdateSuccess = () => {
     fetchTickets();
   };
 
 
-  // Compute unique trips for filter dropdown
-  const uniqueTrips = useMemo(() => {
-    const trips = new Set();
-    const tripOptions = [];
-    ticketsList.forEach(ticket => {
-      if (!trips.has(ticket.tripCode)) {
-        trips.add(ticket.tripCode);
-        tripOptions.push({ value: ticket.tripCode, label: `${ticket.tripCode} (${ticket.route})` });
-      }
-    });
-    return tripOptions;
-  }, [ticketsList]);
-
-  // Filter logic
-  const filteredTickets = useMemo(() => {
-    return ticketsList.filter((ticket) => {
-      // Text search (ID, Name, Phone)
-      const lowerSearch = searchTerm.toLowerCase();
-      const matchesSearch = 
-        ticket.id.toLowerCase().includes(lowerSearch) || 
-        ticket.customerName.toLowerCase().includes(lowerSearch) ||
-        ticket.customerPhone.includes(searchTerm);
-      
-      // Trip filter
-      const matchesTrip = tripFilter === 'all' || ticket.tripCode === tripFilter;
-      
-      // Status filter
-      let statusToMatch = statusFilter;
-      // Map 'pending' from db to 'unpaid' in filter if needed, or update filter options
-      if (statusFilter === 'unpaid') statusToMatch = 'pending';
-      const matchesStatus = statusFilter === 'all' || ticket.status === statusToMatch;
-
-      // Date filter
-      let matchesDate = true;
-      if (dateFilter !== 'all' && ticket.rawDate) {
-        const ticketDate = new Date(ticket.rawDate);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Start of today
-        
-        const ticketDay = new Date(ticketDate);
-        ticketDay.setHours(0, 0, 0, 0);
-
-        if (dateFilter === 'today') {
-          matchesDate = ticketDay.getTime() === today.getTime();
-        } else if (dateFilter === 'yesterday') {
-          const yesterday = new Date(today);
-          yesterday.setDate(yesterday.getDate() - 1);
-          matchesDate = ticketDay.getTime() === yesterday.getTime();
-        } else if (dateFilter === 'this_week') {
-          const startOfWeek = new Date(today);
-          startOfWeek.setDate(today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1)); // Monday
-          matchesDate = ticketDay >= startOfWeek;
-        } else if (dateFilter === 'this_month') {
-          matchesDate = ticketDay.getMonth() === today.getMonth() && ticketDay.getFullYear() === today.getFullYear();
-        }
-      }
-
-      return matchesSearch && matchesTrip && matchesStatus && matchesDate;
-    });
-  }, [searchTerm, tripFilter, statusFilter, dateFilter, ticketsList]);
-
-  // Pagination logic
-  const totalPages = Math.ceil(filteredTickets.length / itemsPerPage) || 1;
-  const paginatedTickets = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredTickets.slice(startIndex, startIndex + itemsPerPage);
-  }, [filteredTickets, currentPage]);
+  const paginatedTickets = ticketsList;
 
   const handleSearchChange = (val) => {
     setSearchTerm(val);

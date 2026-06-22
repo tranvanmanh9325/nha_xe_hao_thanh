@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import com.haothanh.booking.dto.ChangePasswordRequestDTO;
+import com.haothanh.booking.dto.NotificationSettingsDTO;
 import com.haothanh.booking.dto.UserResponseDTO;
 import com.haothanh.booking.service.UserService;
 import com.haothanh.booking.security.CustomUserDetails;
@@ -94,5 +95,31 @@ public class AuthController {
         Long userId = userPrincipal.getId();
         User user = userService.getUserById(userId);
         return ResponseEntity.ok(ApiResponse.success("Lấy thông tin người dùng thành công", UserResponseDTO.fromEntity(user)));
+    }
+
+    @GetMapping("/me/notification-settings")
+    public ResponseEntity<ApiResponse<NotificationSettingsDTO>> getNotificationSettings(@AuthenticationPrincipal CustomUserDetails userPrincipal) {
+        if (userPrincipal == null) {
+            return ResponseEntity.status(401).body(ApiResponse.error("Người dùng chưa xác thực"));
+        }
+
+        Long userId = userPrincipal.getId();
+        NotificationSettingsDTO settings = userService.getNotificationSettings(userId);
+        return ResponseEntity.ok(ApiResponse.success("Lấy cài đặt thông báo thành công", settings));
+    }
+
+    @PutMapping("/me/notification-settings")
+    public ResponseEntity<ApiResponse<NotificationSettingsDTO>> updateNotificationSettings(
+            @Valid @RequestBody NotificationSettingsDTO requestDTO,
+            @AuthenticationPrincipal CustomUserDetails userPrincipal) {
+        
+        if (userPrincipal == null) {
+            return ResponseEntity.status(401).body(ApiResponse.error("Người dùng chưa xác thực"));
+        }
+
+        Long userId = userPrincipal.getId();
+        NotificationSettingsDTO updatedSettings = userService.updateNotificationSettings(userId, requestDTO);
+        
+        return ResponseEntity.ok(ApiResponse.success("Cập nhật cài đặt thông báo thành công", updatedSettings));
     }
 }

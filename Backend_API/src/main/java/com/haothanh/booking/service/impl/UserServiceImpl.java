@@ -2,10 +2,13 @@ package com.haothanh.booking.service.impl;
 
 import com.haothanh.booking.dto.ChangePasswordRequestDTO;
 import com.haothanh.booking.dto.RegisterRequestDTO;
+import com.haothanh.booking.dto.NotificationSettingsDTO;
+import com.haothanh.booking.entity.NotificationSettings;
 import com.haothanh.booking.entity.User;
 import com.haothanh.booking.exception.DuplicateResourceException;
 import com.haothanh.booking.exception.ResourceNotFoundException;
 import com.haothanh.booking.repository.UserRepository;
+import com.haothanh.booking.repository.NotificationSettingsRepository;
 import com.haothanh.booking.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final NotificationSettingsRepository notificationSettingsRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -63,5 +67,36 @@ public class UserServiceImpl implements UserService {
     public User getUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));
+    }
+
+    @Override
+    public NotificationSettingsDTO getNotificationSettings(Long userId) {
+        User user = getUserById(userId);
+        NotificationSettings settings = user.getNotificationSettings();
+        return NotificationSettingsDTO.fromEntity(settings);
+    }
+
+    @Override
+    @Transactional
+    public NotificationSettingsDTO updateNotificationSettings(Long userId, NotificationSettingsDTO request) {
+        User user = getUserById(userId);
+        NotificationSettings settings = user.getNotificationSettings();
+
+        if (settings == null) {
+            settings = NotificationSettings.builder()
+                    .user(user)
+                    .build();
+            user.setNotificationSettings(settings);
+        }
+
+        settings.setPushEnabled(request.getPushEnabled() != null ? request.getPushEnabled() : settings.getPushEnabled());
+        settings.setEmailEnabled(request.getEmailEnabled() != null ? request.getEmailEnabled() : settings.getEmailEnabled());
+        settings.setSmsEnabled(request.getSmsEnabled() != null ? request.getSmsEnabled() : settings.getSmsEnabled());
+        settings.setBookingEnabled(request.getBookingEnabled() != null ? request.getBookingEnabled() : settings.getBookingEnabled());
+        settings.setPromotionsEnabled(request.getPromotionsEnabled() != null ? request.getPromotionsEnabled() : settings.getPromotionsEnabled());
+        settings.setDndEnabled(request.getDndEnabled() != null ? request.getDndEnabled() : settings.getDndEnabled());
+
+        settings = notificationSettingsRepository.save(settings);
+        return NotificationSettingsDTO.fromEntity(settings);
     }
 }

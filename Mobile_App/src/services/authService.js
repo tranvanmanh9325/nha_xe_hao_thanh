@@ -43,6 +43,16 @@ const authService = {
     return data.data;
   },
 
+  async getNotificationSettings() {
+    const { data } = await api.get('/auth/me/notification-settings');
+    return data.data;
+  },
+
+  async updateNotificationSettings(settings) {
+    const { data } = await api.put('/auth/me/notification-settings', settings);
+    return data.data;
+  },
+
   /**
    * Returns cached token when available, falls back to AsyncStorage on cold start.
    */

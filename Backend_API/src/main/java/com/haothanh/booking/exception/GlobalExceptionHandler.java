@@ -32,6 +32,12 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ex.getMessage()));
     }
 
+    @ExceptionHandler(ResourceLockedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleResourceLockedException(ResourceLockedException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
