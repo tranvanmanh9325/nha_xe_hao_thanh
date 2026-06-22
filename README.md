@@ -1,37 +1,79 @@
 # 🚌 Hao Thanh Bus Ticketing & Management System
 
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-brightgreen.svg?logo=springboot)](https://spring.io/projects/spring-boot)
-[![React](https://img.shields.io/badge/React-19-blue.svg?logo=react)](https://react.dev/)
-[![React Native](https://img.shields.io/badge/React_Native-0.85-61DAFB.svg?logo=react)](https://reactnative.dev/)
-[![Expo](https://img.shields.io/badge/Expo-56-000020.svg?logo=expo)](https://expo.dev/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.15-brightgreen.svg?logo=springboot)](https://spring.io/projects/spring-boot)
+[![React](https://img.shields.io/badge/React-19.2.6-blue.svg?logo=react)](https://react.dev/)
+[![React Native](https://img.shields.io/badge/React_Native-0.81.5-61DAFB.svg?logo=react)](https://reactnative.dev/)
+[![Expo](https://img.shields.io/badge/Expo-54.0.0-000020.svg?logo=expo)](https://expo.dev/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED.svg?logo=docker)](https://www.docker.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791.svg?logo=postgresql)](https://www.postgresql.org/)
 [![Redis](https://img.shields.io/badge/Redis-Cache%20%7C%20Lock-DC382D.svg?logo=redis)](https://redis.io/)
 
-A comprehensive, high-performance bus ticketing and management system built with a modern microservices-inspired architecture. Designed to handle high concurrent traffic and completely resolve Race Conditions during seat booking. The platform includes a Web Frontend for administrators/users, a Mobile App for customers, and a robust Backend API.
+## 🌟 Introduction
 
----
+A comprehensive, high-performance bus ticketing and management system built with a modern microservices-inspired architecture. Designed to handle high concurrent traffic and completely resolve Race Conditions during seat booking. The platform includes a Web Frontend for administrators/users, a Mobile App for customers, and a robust Backend API.
 
 ## 📑 Table of Contents
 
 - [Introduction](#-introduction)
-- [Architecture](#-architecture)
 - [Screenshots / Demo](#-screenshots--demo)
 - [Features & Highlights](#-features--highlights)
 - [Tech Stack](#-tech-stack)
+- [Architecture](#-architecture)
 - [Folder Structure](#-folder-structure)
 - [Installation & Usage](#-installation--usage-local-development)
 - [Container Management](#-container-management)
 - [Contributing](#-contributing)
 - [License](#-license)
 
----
+## 📸 Screenshots / Demo
 
-## 🌟 Introduction
+<!-- Please insert your application screenshots, GIFs, or demo video links here -->
+- **Web Dashboard:** `![Dashboard Screenshot](link-to-image)`
+- **Mobile App Booking Flow:** `![Mobile App Screenshot](link-to-image)`
+- **System Architecture Diagram:** `![Architecture Screenshot](link-to-image)`
 
-The Hao Thanh Bus Ticketing System provides a seamless booking experience for passengers while offering powerful management tools for bus operators. Built to ensure High Availability (HA) and consistency, the system uses Distributed Locks to prevent double-booking (Race Conditions) when multiple users attempt to reserve the same seat simultaneously.
+## ✨ Features & Highlights
 
----
+- **Real-time Seat Booking:** Prevents race conditions using Redis Distributed Locks (Redisson).
+- **Cross-Platform Accessibility:** Native-feeling mobile app alongside a responsive web application.
+- **High Availability & Load Balancing:** Nginx routes traffic intelligently to multiple backend replicas.
+- **Secure Authentication:** JWT-based stateless authentication integrated with Spring Security.
+- **Interactive Maps & Charts:** Real-time data visualization using Recharts and interactive maps via Leaflet.
+- **Automated Database Migrations:** Hassle-free database schema updates using Flyway.
+- **Cloud Media Storage:** Direct integration with Cloudinary for seamless image uploads.
+- **Real-time Chat/Support:** Integrated WebSocket support.
+
+## 🚀 Tech Stack
+
+### Frontend (Web)
+
+- **Core Framework:** React 19.2.6, Vite 8.0.16
+- **Routing:** React Router v7
+- **Styling:** Tailwind CSS 3.4
+- **UI & Visualization:** Lucide React, Recharts, React Leaflet
+
+### Mobile (App)
+
+- **Core Framework:** React Native 0.81.5, Expo 54.0.0
+- **Navigation:** React Navigation v7
+- **Styling:** NativeWind 2.0 (Tailwind CSS for React Native)
+
+### Backend (API)
+
+- **Language:** Java 21
+- **Framework:** Spring Boot 3.5.15
+- **ORM & Data Access:** Spring Data JPA / Hibernate
+- **Database Migration:** Flyway
+- **Caching & Locking:** Spring Data Redis, Redisson 3.30.0
+- **Security:** Spring Security, JWT
+- **Cloud Storage:** Cloudinary
+
+### DevOps & Infrastructure
+
+- **Containerization:** Docker & Docker Compose
+- **Database:** PostgreSQL 15 (Alpine)
+- **Cache:** Redis (Alpine)
+- **Web Server / Reverse Proxy:** Nginx (Alpine)
 
 ## 🏗 Architecture
 
@@ -43,64 +85,6 @@ The project is designed with a distributed mindset, incorporating Load Balancing
 - **Database:** PostgreSQL 15 serves as the primary relational database, with schema migrations meticulously managed by Flyway.
 - **Cache & Distributed Lock:** Redis is utilized to accelerate data retrieval. Crucially, Redisson is integrated to implement Distributed Locks, completely eliminating Race Conditions during high-concurrency seat bookings.
 - **API Gateway / Load Balancer:** Nginx acts as the single entry point (Reverse Proxy), automatically distributing incoming API requests across multiple backend instances.
-
----
-
-## 📸 Screenshots / Demo
-
-<!-- Please insert your application screenshots, GIFs, or demo video links here -->
-
-- **Web Dashboard:** `![Dashboard Screenshot](link-to-image)`
-- **Mobile App Booking Flow:** `![Mobile App Screenshot](link-to-image)`
-- **System Architecture Diagram:** `![Architecture Screenshot](link-to-image)`
-
----
-
-## ✨ Features & Highlights
-
-- **Real-time Seat Booking:** Prevents race conditions using Redis Distributed Locks (Redisson).
-- **Cross-Platform Accessibility:** Native-feeling mobile app alongside a responsive web application.
-- **High Availability & Load Balancing:** Nginx routes traffic intelligently to multiple backend replicas.
-- **Secure Authentication:** JWT-based stateless authentication integrated with Spring Security.
-- **Interactive Maps & Charts:** Real-time data visualization using Recharts and interactive maps via Leaflet.
-- **Automated Database Migrations:** Hassle-free database schema updates using Flyway.
-- **Cloud Media Storage:** Direct integration with Cloudinary for seamless image uploads.
-
----
-
-## 🚀 Tech Stack
-
-### Frontend (Web)
-
-- **Core Framework:** React 19, Vite
-- **Routing:** React Router v7
-- **Styling:** Tailwind CSS, PostCSS
-- **UI & Visualization:** Lucide React, Recharts, React Leaflet
-
-### Mobile (App)
-
-- **Core Framework:** React Native 0.85, Expo ~56
-- **Navigation:** React Navigation v7
-- **Styling:** NativeWind (Tailwind CSS for React Native)
-
-### Backend (API)
-
-- **Language:** Java 21
-- **Framework:** Spring Boot 3.5.15
-- **ORM & Data Access:** Spring Data JPA / Hibernate
-- **Database Migration:** Flyway
-- **Caching & Locking:** Spring Data Redis, Redisson
-- **Security:** Spring Security, JWT (io.jsonwebtoken)
-- **Cloud Storage:** Cloudinary
-
-### DevOps & Infrastructure
-
-- **Containerization:** Docker & Docker Compose
-- **Database:** PostgreSQL 15 (Alpine)
-- **Cache:** Redis (Alpine)
-- **Web Server / Reverse Proxy:** Nginx (Alpine)
-
----
 
 ## 📂 Folder Structure
 
@@ -114,8 +98,6 @@ nha_xe_hao_thanh/
 ├── docker-compose.yml    # Infrastructure deployment configuration
 └── README.md             # Project documentation (You are here)
 ```
-
----
 
 ## ⚡ Installation & Usage (Local Development)
 
@@ -153,6 +135,13 @@ CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 
+# Mail Config
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your_email@gmail.com
+MAIL_PASSWORD=your_app_password
+MAIL_FROM=your_email@gmail.com
+
 ### MOBILE APP ###
 # Your machine's local IP address (e.g., 192.168.1.x) for Expo to connect to the backend
 LOCAL_IP=your_local_ip_address
@@ -182,11 +171,9 @@ Once the containers are running healthy:
 - **API Gateway (Nginx):** [http://localhost:8080/api/v1](http://localhost:8080/api/v1)
 - **Mobile App (Expo QR Code):** [http://localhost:8081](http://localhost:8081) (Scan the QR code with the Expo Go app on your physical device)
 
----
-
 ## 🛠 Container Management
 
-- **View backend logs** (useful for monitoring DB queries, Redis locks, and load balancing):
+- **View backend logs**:
 
   ```bash
   docker-compose logs -f backend
@@ -198,25 +185,19 @@ Once the containers are running healthy:
   docker-compose down
   ```
 
-- **Stop the system and wipe all data volumes** (including the PostgreSQL database):
+- **Stop the system and wipe all data volumes:**
 
   ```bash
   docker-compose down -v
   ```
 
----
-
 ## 🤝 Contributing
-
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
 1. **Fork** the Project
 2. **Create** your Feature Branch (`git checkout -b feature/AmazingFeature`)
 3. **Commit** your Changes (`git commit -m 'feat: add some AmazingFeature'`)
 4. **Push** to the Branch (`git push origin feature/AmazingFeature`)
 5. **Open** a Pull Request
-
----
 
 ## 📄 License
 

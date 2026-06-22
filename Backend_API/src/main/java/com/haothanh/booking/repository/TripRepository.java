@@ -15,5 +15,8 @@ public interface TripRepository extends JpaRepository<Trip, Long>, JpaSpecificat
     @org.springframework.data.jpa.repository.Query("SELECT COUNT(t) FROM Trip t WHERE t.departureTime >= :startDate AND t.departureTime <= :endDate")
     long countTripsByDateRange(@org.springframework.data.repository.query.Param("startDate") java.time.OffsetDateTime startDate, @org.springframework.data.repository.query.Param("endDate") java.time.OffsetDateTime endDate);
 
-    List<Trip> findTop8ByDepartureTimeGreaterThanEqualOrderByDepartureTimeAsc(java.time.OffsetDateTime now);
+    List<Trip> findByDepartureTimeGreaterThanEqualOrderByDepartureTimeAsc(java.time.OffsetDateTime now, org.springframework.data.domain.Pageable pageable);
+
+    @org.springframework.data.jpa.repository.Query("SELECT t FROM Trip t JOIN FETCH t.bus WHERE t.departureTime >= :now ORDER BY t.departureTime ASC")
+    List<Trip> findWithBusByDepartureTimeGreaterThanEqualOrderByDepartureTimeAsc(@org.springframework.data.repository.query.Param("now") java.time.OffsetDateTime now, org.springframework.data.domain.Pageable pageable);
 }

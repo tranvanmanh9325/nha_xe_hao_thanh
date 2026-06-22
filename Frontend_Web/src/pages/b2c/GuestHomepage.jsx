@@ -164,8 +164,8 @@ const GuestHomepage = () => {
       </section>
 
       {/* Search Bar Widget (Overlapping Hero) */}
-      <section className="relative z-20 -mt-16 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-2xl shadow-xl shadow-neutral-200/50 p-4 md:p-6 lg:p-8">
+      <section className="relative z-20 -mt-16 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 animate-slide-up">
+        <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl shadow-brand-500/10 p-4 md:p-6 lg:p-8 border border-white/50">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 items-end">
             {/* Nơi đi */}
             <div className="relative">

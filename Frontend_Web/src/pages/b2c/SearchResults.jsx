@@ -7,6 +7,20 @@ import GuestFooter from '../../components/b2c/GuestFooter';
 import AuthModal from '../../components/b2c/AuthModal';
 import { DateIcon, SearchIcon } from '../../components/icons/CustomIcons';
 
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+};
+
+const formatTime = (dateString) => {
+  return new Date(dateString).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+};
+
+const formatDateVN = (dateString) => {
+  if (!dateString) return '';
+  const [year, month, day] = dateString.split('-');
+  return `${day}/${month}/${year}`;
+};
+
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -73,22 +87,8 @@ const SearchResults = () => {
     loadData();
   }, [from, to, dateStr, navigate]);
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-  };
-
-  const formatTime = (dateString) => {
-    return new Date(dateString).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-  };
-  
-  const formatDateVN = (dateString) => {
-    if (!dateString) return '';
-    const [year, month, day] = dateString.split('-');
-    return `${day}/${month}/${year}`;
-  };
-
   return (
-    <div className="min-h-screen bg-neutral-50 font-sans text-neutral-900 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-brand-50 to-white font-sans text-neutral-900 flex flex-col animate-fade-in">
       <GuestNavbar onOpenAuthModal={() => setIsAuthModalOpen(true)} />
 
       <main className="flex-grow pt-20 pb-20">
@@ -157,7 +157,7 @@ const SearchResults = () => {
                 }
 
                 return (
-                  <div key={trip._id} className="bg-white rounded-2xl p-5 md:p-6 shadow-sm hover:shadow-md transition-shadow border border-neutral-200">
+                  <div key={trip._id} className="animate-slide-up bg-white/80 backdrop-blur-md rounded-2xl p-5 md:p-6 shadow-sm hover:shadow-lg transition-all border border-white/50">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                       
                       {/* Left: Time & Route */}

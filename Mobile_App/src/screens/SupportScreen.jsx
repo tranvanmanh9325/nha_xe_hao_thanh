@@ -81,7 +81,7 @@ export default function SupportScreen({ navigation }) {
     setExpandedFaq(faq.id);
     
     setModalConfig({
-      title: "Chi tiết hỗ trợ",
+      title: t('support.supportDetail', 'Chi tiết hỗ trợ'),
       question: faq.question,
       message: faq.answer,
       email: '',
@@ -133,8 +133,8 @@ export default function SupportScreen({ navigation }) {
             await Linking.openURL(phoneUrl);
           } else {
             setModalConfig({
-              title: "Thông báo",
-              message: `Không thể thực hiện cuộc gọi trên thiết bị này.\nHotline: ${settings.hotline}`,
+              title: t('support.notification', 'Thông báo'),
+              message: t('support.cannotCall', { hotline: settings.hotline, defaultValue: `Không thể thực hiện cuộc gọi trên thiết bị này.\nHotline: ${settings.hotline}` }),
               email: "",
               showCopyBtn: false,
               isFaq: false
@@ -150,8 +150,8 @@ export default function SupportScreen({ navigation }) {
             await Linking.openURL(emailUrl);
           } else {
             setModalConfig({
-              title: "Lỗi",
-              message: `Thiết bị chưa cài đặt ứng dụng Email. Bạn vui lòng gửi email về:\n${emailAddress}`,
+              title: t('common.error', 'Lỗi'),
+              message: t('support.emailNotInstalled', { email: emailAddress, defaultValue: `Thiết bị chưa cài đặt ứng dụng Email. Bạn vui lòng gửi email về:\n${emailAddress}` }),
               email: emailAddress,
               showCopyBtn: true,
               isFaq: false
@@ -165,8 +165,8 @@ export default function SupportScreen({ navigation }) {
       }
     } catch (error) {
       setModalConfig({
-        title: "Lỗi",
-        message: "Không thể thực hiện tác vụ này trên thiết bị của bạn.",
+        title: t('common.error', 'Lỗi'),
+        message: t('support.errorAction', 'Không thể thực hiện tác vụ này trên thiết bị của bạn.'),
         email: "",
         showCopyBtn: false,
         isFaq: false
@@ -198,8 +198,8 @@ export default function SupportScreen({ navigation }) {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.searchSection}>
-          <Text style={styles.greetingText}>Xin chào,</Text>
-          <Text style={styles.askText}>Chúng tôi có thể giúp gì cho bạn?</Text>
+          <Text style={styles.greetingText}>{t('support.greeting', 'Xin chào,')}</Text>
+          <Text style={styles.askText}>{t('support.askHelp', 'Chúng tôi có thể giúp gì cho bạn?')}</Text>
           
           <View style={styles.searchWrapper}>
             <View style={styles.searchContainer}>
@@ -250,7 +250,7 @@ export default function SupportScreen({ navigation }) {
                   })
                 ) : (
                   <View style={styles.noResultContainer}>
-                    <Text style={styles.noResultText}>Không tìm thấy kết quả phù hợp</Text>
+                    <Text style={styles.noResultText}>{t('support.noResult', 'Không tìm thấy kết quả phù hợp')}</Text>
                   </View>
                 )}
               </View>
@@ -360,7 +360,7 @@ export default function SupportScreen({ navigation }) {
                   setModalVisible(false);
                 }}
               >
-                <Text style={styles.copyButtonText}>Sao chép Email</Text>
+                <Text style={styles.copyButtonText}>{t('support.copyEmail', 'Sao chép Email')}</Text>
               </TouchableOpacity>
             )}
 
@@ -368,7 +368,7 @@ export default function SupportScreen({ navigation }) {
               style={styles.closeButton}
               onPress={() => setModalVisible(false)}
             >
-              <Text style={styles.closeButtonText}>Đóng</Text>
+              <Text style={styles.closeButtonText}>{t('support.close', 'Đóng')}</Text>
             </TouchableOpacity>
           </View>
         </View>

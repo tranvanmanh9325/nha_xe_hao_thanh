@@ -23,11 +23,10 @@ import org.springframework.security.access.AccessDeniedException;
 import com.haothanh.booking.security.CustomUserDetails;
 
 import java.util.concurrent.TimeUnit;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -40,12 +39,55 @@ public class TicketServiceImpl implements TicketService {
     private final RedissonClient redissonClient;
     private final CacheManager cacheManager;
     private final PasswordEncoder passwordEncoder;
+    private final TransactionTemplate transactionTemplate;
 
     @Override
     @Transactional(readOnly = true)
-    public List<TicketResponseDTO> getAllTickets() {
-        List<Ticket> tickets = ticketRepository.findAllWithDetails();
-        return tickets.stream().map(this::mapToDTO).collect(Collectors.toList());
+    public org.springframework.data.domain.Page<TicketResponseDTO> getAllTickets(String search, Long tripId, String status, String dateFilter, org.springframework.data.domain.Pageable pageable) {
+        java.time.OffsetDateTime startDate = null;
+        java.time.OffsetDateTime endDate = null;
+        
+        if (dateFilter != null && !dateFilter.equals("all")) {
+            java.time.OffsetDateTime now = java.time.OffsetDateTime.now();
+            java.time.OffsetDateTime startOfToday = now.with(java.time.LocalTime.MIN);
+            java.time.OffsetDateTime endOfToday = now.with(java.time.LocalTime.MAX);
+            
+            switch (dateFilter) {
+                case "today":
+                    startDate = startOfToday;
+                    endDate = endOfToday;
+                    break;
+                case "yesterday":
+                    startDate = startOfToday.minusDays(1);
+                    endDate = endOfToday.minusDays(1);
+                    break;
+                case "this_week":
+                    startDate = startOfToday.with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
+                    endDate = endOfToday.with(java.time.temporal.TemporalAdjusters.nextOrSame(java.time.DayOfWeek.SUNDAY));
+                    break;
+                case "this_month":
+                    startDate = startOfToday.with(java.time.temporal.TemporalAdjusters.firstDayOfMonth());
+                    endDate = endOfToday.with(java.time.temporal.TemporalAdjusters.lastDayOfMonth());
+                    break;
+            }
+        }
+        
+        if ("pending".equalsIgnoreCase(status) || "unpaid".equalsIgnoreCase(status)) {
+            status = "PENDING";
+        } else if ("paid".equalsIgnoreCase(status)) {
+            status = "PAID";
+        } else if ("cancelled".equalsIgnoreCase(status)) {
+            status = "CANCELLED";
+        } else {
+            status = null;
+        }
+        
+        if (search != null && search.trim().isEmpty()) {
+            search = null;
+        }
+
+        org.springframework.data.domain.Page<Ticket> tickets = ticketRepository.findAllWithFilters(search, tripId, status, startDate, endDate, pageable);
+        return tickets.map(this::mapToDTO);
     }
 
     private TicketResponseDTO mapToDTO(Ticket ticket) {
@@ -102,21 +144,21 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    @Transactional
     public TicketResponseDTO bookOfflineTicket(TicketRequestDTO request) {
         String lockKey = "lock:seat:" + request.getTripId() + ":" + request.getSeatCode();
         RLock lock = redissonClient.getLock(lockKey);
+        boolean isLocked = false;
 
         try {
             // Attempt to acquire lock. Wait up to 3 seconds, hold for 10 seconds.
-            boolean isLocked = lock.tryLock(3, 10, TimeUnit.SECONDS);
+            isLocked = lock.tryLock(3, 10, TimeUnit.SECONDS);
             
             if (!isLocked) {
                 log.warn("Could not acquire lock for trip {} and seat {}. System busy.", request.getTripId(), request.getSeatCode());
-                throw new RuntimeException("Hệ thống đang xử lý ghế này, vui lòng thử lại sau.");
+                throw new com.haothanh.booking.exception.ResourceLockedException("Hệ thống đang xử lý ghế này, vui lòng thử lại sau.");
             }
             
-            try {
+            return transactionTemplate.execute(status -> {
                 // 1. Check if trip exists
                 Trip trip = tripRepository.findById(java.util.Objects.requireNonNull(request.getTripId(), "Trip ID cannot be null"))
                         .orElseThrow(() -> new RuntimeException("Không tìm thấy chuyến xe với ID: " + request.getTripId()));
@@ -162,20 +204,18 @@ public class TicketServiceImpl implements TicketService {
                 }
 
                 return mapToDTO(ticket);
-                
-            } finally {
-                if (lock.isHeldByCurrentThread()) {
-                    lock.unlock();
-                }
-            }
+            });
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Bị gián đoạn khi đang giữ chỗ.");
+            throw new com.haothanh.booking.exception.ResourceLockedException("Bị gián đoạn khi đang giữ chỗ.");
+        } finally {
+            if (isLocked && lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
         }
     }
 
     @Override
-    @Transactional
     public TicketResponseDTO updateTicket(Long ticketId, com.haothanh.booking.dto.TicketUpdateRequestDTO request) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy vé"));
@@ -192,20 +232,35 @@ public class TicketServiceImpl implements TicketService {
         String currentSeat = ticket.getSeatCode();
         String newSeat = request.getNewSeatCode();
 
+        RLock lock = null;
+        boolean isLocked = false;
+
         if (newSeat != null && !newSeat.equals(currentSeat)) {
-            // Need to change seat
+            // Need to change seat, acquire lock first
             String lockKey = "lock:seat:" + ticket.getTrip().getId() + ":" + newSeat;
-            RLock lock = redissonClient.getLock(lockKey);
+            lock = redissonClient.getLock(lockKey);
 
             try {
-                boolean isLocked = lock.tryLock(3, 10, TimeUnit.SECONDS);
+                isLocked = lock.tryLock(3, 10, TimeUnit.SECONDS);
                 if (!isLocked) {
-                    throw new RuntimeException("Ghế mới đang được xử lý bởi người khác, vui lòng thử lại.");
+                    throw new com.haothanh.booking.exception.ResourceLockedException("Ghế mới đang được xử lý bởi người khác, vui lòng thử lại.");
                 }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new com.haothanh.booking.exception.ResourceLockedException("Bị gián đoạn khi đang giữ ghế mới.");
+            }
+        }
 
-                try {
+        try {
+            final String finalNewStatus = newStatus;
+            return transactionTemplate.execute(status -> {
+                // Re-fetch ticket to ensure it is attached to the current session
+                Ticket attachedTicket = ticketRepository.findById(ticketId)
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy vé"));
+
+                if (newSeat != null && !newSeat.equals(currentSeat)) {
                     List<String> bookedSeats = ticketRepository.findBookedSeatsByTripId(
-                            ticket.getTrip().getId(), 
+                            attachedTicket.getTrip().getId(), 
                             java.util.Arrays.asList("PAID", "PENDING")
                     );
                     
@@ -213,26 +268,23 @@ public class TicketServiceImpl implements TicketService {
                         throw new RuntimeException("Ghế " + newSeat + " đã có người đặt.");
                     }
 
-                    ticket.setSeatCode(newSeat);
-                } finally {
-                    if (lock.isHeldByCurrentThread()) {
-                        lock.unlock();
-                    }
+                    attachedTicket.setSeatCode(newSeat);
                 }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException("Bị gián đoạn khi đang giữ ghế mới.");
+
+                attachedTicket.setPaymentStatus(finalNewStatus);
+                ticketRepository.save(attachedTicket);
+
+                var cache = cacheManager.getCache("trip-seat-map");
+                if (cache != null) {
+                    cache.evict(attachedTicket.getTrip().getId());
+                }
+
+                return mapToDTO(attachedTicket);
+            });
+        } finally {
+            if (lock != null && isLocked && lock.isHeldByCurrentThread()) {
+                lock.unlock();
             }
         }
-
-        ticket.setPaymentStatus(newStatus);
-        ticketRepository.save(ticket);
-
-        var cache = cacheManager.getCache("trip-seat-map");
-        if (cache != null) {
-            cache.evict(ticket.getTrip().getId());
-        }
-
-        return mapToDTO(ticket);
     }
 }

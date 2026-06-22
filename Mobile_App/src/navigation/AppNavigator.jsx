@@ -13,6 +13,7 @@ import AppInfoScreen from '../screens/AppInfoScreen';
 import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
 import TermsOfServiceScreen from '../screens/TermsOfServiceScreen';
 import LegalAndPoliciesScreen from '../screens/LegalAndPoliciesScreen';
+import NotificationSettingsScreen from '../screens/NotificationSettingsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -78,6 +79,11 @@ export default function AppNavigator() {
         <Stack.Screen 
           name="LegalAndPolicies" 
           component={LegalAndPoliciesScreen} 
+          options={{ headerShown: false, animation: 'slide_from_right' }}
+        />
+        <Stack.Screen 
+          name="NotificationSettings" 
+          component={NotificationSettingsScreen} 
           options={{ headerShown: false, animation: 'slide_from_right' }}
         />
       </Stack.Navigator>

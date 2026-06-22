@@ -1,10 +1,8 @@
 package com.haothanh.booking.service;
 
 import com.haothanh.booking.dto.TicketResponseDTO;
-import java.util.List;
-
 public interface TicketService {
-    List<TicketResponseDTO> getAllTickets();
+    org.springframework.data.domain.Page<TicketResponseDTO> getAllTickets(String search, Long tripId, String status, String dateFilter, org.springframework.data.domain.Pageable pageable);
     void cancelTicket(Long ticketId);
     TicketResponseDTO bookOfflineTicket(com.haothanh.booking.dto.TicketRequestDTO request);
 
