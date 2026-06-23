@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import api from './api';
 
 const TOKEN_KEY = 'auth_token';
@@ -23,6 +24,11 @@ const authService = {
     const { data } = await api.post('/auth/login', { phone, password });
     cachedToken = data.data.accessToken;
     await AsyncStorage.setItem(TOKEN_KEY, cachedToken);
+    
+    // Lưu credentials an toàn cho tính năng sinh trắc học
+    await SecureStore.setItemAsync('auth_phone', phone);
+    await SecureStore.setItemAsync('auth_password', password);
+    
     return data;
   },
 
@@ -36,6 +42,29 @@ const authService = {
   async logout() {
     cachedToken = null;
     await AsyncStorage.removeItem(TOKEN_KEY);
+    await SecureStore.deleteItemAsync('auth_phone');
+    await SecureStore.deleteItemAsync('auth_password');
+  },
+
+  async changePassword(oldPassword, newPassword) {
+    const { data } = await api.put('/auth/change-password', { oldPassword, newPassword });
+    // Cập nhật lại mật khẩu mới vào SecureStore để FaceID đăng nhập không bị lỗi
+    const savedPhone = await SecureStore.getItemAsync('auth_phone');
+    if (savedPhone) {
+      await SecureStore.setItemAsync('auth_password', newPassword);
+    }
+    return data;
+  },
+
+  async deleteAccount() {
+    try {
+      const { data } = await api.delete('/auth/me');
+      await this.logout();
+      return data;
+    } catch (error) {
+      const message = this.getErrorMessage(error);
+      throw new Error(message);
+    }
   },
 
   async getProfile() {
@@ -65,6 +94,17 @@ const authService = {
   async isAuthenticated() {
     const token = await authService.getToken();
     return !!token;
+  },
+
+  async getSecureCredentials() {
+    try {
+      const phone = await SecureStore.getItemAsync('auth_phone');
+      const password = await SecureStore.getItemAsync('auth_password');
+      if (phone && password) return { phone, password };
+      return null;
+    } catch (e) {
+      return null;
+    }
   },
 
   /**

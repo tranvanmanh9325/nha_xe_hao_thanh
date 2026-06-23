@@ -275,3 +275,13 @@ export const CheckCircleIcon = ({ size = 24, color = "currentColor", style }) =>
     <Polyline points="22 4 12 14.01 9 11.01" />
   </Svg>
 );
+
+export const FingerprintIcon = ({ size = 24, color = "currentColor", style }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={style}>
+    <Path d="M2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2C6.48 2 2 6.48 2 12Z" strokeDasharray="4 4" />
+    <Path d="M8.5 9.5C9.5 8.5 10.5 8 12 8C13.5 8 14.5 8.5 15.5 9.5" />
+    <Path d="M7.5 12.5C8.5 11 10 10 12 10C14 10 15.5 11 16.5 12.5" />
+    <Path d="M6.5 16C7.5 14 9.5 12.5 12 12.5C14.5 12.5 16.5 14 17.5 16" />
+    <Path d="M12 15C11 15 10 16 10 17" />
+  </Svg>
+);

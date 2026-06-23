@@ -11,6 +11,7 @@ public interface UserService {
     User register(RegisterRequestDTO request);
 
     User getUserById(Long userId);
+    void deleteAccount(Long userId);
     NotificationSettingsDTO getNotificationSettings(Long userId);
     NotificationSettingsDTO updateNotificationSettings(Long userId, NotificationSettingsDTO request);
 }

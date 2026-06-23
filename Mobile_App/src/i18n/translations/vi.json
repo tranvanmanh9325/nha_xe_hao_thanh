@@ -65,6 +65,22 @@
   "ticket": {
     "title": "Vé của tôi"
   },
+  "bookingHistory": {
+    "title": "Lịch sử đặt vé",
+    "all": "Tất cả",
+    "upcoming": "Sắp đi",
+    "completed": "Đã đi",
+    "cancelled": "Đã hủy",
+    "empty": "Bạn chưa có chuyến đi nào trong mục này",
+    "bookNow": "Đặt vé ngay",
+    "seat": "Ghế",
+    "ticketCode": "Mã vé",
+    "status": {
+      "pending": "Chờ thanh toán",
+      "paid": "Đã thanh toán",
+      "cancelled": "Đã hủy"
+    }
+  },
   "notification": {
     "title": "Thông báo",
     "empty": "Bạn chưa có thông báo nào"
@@ -250,5 +266,27 @@
     "registerButton": "Đăng ký",
     "haveAccount": "Đã có tài khoản?",
     "loginNow": "Đăng nhập ngay"
+  },
+  "securityScreen": {
+    "title": "Bảo mật & Mật khẩu",
+    "changePassword": "Đổi mật khẩu",
+    "oldPassword": "Mật khẩu hiện tại",
+    "newPassword": "Mật khẩu mới",
+    "confirmNewPassword": "Xác nhận mật khẩu mới",
+    "passwordRequirements": "Mật khẩu phải có ít nhất 6 ký tự",
+    "passwordNotMatch": "Mật khẩu xác nhận không khớp",
+    "passwordChangedSuccess": "Đổi mật khẩu thành công!",
+    "saveChanges": "Lưu thay đổi",
+    "biometrics": "Xác thực sinh trắc học",
+    "biometricsDesc": "Sử dụng FaceID / TouchID để đăng nhập nhanh",
+    "deviceManagement": "Thiết bị & Hoạt động",
+    "currentDevice": "Thiết bị hiện tại",
+    "activeSession": "Đang hoạt động",
+    "deleteAccount": "Xóa tài khoản",
+    "deleteAccountDesc": "Xóa vĩnh viễn dữ liệu tài khoản",
+    "deleteAccountConfirmTitle": "Xác nhận xóa tài khoản",
+    "deleteAccountConfirmMessage": "Hành động này không thể hoàn tác. Toàn bộ dữ liệu đặt vé, H-Coin và thông tin cá nhân sẽ bị xóa vĩnh viễn. Bạn có chắc chắn muốn tiếp tục?",
+    "delete": "Xóa",
+    "cancel": "Hủy"
   }
 }

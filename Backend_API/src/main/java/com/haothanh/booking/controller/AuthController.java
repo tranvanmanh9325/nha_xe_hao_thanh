@@ -27,6 +27,8 @@ import com.haothanh.booking.service.UserService;
 import com.haothanh.booking.security.CustomUserDetails;
 import com.haothanh.booking.entity.User;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
+
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -95,6 +97,17 @@ public class AuthController {
         Long userId = userPrincipal.getId();
         User user = userService.getUserById(userId);
         return ResponseEntity.ok(ApiResponse.success("Lấy thông tin người dùng thành công", UserResponseDTO.fromEntity(user)));
+    }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<ApiResponse<Void>> deleteAccount(@AuthenticationPrincipal CustomUserDetails userPrincipal) {
+        if (userPrincipal == null) {
+            return ResponseEntity.status(401).body(ApiResponse.error("Người dùng chưa xác thực"));
+        }
+
+        Long userId = userPrincipal.getId();
+        userService.deleteAccount(userId);
+        return ResponseEntity.ok(ApiResponse.success("Xóa tài khoản thành công", null));
     }
 
     @GetMapping("/me/notification-settings")

@@ -65,6 +65,22 @@
   "ticket": {
     "title": "My Tickets"
   },
+  "bookingHistory": {
+    "title": "Booking History",
+    "all": "All",
+    "upcoming": "Upcoming",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "empty": "You have no trips in this category",
+    "bookNow": "Book Now",
+    "seat": "Seat",
+    "ticketCode": "Ticket Code",
+    "status": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "cancelled": "Cancelled"
+    }
+  },
   "notification": {
     "title": "Notifications",
     "empty": "You have no notifications"
@@ -250,5 +266,27 @@
     "registerButton": "Register",
     "haveAccount": "Already have an account?",
     "loginNow": "Login now"
+  },
+  "securityScreen": {
+    "title": "Security & Password",
+    "changePassword": "Change Password",
+    "oldPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "passwordRequirements": "Password must be at least 6 characters",
+    "passwordNotMatch": "Passwords do not match",
+    "passwordChangedSuccess": "Password changed successfully!",
+    "saveChanges": "Save Changes",
+    "biometrics": "Biometric Authentication",
+    "biometricsDesc": "Use FaceID / TouchID for quick login",
+    "deviceManagement": "Devices & Activity",
+    "currentDevice": "Current Device",
+    "activeSession": "Active",
+    "deleteAccount": "Delete Account",
+    "deleteAccountDesc": "Permanently delete account data",
+    "deleteAccountConfirmTitle": "Confirm Account Deletion",
+    "deleteAccountConfirmMessage": "This action cannot be undone. All your bookings, H-Coins, and personal data will be permanently deleted. Are you sure you want to continue?",
+    "delete": "Delete",
+    "cancel": "Cancel"
   }
 }

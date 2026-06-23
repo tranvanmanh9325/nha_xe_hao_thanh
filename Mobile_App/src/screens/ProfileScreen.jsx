@@ -159,7 +159,9 @@ export default function ProfileScreen({ navigation }) {
             {renderMenuItem(
               (color) => <ShieldIcon size={24} color={color} />, 
               t('profile.security'),
-              t('profile.securityDesc')
+              t('profile.securityDesc'),
+              false,
+              () => navigation.navigate('Security')
             )}
           </View>
         </View>
@@ -169,7 +171,10 @@ export default function ProfileScreen({ navigation }) {
           <View style={styles.menuCard}>
             {renderMenuItem(
               (color) => <TicketOutlineIcon size={24} color={color} />, 
-              t('profile.bookingHistory')
+              t('profile.bookingHistory'),
+              null,
+              false,
+              () => navigation.navigate('BookingHistory')
             )}
             <View style={styles.divider} />
             {renderMenuItem(

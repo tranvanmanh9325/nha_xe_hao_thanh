@@ -65,6 +65,22 @@
   "ticket": {
     "title": "내 티켓"
   },
+  "bookingHistory": {
+    "title": "예약 내역",
+    "all": "전체",
+    "upcoming": "예정",
+    "completed": "완료",
+    "cancelled": "취소됨",
+    "empty": "이 카테고리에 예약 내역이 없습니다",
+    "bookNow": "지금 예약하기",
+    "seat": "좌석",
+    "ticketCode": "티켓 코드",
+    "status": {
+      "pending": "결제 대기 중",
+      "paid": "결제 완료",
+      "cancelled": "취소됨"
+    }
+  },
   "notification": {
     "title": "알림",
     "empty": "알림이 없습니다"
@@ -230,5 +246,27 @@
     "registerButton": "가입하기",
     "haveAccount": "이미 계정이 있으신가요?",
     "loginNow": "지금 로그인하세요"
+  },
+  "securityScreen": {
+    "title": "보안 및 비밀번호",
+    "changePassword": "비밀번호 변경",
+    "oldPassword": "현재 비밀번호",
+    "newPassword": "새 비밀번호",
+    "confirmNewPassword": "새 비밀번호 확인",
+    "passwordRequirements": "비밀번호는 6자 이상이어야 합니다",
+    "passwordNotMatch": "비밀번호가 일치하지 않습니다",
+    "passwordChangedSuccess": "비밀번호가 성공적으로 변경되었습니다!",
+    "saveChanges": "변경 사항 저장",
+    "biometrics": "생체 인증",
+    "biometricsDesc": "FaceID / TouchID를 사용하여 빠른 로그인",
+    "deviceManagement": "기기 및 활동",
+    "currentDevice": "현재 기기",
+    "activeSession": "활성",
+    "deleteAccount": "계정 삭제",
+    "deleteAccountDesc": "계정 데이터 영구 삭제",
+    "deleteAccountConfirmTitle": "계정 삭제 확인",
+    "deleteAccountConfirmMessage": "이 작업은 취소할 수 없습니다. 예약, H-Coin 및 개인 데이터가 영구적으로 삭제됩니다. 계속하시겠습니까?",
+    "delete": "삭제",
+    "cancel": "취소"
   }
 }

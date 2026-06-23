@@ -21,9 +21,9 @@ const GuestFooter = ({ settings }) => {
         <div>
           <h4 className="text-white font-bold mb-4">Về Chúng Tôi</h4>
           <ul className="space-y-2">
-            <li><Link to="#" className="hover:text-brand-400 transition-colors">Giới thiệu</Link></li>
-            <li><Link to="#" className="hover:text-brand-400 transition-colors">Tuyển dụng</Link></li>
-            <li><Link to="#" className="hover:text-brand-400 transition-colors">Tin tức</Link></li>
+            <li><Link to="/gioi-thieu" className="hover:text-brand-400 transition-colors">Giới thiệu</Link></li>
+            <li><Link to="/tuyen-dung" className="hover:text-brand-400 transition-colors">Tuyển dụng</Link></li>
+            <li><Link to="/tin-tuc" className="hover:text-brand-400 transition-colors">Tin tức</Link></li>
           </ul>
         </div>
         <div>

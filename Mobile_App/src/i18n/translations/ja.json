@@ -65,6 +65,22 @@
   "ticket": {
     "title": "マイチケット"
   },
+  "bookingHistory": {
+    "title": "予約履歴",
+    "all": "すべて",
+    "upcoming": "予定",
+    "completed": "完了",
+    "cancelled": "キャンセル",
+    "empty": "このカテゴリには予約がありません",
+    "bookNow": "今すぐ予約",
+    "seat": "座席",
+    "ticketCode": "チケットコード",
+    "status": {
+      "pending": "支払い待ち",
+      "paid": "支払い済み",
+      "cancelled": "キャンセル済み"
+    }
+  },
   "notification": {
     "title": "通知",
     "empty": "通知はありません"
@@ -230,5 +246,27 @@
     "registerButton": "登録",
     "haveAccount": "すでにアカウントを持っていますか？",
     "loginNow": "今すぐログイン"
+  },
+  "securityScreen": {
+    "title": "セキュリティとパスワード",
+    "changePassword": "パスワードを変更",
+    "oldPassword": "現在のパスワード",
+    "newPassword": "新しいパスワード",
+    "confirmNewPassword": "新しいパスワード（確認）",
+    "passwordRequirements": "パスワードは6文字以上にする必要があります",
+    "passwordNotMatch": "パスワードが一致しません",
+    "passwordChangedSuccess": "パスワードが正常に変更されました！",
+    "saveChanges": "変更を保存",
+    "biometrics": "生体認証",
+    "biometricsDesc": "FaceID / TouchIDで素早くログイン",
+    "deviceManagement": "デバイスとアクティビティ",
+    "currentDevice": "現在のデバイス",
+    "activeSession": "アクティブ",
+    "deleteAccount": "アカウントを削除",
+    "deleteAccountDesc": "アカウントデータを完全に削除します",
+    "deleteAccountConfirmTitle": "アカウント削除の確認",
+    "deleteAccountConfirmMessage": "この操作は元に戻せません。予約、H-Coin、および個人データは完全に削除されます。続行してもよろしいですか？",
+    "delete": "削除",
+    "cancel": "キャンセル"
   }
 }

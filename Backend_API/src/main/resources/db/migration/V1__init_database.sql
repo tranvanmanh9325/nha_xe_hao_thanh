@@ -472,3 +472,23 @@ CREATE TABLE notification_settings (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_notification_settings_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+-- ==========================================
+-- BỔ SUNG BẢNG NOTIFICATION_QUEUE
+-- ==========================================
+
+CREATE TABLE notification_queue (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    channel VARCHAR(50) NOT NULL,
+    scheduled_for TIMESTAMP WITH TIME ZONE NOT NULL,
+    retry_count INT DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_notification_queue_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_notification_queue_scheduled_for ON notification_queue(scheduled_for);
+CREATE INDEX idx_notification_queue_user_id ON notification_queue(user_id);
