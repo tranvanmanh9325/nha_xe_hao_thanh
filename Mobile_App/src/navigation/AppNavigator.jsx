@@ -14,6 +14,8 @@ import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
 import TermsOfServiceScreen from '../screens/TermsOfServiceScreen';
 import LegalAndPoliciesScreen from '../screens/LegalAndPoliciesScreen';
 import NotificationSettingsScreen from '../screens/NotificationSettingsScreen';
+import BookingHistoryScreen from '../screens/BookingHistoryScreen';
+import SecurityScreen from '../screens/SecurityScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -84,6 +86,16 @@ export default function AppNavigator() {
         <Stack.Screen 
           name="NotificationSettings" 
           component={NotificationSettingsScreen} 
+          options={{ headerShown: false, animation: 'slide_from_right' }}
+        />
+        <Stack.Screen 
+          name="BookingHistory" 
+          component={BookingHistoryScreen} 
+          options={{ headerShown: false, animation: 'slide_from_right' }}
+        />
+        <Stack.Screen 
+          name="Security" 
+          component={SecurityScreen} 
           options={{ headerShown: false, animation: 'slide_from_right' }}
         />
       </Stack.Navigator>

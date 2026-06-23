@@ -99,4 +99,24 @@ public class UserServiceImpl implements UserService {
         settings = notificationSettingsRepository.save(settings);
         return NotificationSettingsDTO.fromEntity(settings);
     }
+
+    @Override
+    @Transactional
+    @SuppressWarnings("null")
+    public void deleteAccount(Long userId) {
+        User user = getUserById(userId);
+        
+        // Thực hiện Soft Delete / Anonymize data thay vì Hard Delete để tránh lỗi khóa ngoại (Tickets, NotificationQueue)
+        user.setPhone("deleted_" + user.getId() + "_" + System.currentTimeMillis());
+        user.setEmail("deleted_" + user.getId() + "_" + System.currentTimeMillis() + "@haothanh.vn");
+        user.setFullName("Người dùng đã xóa");
+        user.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
+        
+        if (user.getNotificationSettings() != null) {
+            notificationSettingsRepository.delete(user.getNotificationSettings());
+            user.setNotificationSettings(null);
+        }
+        
+        userRepository.save(user);
+    }
 }

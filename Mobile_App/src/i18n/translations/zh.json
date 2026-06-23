@@ -65,6 +65,22 @@
   "ticket": {
     "title": "我的门票"
   },
+  "bookingHistory": {
+    "title": "预订历史",
+    "all": "全部",
+    "upcoming": "即将出行",
+    "completed": "已完成",
+    "cancelled": "已取消",
+    "empty": "此类别中没有行程",
+    "bookNow": "立即预订",
+    "seat": "座位",
+    "ticketCode": "票号",
+    "status": {
+      "pending": "待支付",
+      "paid": "已支付",
+      "cancelled": "已取消"
+    }
+  },
   "notification": {
     "title": "通知",
     "empty": "您没有通知"
@@ -230,5 +246,27 @@
     "registerButton": "注册",
     "haveAccount": "已有账户？",
     "loginNow": "立即登录"
+  },
+  "securityScreen": {
+    "title": "安全与密码",
+    "changePassword": "更改密码",
+    "oldPassword": "当前密码",
+    "newPassword": "新密码",
+    "confirmNewPassword": "确认新密码",
+    "passwordRequirements": "密码必须至少为6个字符",
+    "passwordNotMatch": "密码不匹配",
+    "passwordChangedSuccess": "密码更改成功！",
+    "saveChanges": "保存更改",
+    "biometrics": "生物识别认证",
+    "biometricsDesc": "使用FaceID / TouchID快速登录",
+    "deviceManagement": "设备与活动",
+    "currentDevice": "当前设备",
+    "activeSession": "活动",
+    "deleteAccount": "删除账户",
+    "deleteAccountDesc": "永久删除账户数据",
+    "deleteAccountConfirmTitle": "确认删除账户",
+    "deleteAccountConfirmMessage": "此操作无法撤销。您的所有预订、H-Coin和个人数据将被永久删除。您确定要继续吗？",
+    "delete": "删除",
+    "cancel": "取消"
   }
 }

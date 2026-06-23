@@ -117,7 +117,7 @@ export default function AnimatedInput({
 
 const styles = StyleSheet.create({
   wrapper: {
-    marginBottom: 20,
+    marginBottom: 24,
     width: '100%',
   },
   label: {

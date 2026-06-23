@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
@@ -6,16 +6,21 @@ import {
   Platform, 
   Pressable,
   StyleSheet,
-  Alert
+  Alert,
+  ScrollView
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import AnimatedInput from '../components/AnimatedInput';
 import AnimatedButton from '../components/AnimatedButton';
 import { COLORS, TYPOGRAPHY, RADIUS } from '../theme';
-import { BusIcon, PhoneIcon, LockIcon } from '../components/icons/CustomIcons';
+import { BusIcon, PhoneIcon, LockIcon, FingerprintIcon } from '../components/icons/CustomIcons';
 import authService from '../services/authService';
 import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as LocalAuthentication from 'expo-local-authentication';
+
+const BIOMETRICS_KEY = '@biometrics_enabled';
 
 const PHONE_REGEX = /^0\d{9,10}$/;
 
@@ -25,6 +30,53 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isBiometricsAvailable, setIsBiometricsAvailable] = useState(false);
+
+  useEffect(() => {
+    checkBiometrics();
+  }, []);
+
+  const checkBiometrics = async () => {
+    try {
+      const isEnabled = await AsyncStorage.getItem(BIOMETRICS_KEY);
+      if (isEnabled === 'true') {
+        setIsBiometricsAvailable(true);
+        // Tự động gọi quét khi vừa vào màn hình Login nếu có credentials
+        const credentials = await authService.getSecureCredentials();
+        if (credentials) {
+          handleBiometricLogin();
+        }
+      }
+    } catch (e) {
+      console.log('Error checking biometrics', e);
+    }
+  };
+
+  const handleBiometricLogin = async () => {
+    try {
+      const authResult = await LocalAuthentication.authenticateAsync({
+        promptMessage: t('auth.biometricPrompt', 'Đăng nhập bằng Sinh trắc học'),
+        fallbackLabel: t('auth.biometricFallback', 'Dùng mật khẩu'),
+        disableDeviceFallback: true,
+      });
+
+      if (authResult.success) {
+        // Lấy credentials từ SecureStore
+        const credentials = await authService.getSecureCredentials();
+        if (credentials) {
+          setLoading(true);
+          await authService.login(credentials.phone, credentials.password);
+          navigation.replace('Main');
+        } else {
+          Alert.alert(t('common.error', 'Lỗi'), t('auth.noCredentials', 'Không tìm thấy thông tin đăng nhập đã lưu. Vui lòng đăng nhập lại bằng mật khẩu.'));
+        }
+      }
+    } catch (e) {
+      console.log('Biometric error', e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const validate = () => {
     const newErrors = {};
@@ -73,74 +125,91 @@ export default function LoginScreen({ navigation }) {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardView}
       >
-        <View style={styles.container}>
-          <Animated.View 
-            entering={FadeInDown.duration(800).springify()}
-            style={styles.card}
-          >
-            <Animated.View entering={FadeIn.delay(200).duration(800)} style={styles.header}>
-              <View style={styles.logoWrapper}>
-                <BusIcon size={36} color={COLORS.brand[500]} />
-              </View>
-              <Text style={styles.title}>{t('auth.loginTitle')}</Text>
-              <Text style={styles.subtitle}>{t('auth.loginIntro', 'Đăng nhập để đặt vé xe nhanh chóng và nhận nhiều ưu đãi.')}</Text>
-            </Animated.View>
-
-            <Animated.View entering={FadeInDown.delay(300).duration(600).springify()} style={styles.formContainer}>
-              {errors.general && (
-                <View style={styles.errorBanner}>
-                  <Text style={styles.errorBannerText}>{errors.general}</Text>
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.container}>
+            <Animated.View 
+              entering={FadeInDown.duration(800).springify()}
+              style={styles.card}
+            >
+              <Animated.View entering={FadeIn.delay(200).duration(800)} style={styles.header}>
+                <View style={styles.logoWrapper}>
+                  <BusIcon size={36} color={COLORS.brand[500]} />
                 </View>
-              )}
+                <Text style={styles.title}>{t('auth.loginTitle')}</Text>
+                <Text style={styles.subtitle}>{t('auth.loginIntro', 'Đăng nhập để đặt vé xe nhanh chóng và nhận nhiều ưu đãi.')}</Text>
+              </Animated.View>
 
-              <AnimatedInput
-                label={t('auth.phonePlaceholder')}
-                placeholder="09xx xxx xxx"
-                keyboardType="phone-pad"
-                icon={PhoneIcon}
-                value={phone}
-                onChangeText={(text) => {
-                  setPhone(text);
-                  if (errors.phone) setErrors((prev) => ({ ...prev, phone: undefined }));
-                }}
-                error={errors.phone}
-              />
-              
-              <AnimatedInput
-                label={t('auth.passwordPlaceholder')}
-                placeholder={t('auth.passwordPlaceholder')}
-                secureTextEntry
-                icon={LockIcon}
-                value={password}
-                onChangeText={(text) => {
-                  setPassword(text);
-                  if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }));
-                }}
-                error={errors.password}
-              />
+              <Animated.View entering={FadeInDown.delay(300).duration(600).springify()} style={styles.formContainer}>
+                {errors.general && (
+                  <View style={styles.errorBanner}>
+                    <Text style={styles.errorBannerText}>{errors.general}</Text>
+                  </View>
+                )}
 
-              <View style={styles.forgotPasswordContainer}>
-                <Pressable>
-                  <Text style={styles.forgotPasswordText}>{t('auth.forgotPassword')}</Text>
-                </Pressable>
-              </View>
+                <AnimatedInput
+                  label={t('auth.phonePlaceholder')}
+                  placeholder="09xx xxx xxx"
+                  keyboardType="phone-pad"
+                  icon={PhoneIcon}
+                  value={phone}
+                  onChangeText={(text) => {
+                    setPhone(text);
+                    if (errors.phone) setErrors((prev) => ({ ...prev, phone: undefined }));
+                  }}
+                  error={errors.phone}
+                />
+                
+                <AnimatedInput
+                  label={t('auth.passwordPlaceholder')}
+                  placeholder={t('auth.passwordPlaceholder')}
+                  secureTextEntry
+                  icon={LockIcon}
+                  value={password}
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }));
+                  }}
+                  error={errors.password}
+                />
 
-              <AnimatedButton
-                title={t('auth.loginButton')}
-                onPress={handleLogin}
-                loading={loading}
-                style={styles.loginButton}
-              />
+                <View style={styles.forgotPasswordContainer}>
+                  <Pressable>
+                    <Text style={styles.forgotPasswordText}>{t('auth.forgotPassword')}</Text>
+                  </Pressable>
+                </View>
 
-              <View style={styles.registerContainer}>
-                <Text style={styles.registerText}>{t('auth.noAccount')} </Text>
-                <Pressable onPress={() => navigation.navigate('Register')} style={styles.registerLinkContainer}>
-                  <Text style={styles.registerLink}>{t('auth.registerNow')}</Text>
-                </Pressable>
-              </View>
+                <View style={styles.actionButtonsContainer}>
+                  <AnimatedButton
+                    title={t('auth.loginButton')}
+                    onPress={handleLogin}
+                    loading={loading}
+                    style={[styles.loginButton, isBiometricsAvailable && { flex: 1, marginBottom: 0 }]}
+                  />
+                  
+                  {isBiometricsAvailable && (
+                    <Pressable 
+                      style={styles.biometricButton}
+                      onPress={handleBiometricLogin}
+                    >
+                      <FingerprintIcon size={28} color={COLORS.brand[600]} />
+                    </Pressable>
+                  )}
+                </View>
+
+                <View style={styles.registerContainer}>
+                  <Text style={styles.registerText}>{t('auth.noAccount')} </Text>
+                  <Pressable onPress={() => navigation.navigate('Register')} style={styles.registerLinkContainer}>
+                    <Text style={styles.registerLink}>{t('auth.registerNow')}</Text>
+                  </Pressable>
+                </View>
+              </Animated.View>
             </Animated.View>
-          </Animated.View>
-        </View>
+          </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -154,6 +223,9 @@ const styles = StyleSheet.create({
   keyboardView: {
     flex: 1,
   },
+  scrollContent: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
     alignItems: 'center',
@@ -165,7 +237,8 @@ const styles = StyleSheet.create({
     maxWidth: 480,
     backgroundColor: COLORS.white,
     borderRadius: RADIUS['2xl'],
-    padding: 24,
+    paddingVertical: 36,
+    paddingHorizontal: 28,
     shadowColor: COLORS.brand[700],
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.08,
@@ -174,7 +247,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 40,
   },
   logoWrapper: {
     width: 64,
@@ -218,8 +291,8 @@ const styles = StyleSheet.create({
   forgotPasswordContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginBottom: 32,
-    marginTop: -8,
+    marginBottom: 36,
+    marginTop: 4,
   },
   forgotPasswordText: {
     fontSize: TYPOGRAPHY.sm,
@@ -228,6 +301,20 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     marginBottom: 24,
+  },
+  actionButtonsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
+    gap: 12,
+  },
+  biometricButton: {
+    width: 56,
+    height: 56,
+    backgroundColor: COLORS.brand[50],
+    borderRadius: RADIUS.xl,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   registerContainer: {
     flexDirection: 'row',

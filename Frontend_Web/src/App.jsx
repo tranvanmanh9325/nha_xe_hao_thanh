@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import ScrollToTop from './components/layout/ScrollToTop';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -7,6 +8,9 @@ import 'react-toastify/dist/ReactToastify.css';
 const GuestHomepage = React.lazy(() => import('./pages/b2c/GuestHomepage'));
 const Schedule = React.lazy(() => import('./pages/b2c/Schedule'));
 const SearchResults = React.lazy(() => import('./pages/b2c/SearchResults'));
+const AboutUs = React.lazy(() => import('./pages/b2c/AboutUs'));
+const Careers = React.lazy(() => import('./pages/b2c/Careers'));
+const News = React.lazy(() => import('./pages/b2c/News'));
 
 const DashboardLayout = React.lazy(() => import('./components/layout/DashboardLayout'));
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
@@ -37,12 +41,16 @@ const App = () => {
     <>
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
       <BrowserRouter>
+        <ScrollToTop />
         <Suspense fallback={<Loader />}>
           <Routes>
             {/* Public Routes (B2C) */}
             <Route path="/" element={<GuestHomepage />} />
             <Route path="/lich-trinh" element={<Schedule />} />
             <Route path="/tra-cuu-ve" element={<SearchResults />} />
+            <Route path="/gioi-thieu" element={<AboutUs />} />
+            <Route path="/tuyen-dung" element={<Careers />} />
+            <Route path="/tin-tuc" element={<News />} />
 
             {/* Admin Routes (B2B) */}
             <Route path="/admin" element={<ProtectedRoute />}>

@@ -27,6 +27,14 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import java.time.OffsetDateTime;
+import java.time.LocalTime;
+import java.time.DayOfWeek;
+import java.time.temporal.TemporalAdjusters;
+import java.util.Arrays;
+import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -43,14 +51,14 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional(readOnly = true)
-    public org.springframework.data.domain.Page<TicketResponseDTO> getAllTickets(String search, Long tripId, String status, String dateFilter, org.springframework.data.domain.Pageable pageable) {
-        java.time.OffsetDateTime startDate = null;
-        java.time.OffsetDateTime endDate = null;
+    public Page<TicketResponseDTO> getAllTickets(String search, Long tripId, String status, String dateFilter, Pageable pageable) {
+        OffsetDateTime startDate = null;
+        OffsetDateTime endDate = null;
         
         if (dateFilter != null && !dateFilter.equals("all")) {
-            java.time.OffsetDateTime now = java.time.OffsetDateTime.now();
-            java.time.OffsetDateTime startOfToday = now.with(java.time.LocalTime.MIN);
-            java.time.OffsetDateTime endOfToday = now.with(java.time.LocalTime.MAX);
+            OffsetDateTime now = OffsetDateTime.now();
+            OffsetDateTime startOfToday = now.with(LocalTime.MIN);
+            OffsetDateTime endOfToday = now.with(LocalTime.MAX);
             
             switch (dateFilter) {
                 case "today":
@@ -62,12 +70,12 @@ public class TicketServiceImpl implements TicketService {
                     endDate = endOfToday.minusDays(1);
                     break;
                 case "this_week":
-                    startDate = startOfToday.with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
-                    endDate = endOfToday.with(java.time.temporal.TemporalAdjusters.nextOrSame(java.time.DayOfWeek.SUNDAY));
+                    startDate = startOfToday.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+                    endDate = endOfToday.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
                     break;
                 case "this_month":
-                    startDate = startOfToday.with(java.time.temporal.TemporalAdjusters.firstDayOfMonth());
-                    endDate = endOfToday.with(java.time.temporal.TemporalAdjusters.lastDayOfMonth());
+                    startDate = startOfToday.with(TemporalAdjusters.firstDayOfMonth());
+                    endDate = endOfToday.with(TemporalAdjusters.lastDayOfMonth());
                     break;
             }
         }
@@ -86,7 +94,7 @@ public class TicketServiceImpl implements TicketService {
             search = null;
         }
 
-        org.springframework.data.domain.Page<Ticket> tickets = ticketRepository.findAllWithFilters(search, tripId, status, startDate, endDate, pageable);
+        Page<Ticket> tickets = ticketRepository.findAllWithFilters(search, tripId, status, startDate, endDate, pageable);
         return tickets.map(this::mapToDTO);
     }
 
@@ -160,13 +168,13 @@ public class TicketServiceImpl implements TicketService {
             
             return transactionTemplate.execute(status -> {
                 // 1. Check if trip exists
-                Trip trip = tripRepository.findById(java.util.Objects.requireNonNull(request.getTripId(), "Trip ID cannot be null"))
+                Trip trip = tripRepository.findById(Objects.requireNonNull(request.getTripId(), "Trip ID cannot be null"))
                         .orElseThrow(() -> new RuntimeException("Không tìm thấy chuyến xe với ID: " + request.getTripId()));
 
                 // 2. Check if seat is already booked (PAID or PENDING)
                 List<String> bookedSeats = ticketRepository.findBookedSeatsByTripId(
-                        java.util.Objects.requireNonNull(request.getTripId()), 
-                        java.util.Arrays.asList("PAID", "PENDING")
+                        Objects.requireNonNull(request.getTripId()), 
+                        Arrays.asList("PAID", "PENDING")
                 );
                 
                 if (bookedSeats.contains(request.getSeatCode())) {
@@ -182,7 +190,7 @@ public class TicketServiceImpl implements TicketService {
                                     .role("GUEST")
                                     .password(passwordEncoder.encode(request.getCustomerPhone())) // Hash password
                                     .build();
-                            return userRepository.save(java.util.Objects.requireNonNull(newUser));
+                            return userRepository.save(Objects.requireNonNull(newUser));
                         });
 
                 // 4. Create Ticket
@@ -195,7 +203,7 @@ public class TicketServiceImpl implements TicketService {
                         .paymentStatus("PAID") // Offline booking is paid immediately
                         .build();
 
-                ticketRepository.save(java.util.Objects.requireNonNull(ticket));
+                ticketRepository.save(Objects.requireNonNull(ticket));
 
                 // 5. Evict cache
                 var cache = cacheManager.getCache("trip-seat-map");
@@ -261,7 +269,7 @@ public class TicketServiceImpl implements TicketService {
                 if (newSeat != null && !newSeat.equals(currentSeat)) {
                     List<String> bookedSeats = ticketRepository.findBookedSeatsByTripId(
                             attachedTicket.getTrip().getId(), 
-                            java.util.Arrays.asList("PAID", "PENDING")
+                            Arrays.asList("PAID", "PENDING")
                     );
                     
                     if (bookedSeats.contains(newSeat)) {
@@ -286,5 +294,21 @@ public class TicketServiceImpl implements TicketService {
                 lock.unlock();
             }
         }
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<TicketResponseDTO> getMyTickets(Long userId, String status, Pageable pageable) {
+        if ("pending".equalsIgnoreCase(status) || "unpaid".equalsIgnoreCase(status)) {
+            status = "PENDING";
+        } else if ("paid".equalsIgnoreCase(status)) {
+            status = "PAID";
+        } else if ("cancelled".equalsIgnoreCase(status)) {
+            status = "CANCELLED";
+        } else {
+            status = null;
+        }
+
+        Page<Ticket> tickets = ticketRepository.findAllByUserIdAndStatus(userId, status, pageable);
+        return tickets.map(this::mapToDTO);
     }
 }
